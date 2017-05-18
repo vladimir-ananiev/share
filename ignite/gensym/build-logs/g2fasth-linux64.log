@@ -1,0 +1,76 @@
+Detected Java version: 1.7 in: /usr/lib/jvm/java-7-openjdk-amd64/jre
+Detected OS: Linux
+parsing buildfile /gensym/src/g2fasth/build.xml with URI = file:/gensym/src/g2fasth/build.xml
+Project base dir set to: /gensym/src/g2fasth
+parsing buildfile jar:file:/usr/share/ant/lib/ant.jar!/org/apache/tools/ant/antlib.xml with URI = jar:file:/usr/share/ant/lib/ant.jar!/org/apache/tools/ant/antlib.xml from a zip file
+Build sequence for target(s) `build' is [build]
+Complete build sequence is [build, print-version, clean, build-debug, unit-tests, ]
+
+build:
+    [mkdir] Created dir: /gensym/src/g2fasth/build
+     [exec] Current OS is Linux
+     [exec] Executing 'cmake' with arguments:
+     [exec] '../'
+     [exec] 
+     [exec] The ' characters around the executable and arguments are
+     [exec] not part of the command.
+     [exec] -- The CXX compiler identification is GNU
+     [exec] -- Check for working CXX compiler: /usr/bin/c++
+     [exec] -- Check for working CXX compiler: /usr/bin/c++ -- works
+     [exec] -- Detecting CXX compiler ABI info
+     [exec] -- Detecting CXX compiler ABI info - done
+     [exec] -- Performing Test COMPILER_SUPPORTS_CXX11
+     [exec] -- Performing Test COMPILER_SUPPORTS_CXX11 - Failed
+     [exec] -- Performing Test COMPILER_SUPPORTS_CXX0X
+     [exec] -- Performing Test COMPILER_SUPPORTS_CXX0X - Success
+     [exec] -- The C compiler identification is GNU
+     [exec] -- Check for working C compiler: /usr/bin/gcc
+     [exec] -- Check for working C compiler: /usr/bin/gcc -- works
+     [exec] -- Detecting C compiler ABI info
+     [exec] -- Detecting C compiler ABI info - done
+     [exec] -- Configuring done
+     [exec] -- Generating done
+     [exec] -- Build files have been written to: /gensym/src/g2fasth/build
+     [exec] Current OS is Linux
+     [exec] Executing 'cmake' with arguments:
+     [exec] '--build'
+     [exec] '.'
+     [exec] '--config'
+     [exec] 'Release'
+     [exec] 
+     [exec] The ' characters around the executable and arguments are
+     [exec] not part of the command.
+     [exec] Scanning dependencies of target libg2fasth
+     [exec] [  4%] Building CXX object CMakeFiles/libg2fasth.dir/src/g2fasth.cpp.o
+     [exec] [  9%] Building CXX object CMakeFiles/libg2fasth.dir/src/logger.cpp.o
+     [exec] [ 13%] Building CXX object CMakeFiles/libg2fasth.dir/src/test_run_instance.cpp.o
+     [exec] [ 18%] Building CXX object CMakeFiles/libg2fasth.dir/src/tinythread.cpp.o
+     [exec] [ 22%] Building CXX object CMakeFiles/libg2fasth.dir/src/tinyxml2.cpp.o
+     [exec] [ 27%] Building CXX object CMakeFiles/libg2fasth.dir/src/xml_serialization.cpp.o
+     [exec] Linking CXX static library ../lib/liblibg2fasth.a
+     [exec] [ 27%] Built target libg2fasth
+     [exec] Scanning dependencies of target testg2fasth
+     [exec] [ 31%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-async.cpp.o
+     [exec] [ 36%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-before-after.cpp.o
+     [exec] [ 40%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-execution-engine.cpp.o
+     [exec] [ 45%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-g2-options.cpp.o
+     [exec] [ 50%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-graph.cpp.o
+     [exec] [ 54%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-graph-of-test-cases.cpp.o
+     [exec] [ 59%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-junit.cpp.o
+     [exec] [ 63%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-logger.cpp.o
+     [exec] [ 68%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-main.cpp.o
+     [exec] [ 72%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite.cpp.o
+     [exec] [ 77%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite-results.cpp.o
+     [exec] [ 81%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite-scheduling.cpp.o
+     [exec] [ 86%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-test-scheduling.cpp.o
+     [exec] [ 90%] Building CXX object CMakeFiles/testg2fasth.dir/src/tinythread.cpp.o
+     [exec] Linking CXX executable ../bin/testg2fasth
+     [exec] [ 90%] Built target testg2fasth
+     [exec] Scanning dependencies of target basetest
+     [exec] [ 95%] Building CXX object test/CMakeFiles/basetest.dir/basetest.cpp.o
+     [exec] [100%] Building CXX object test/CMakeFiles/basetest.dir/MySuite.cpp.o
+     [exec] Linking CXX executable ../../bin/basetest
+     [exec] [100%] Built target basetest
+
+BUILD SUCCESSFUL
+Total time: 45 seconds
