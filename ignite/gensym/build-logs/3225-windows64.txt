@@ -20,7 +20,7 @@ build_64_ent_wout_32:
      [exec] [Microsoft .NET Framework, version 4.0.30319.36365]
      [exec] Copyright (C) Microsoft Corporation. All rights reserved.
      [exec] 
-     [exec] Build started 5/20/2017 10:32:38 PM.
+     [exec] Build started 5/22/2017 4:04:19 PM.
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" on node 1 (default targets).
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" (1) is building "D:\develop\ignite-gensym\g2fasth\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
      [exec] PrepareForBuild:
@@ -514,150 +514,6 @@ build_64_ent_wout_32:
      [exec]   tests-declare-g2-variable.cpp
      [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(45): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(46): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-declare-g2-variable.cpp(9): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-declare-g2-variable.cpp(9): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-declare-g2-variable.cpp(36): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-declare-g2-variable.cpp(36): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(58): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(53) : while compiling class template member function 'g2::fasth::suite<T>::suite(std::string,g2::fasth::test_order,g2::fasth::log_level,std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec]           ..\src\tests-declare-g2-variable.cpp(6) : see reference to class template instantiation 'g2::fasth::suite<T>' being compiled
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(61): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(72): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(69) : while compiling class template member function 'std::string g2::fasth::suite<T>::execute(std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(58): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(53) : while compiling class template member function 'g2::fasth::suite<T>::suite(std::string,g2::fasth::test_order,g2::fasth::log_level,std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec]           ..\src\tests-declare-g2-variable.cpp(33) : see reference to class template instantiation 'g2::fasth::suite<T>' being compiled
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(61): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(72): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(69) : while compiling class template member function 'std::string g2::fasth::suite<T>::execute(std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(193) : while compiling class template member function 'std::string g2::fasth::suite<T>::start(std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(204): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(206): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(193) : while compiling class template member function 'std::string g2::fasth::suite<T>::start(std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(204): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(206): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(94) : while compiling class template member function 'bool g2::fasth::suite<T>::test_case_exists(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(210): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(209) : while compiling class template member function 'std::string g2::fasth::suite<T>::generate_junit_report(std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(214): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(242) : while compiling class template member function 'void g2::fasth::suite<T>::execute_test_case(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(246): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(248): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(94) : while compiling class template member function 'bool g2::fasth::suite<T>::test_case_exists(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(210): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(209) : while compiling class template member function 'std::string g2::fasth::suite<T>::generate_junit_report(std::string)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(214): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(242) : while compiling class template member function 'void g2::fasth::suite<T>::execute_test_case(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(246): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(248): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(163): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(159) : while compiling class template member function 'void g2::fasth::test_run_spec<T>::execute(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96) : see reference to class template instantiation 'g2::fasth::test_run_spec<T>' being compiled
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(94) : while compiling class template member function 'bool g2::fasth::suite<T>::test_case_exists(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_1
-     [exec]           ]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(170): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(181): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(183): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(187): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(163): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]           d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(159) : while compiling class template member function 'void g2::fasth::test_run_spec<T>::execute(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96) : see reference to class template instantiation 'g2::fasth::test_run_spec<T>' being compiled
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(94) : while compiling class template member function 'bool g2::fasth::suite<T>::test_case_exists(void)'
-     [exec]           with
-     [exec]           [
-     [exec]               T=TestDeclareG2Variable_2
-     [exec]           ]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(170): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(181): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(183): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(187): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   tests-suite.cpp
      [exec] ..\src\tests-suite.cpp(8): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] ..\src\tests-suite.cpp(8): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
@@ -1445,50 +1301,6 @@ build_64_ent_wout_32:
      [exec]   ..\src\tests-logger.cpp(43): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(45): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(46): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-declare-g2-variable.cpp(9): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-declare-g2-variable.cpp(9): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-declare-g2-variable.cpp(36): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-declare-g2-variable.cpp(36): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(58): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(61): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(72): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(58): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(61): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(72): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(204): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(206): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(204): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(206): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(210): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(214): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(246): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(248): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(96): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(210): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(214): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(246): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(248): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(244): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(163): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(170): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(181): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(183): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(187): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(163): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(170): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(181): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(183): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(187): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-suite.cpp(8): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-suite.cpp(8): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-suite.cpp(35): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
@@ -1684,10 +1496,10 @@ build_64_ent_wout_32:
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(183): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(187): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] 
-     [exec]     390 Warning(s)
+     [exec]     346 Warning(s)
      [exec]     0 Error(s)
      [exec] 
-     [exec] Time Elapsed 00:00:30.05
+     [exec] Time Elapsed 00:00:30.87
 
 BUILD SUCCESSFUL
-Total time: 37 seconds
+Total time: 38 seconds
