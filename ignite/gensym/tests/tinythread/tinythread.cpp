@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
 */
 
 #include <exception>
+#include <time.h>
 #include "tinythread.h"
 
 #if defined(_TTHREAD_POSIX_)
@@ -184,6 +185,7 @@ void * thread::wrapper_function(void * aArg)
 
   return 0;
 }
+#include <stdio.h>
 
 thread::thread(void (*aFunction)(void *), void * aArg)
 {
@@ -204,6 +206,12 @@ thread::thread(void (*aFunction)(void *), void * aArg)
 #if defined(_TTHREAD_WIN32_)
   mHandle = (HANDLE) _beginthreadex(0, 0, wrapper_function, (void *) ti, 0, &mWin32ThreadID);
 #elif defined(_TTHREAD_POSIX_)
+//   pthread_attr_t thr_attr;
+//   pthread_attr_init(&thr_attr);
+//   size_t stack_size;
+//   pthread_attr_getstacksize(&thr_attr, &stack_size);
+//   printf("Initial stack size = %d\n",  (int)stack_size);
+//   pthread_attr_setstacksize(&thr_attr, 128*1024*1024);
   if(pthread_create(&mHandle, NULL, wrapper_function, (void *) ti) != 0)
     mHandle = 0;
 #endif
@@ -216,10 +224,16 @@ thread::thread(void (*aFunction)(void *), void * aArg)
   }
 }
 
+
 thread::~thread()
 {
+    puts("thread::~thread() - ENTER");
   if(joinable())
+  {
+    puts("thread::~thread() - joinable,  terminate all");
     std::terminate();
+  }
+    puts("thread::~thread() - LEAVE");
 }
 
 void thread::join()
@@ -235,29 +249,34 @@ void thread::join()
   }
 }
 
-bool thread::join_or_kill(int timeout)
+bool thread::join_or_kill(int timeout) //  timeout in ms
 {
+  puts("thread::join_or_kill() - ENTER");
+  if (!joinable())
+    return true;
   bool in_time;
 #if defined(_TTHREAD_WIN32_)
   in_time = WAIT_OBJECT_0 == WaitForSingleObject(native_handle(), (DWORD)timeout);
   if (!in_time)
     TerminateThread(native_handle(), 0);
-  CloseHandle(native_handle());
 #elif defined(_TTHREAD_POSIX_)
   timespec ts;
-  ts.tv_sec = timeout / 1000;
-  ts.tv_nsec = (timeout % 1000) * 1000000;
-  in_time = !pthread_timedjoin_np(native_handle(), NULL, &ts);
+  clock_gettime(CLOCK_REALTIME, &ts);                       // get current (absolute) time
+  ts.tv_sec  += timeout / 1000;                             // adding seconds
+  ts.tv_nsec += (timeout % 1000) * 1000000;                 // adding nanoseconds
+  ts.tv_sec  += (time_t)(ts.tv_nsec / 1000000000);          // handling nanoseconds overflow (adding a second if needed)
+  ts.tv_nsec  = ts.tv_nsec % 1000000000;                    // handling nanoseconds overflow (leaving just nanoseconds)
+  in_time = !pthread_timedjoin_np(native_handle(), NULL, &ts); // ts contains absolute time !!!
   if (!in_time)
+  {
     pthread_cancel(native_handle());
+    //pthread_kill(native_handle(),  SIGKILL);
+  }
 #else
   in_time = true;
 #endif
-  if (!in_time)
-  {
-      lock_guard<mutex> guard(mDataMutex);
-      mNotAThread = true;
-  }
+  detach();
+  puts("thread::join_or_kill() - LEAVE");
   return in_time;
 }
 
