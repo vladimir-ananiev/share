@@ -19,19 +19,21 @@ int main(int argc, char* argv[])
     // Let thread start
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10));
 
-    if (!thread.join_or_kill(2500))
+    if (!thread.join(2500))
     {
-        puts("Thread is timed out and killed");
+        puts("Thread is timed out and will be killed");
+        thread.kill();
     }
     else
     {
         puts("Thread is completed in time");
     }
 
-     puts("Press ENTER to exit");
-//      getchar();
+    puts("Checking for crash...");
+    //puts("Press ENTER to exit");
+    //getchar();
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10));
-     puts("After sleep");
+    puts("No crash. GOOD.");
 
     return 0;
 }

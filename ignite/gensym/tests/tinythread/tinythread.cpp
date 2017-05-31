@@ -227,13 +227,13 @@ thread::thread(void (*aFunction)(void *), void * aArg)
 
 thread::~thread()
 {
-    puts("thread::~thread() - ENTER");
+  puts("thread::~thread() - ENTER");
   if(joinable())
   {
     puts("thread::~thread() - joinable,  terminate all");
     std::terminate();
   }
-    puts("thread::~thread() - LEAVE");
+  puts("thread::~thread() - LEAVE");
 }
 
 void thread::join()
@@ -249,16 +249,13 @@ void thread::join()
   }
 }
 
-bool thread::join_or_kill(int timeout) //  timeout in ms
+bool thread::join(int timeout) //  timeout in ms
 {
-  puts("thread::join_or_kill() - ENTER");
   if (!joinable())
     return true;
   bool in_time;
 #if defined(_TTHREAD_WIN32_)
   in_time = WAIT_OBJECT_0 == WaitForSingleObject(native_handle(), (DWORD)timeout);
-  if (!in_time)
-    TerminateThread(native_handle(), 0);
 #elif defined(_TTHREAD_POSIX_)
   timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);                       // get current (absolute) time
@@ -267,17 +264,23 @@ bool thread::join_or_kill(int timeout) //  timeout in ms
   ts.tv_sec  += (time_t)(ts.tv_nsec / 1000000000);          // handling nanoseconds overflow (adding a second if needed)
   ts.tv_nsec  = ts.tv_nsec % 1000000000;                    // handling nanoseconds overflow (leaving just nanoseconds)
   in_time = !pthread_timedjoin_np(native_handle(), NULL, &ts); // ts contains absolute time !!!
-  if (!in_time)
-  {
-    pthread_cancel(native_handle());
-    //pthread_kill(native_handle(),  SIGKILL);
-  }
-#else
-  in_time = true;
+#endif
+  return in_time;
+}
+
+void thread::kill()
+{
+  if (!joinable())
+    return;
+  puts("thread::kill() - ENTER");
+#if defined(_TTHREAD_WIN32_)
+  TerminateThread(native_handle(), 0);
+#elif defined(_TTHREAD_POSIX_)
+  pthread_cancel(native_handle());
+  //pthread_kill(native_handle(),  SIGKILL);
 #endif
   detach();
-  puts("thread::join_or_kill() - LEAVE");
-  return in_time;
+  puts("thread::kill() - LEAVE");
 }
 
 

@@ -518,7 +518,8 @@ class thread {
     /// a thread of execution (i.e. it is not joinable, and you may not join
     /// with it nor detach from it).
     void join();
-    bool join_or_kill(int timeout);
+    bool join(int timeout);
+    void kill();
 
     /// Check if the thread is joinable.
     /// A thread object is joinable if it has an associated thread of execution.
