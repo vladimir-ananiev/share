@@ -280,6 +280,14 @@ void thread::cancel()
   detach();
 }
 
+void thread::make_cancel_safe()
+{
+#if defined(_TTHREAD_WIN32_)
+#elif defined(_TTHREAD_POSIX_)
+  pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+#endif
+}
+
 
 bool thread::joinable() const
 {

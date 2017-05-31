@@ -522,6 +522,9 @@ class thread {
 
     /// Cancel the thread.
     void cancel();
+    /// Prevent segmentation fault in Linux after pthread_cancel()
+    /// Should be called in cancelled thread
+    static void make_cancel_safe();
 
     /// Check if the thread is joinable.
     /// A thread object is joinable if it has an associated thread of execution.
