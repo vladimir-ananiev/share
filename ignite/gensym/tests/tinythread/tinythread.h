@@ -519,7 +519,9 @@ class thread {
     /// with it nor detach from it).
     void join();
     bool join(int timeout);
-    void kill();
+
+    /// Cancel the thread.
+    void cancel();
 
     /// Check if the thread is joinable.
     /// A thread object is joinable if it has an associated thread of execution.

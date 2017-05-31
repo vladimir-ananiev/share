@@ -227,13 +227,11 @@ thread::thread(void (*aFunction)(void *), void * aArg)
 
 thread::~thread()
 {
-  puts("thread::~thread() - ENTER");
   if(joinable())
   {
     puts("thread::~thread() - joinable,  terminate all");
     std::terminate();
   }
-  puts("thread::~thread() - LEAVE");
 }
 
 void thread::join()
@@ -256,6 +254,8 @@ bool thread::join(int timeout) //  timeout in ms
   bool in_time;
 #if defined(_TTHREAD_WIN32_)
   in_time = WAIT_OBJECT_0 == WaitForSingleObject(native_handle(), (DWORD)timeout);
+  if (in_time)
+    CloseHandle(mHandle);
 #elif defined(_TTHREAD_POSIX_)
   timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);                       // get current (absolute) time
@@ -268,19 +268,16 @@ bool thread::join(int timeout) //  timeout in ms
   return in_time;
 }
 
-void thread::kill()
+void thread::cancel()
 {
   if (!joinable())
     return;
-  puts("thread::kill() - ENTER");
 #if defined(_TTHREAD_WIN32_)
   TerminateThread(native_handle(), 0);
 #elif defined(_TTHREAD_POSIX_)
   pthread_cancel(native_handle());
-  //pthread_kill(native_handle(),  SIGKILL);
 #endif
   detach();
-  puts("thread::kill() - LEAVE");
 }
 
 

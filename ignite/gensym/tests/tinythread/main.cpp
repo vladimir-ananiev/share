@@ -5,9 +5,10 @@ void thread_proc(void* p)
 {
     puts("Thread ENTER");
 
-    //pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
+    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
     
-    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(2550));
+    //tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10000));
+    while (1)tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1));
     
     puts("Thread LEAVE");
 }
@@ -21,8 +22,10 @@ int main(int argc, char* argv[])
 
     if (!thread.join(2500))
     {
-        puts("Thread is timed out and will be killed");
-        thread.kill();
+        puts("Thread is timed out and will be cancelled");
+        thread.cancel();
+//         tthread::thread kill(kill_proc, &thread);
+//         kill.join();
     }
     else
     {
@@ -30,9 +33,9 @@ int main(int argc, char* argv[])
     }
 
     puts("Checking for crash...");
-    //puts("Press ENTER to exit");
-    //getchar();
-    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10));
+    puts("Press ENTER to exit");
+    getchar();
+//     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10));
     puts("No crash. GOOD.");
 
     return 0;
