@@ -5,7 +5,7 @@ void thread_proc(void* p)
 {
     puts("Thread ENTER");
 
-    pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, NULL);
+    tthread::thread::make_cancel_safe();
     
     //tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10000));
     while (1)tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1));
