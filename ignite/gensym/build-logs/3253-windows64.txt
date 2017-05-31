@@ -20,7 +20,7 @@ build_64_ent_wout_32:
      [exec] [Microsoft .NET Framework, version 4.0.30319.36365]
      [exec] Copyright (C) Microsoft Corporation. All rights reserved.
      [exec] 
-     [exec] Build started 5/31/2017 2:37:36 PM.
+     [exec] Build started 5/31/2017 5:44:36 PM.
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" on node 1 (default targets).
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" (1) is building "D:\develop\ignite-gensym\g2fasth\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
      [exec] PrepareForBuild:
@@ -2944,7 +2944,7 @@ build_64_ent_wout_32:
      [exec]     781 Warning(s)
      [exec]     0 Error(s)
      [exec] 
-     [exec] Time Elapsed 00:00:45.43
+     [exec] Time Elapsed 00:00:40.51
 
 BUILD SUCCESSFUL
-Total time: 56 seconds
+Total time: 49 seconds
