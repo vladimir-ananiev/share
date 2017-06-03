@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <string>
 #include "MySuite.hpp"
 #include "tinythread.h"
 #include "libgsi.hpp"
@@ -88,7 +89,17 @@ test_outcome MySuite::timeout_pass_test(g2::fasth::test_run_instance &)
 
 test_outcome MySuite::timeout_fail_test(g2::fasth::test_run_instance &)
 {
-    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(3000));
+    puts((std::string(__FUNCTION__) + " START").c_str());
+    int all_time = 5000;
+    int sleep_time = 500;
+    while (all_time > 0)
+    {
+        int sl_t = sleep_time < all_time ? sleep_time : all_time;
+        tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sl_t));
+        all_time -= sl_t;
+        puts(__FUNCTION__);
+    }
+    puts((std::string(__FUNCTION__) + " END").c_str());
     return test_outcome::pass;
 }
 
