@@ -15,7 +15,6 @@
 #include <tinythread.h>
 #include <ctime>
 #include <time.h>
-#include <stdlib.h>
 
 class ScopeLog
 {
@@ -225,7 +224,8 @@ public :
             set_state(test_run_state::ongoing);
 
             char buf[10];
-            ScopeLog sl(d_test_case_name + " execute, timeout = " + itoa(d_timeout.count(),buf,10));
+            sprintf(buf, "%d", d_timeout.count());
+            ScopeLog sl(d_test_case_name + " execute, timeout = " + buf);
 
             // Run test case body in separate thread to have
             // possibility of time measurement and test canceling
