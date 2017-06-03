@@ -15,6 +15,7 @@
 #include <tinythread.h>
 #include <ctime>
 #include <time.h>
+#include <stdlib.h>
 
 class ScopeLog
 {
