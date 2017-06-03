@@ -47,10 +47,10 @@ void MySuite::setup_test_track()
 
     //g2::fasth::libgsi::getInstance().declare_g2_variable<int>("INTEGER_VAR_NAME");
 
-    //run(&MySuite::timeout_pass_test, "Timeout-Pass-Test", chrono::milliseconds(4000)); // timeout 4000 ms
+    run(&MySuite::timeout_pass_test, "Timeout-Pass-Test", chrono::milliseconds(4000)); // timeout 4000 ms
     run(&MySuite::timeout_fail_test, "Timeout-Fail-Test", chrono::milliseconds(2000)); // timeout 2000 ms
     //run(&MySuite::default_timeout_pass_test, "Default-Timeout-Pass-Test");    // default timeout
-    //run(&MySuite::default_timeout_fail_test, "Default-Timeout-Fail-Test");    // default timeout
+    run(&MySuite::default_timeout_fail_test, "Default-Timeout-Fail-Test");    // default timeout
 }
 
 test_outcome MySuite::first_test(g2::fasth::test_run_instance &)

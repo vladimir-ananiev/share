@@ -14,6 +14,7 @@
 #include "test_case_graph.hpp"
 #include <tinythread.h>
 #include <ctime>
+#include <time.h>
 
 class ScopeLog
 {
@@ -30,10 +31,9 @@ public:
 
   static void print(const char* line)
   {
-    timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    int ms = ts.tv_nsec / 1000000;
-    printf("%08d:%03d %s\n", (int)ts.tv_sec, ms, line);
+      int sec, msec;
+      get_sec_msec(&sec, &msec);
+      printf("%08d:%03d %s\n", sec, msec, line);
   }
   static void print(const std::string& line)
   {
@@ -223,12 +223,16 @@ public :
         {
             set_state(test_run_state::ongoing);
 
+            char buf[10];
+            ScopeLog sl(d_test_case_name + " execute, timeout = " + itoa(d_timeout.count(),buf,10));
+
             // Run test case body in separate thread to have
             // possibility of time measurement and test canceling
             tthread::thread thread(action_thread_proc, this);
             // Wait for the thread completion during the timeout
             if (!thread.join(d_timeout))
             {   // Timed out, so
+                ScopeLog::print(d_test_case_name + " killed");
                 // cancel the test
                 thread.cancel();
                 // set outcome as fail
@@ -359,10 +363,8 @@ private:
     // Thread procedure for test action run
     static void action_thread_proc(void* p) {
         tthread::thread::make_cancel_safe();
-	
-	ScoprLog sl()
-
         test_run_spec* _this = (test_run_spec*)p;
+        ScopeLog sl(_this->d_test_case_name + " thread");
         g2::fasth::test_outcome outcome;
         try {
             outcome = _this->d_action(_this->d_async_instance);

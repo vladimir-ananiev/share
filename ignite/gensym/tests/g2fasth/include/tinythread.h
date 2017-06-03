@@ -83,6 +83,8 @@ freely, subject to the following restrictions:
   #include <unistd.h>
 #endif
 
+#include <time.h>
+
 // Generic includes
 #include <ostream>
 
@@ -712,6 +714,24 @@ namespace this_thread {
   }
 }
 
+}
+
+inline void get_sec_msec(int*sec, int*msec)
+{
+#if defined(_TTHREAD_WIN32_)
+    DWORD ticks = GetTickCount();
+    if (sec)
+        *sec = (int)ticks / 1000;
+    if (msec)
+        *msec = (int)ticks % 1000;
+#else
+    timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    if (sec)
+        *sec = (int)ts.tv_sec;
+    if (msec)
+        *msec = ts.tv_nsec / 1000000;
+#endif
 }
 
 // Define/macro cleanup
