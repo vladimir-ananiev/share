@@ -15,6 +15,34 @@
 #include <tinythread.h>
 #include <ctime>
 
+class ScopeLog
+{
+  std::string _name;
+public:
+  ScopeLog(const std::string& ame) : _name( ame)
+  {
+    print(_name + " ENTER");
+  }
+  ~ScopeLog()
+  {
+    print(_name + " LEAVE");
+  }
+
+  static void print(const char* line)
+  {
+    timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    int ms = ts.tv_nsec / 1000000;
+    printf("%08d:%03d %s\n", (int)ts.tv_sec, ms, line);
+  }
+  static void print(const std::string& line)
+  {
+    print(line.c_str());
+  }
+};
+
+#define FUNCLOG ScopeLog _sl_(__FUNCTION__)
+
 
 namespace g2 {
 namespace fasth {
@@ -331,6 +359,9 @@ private:
     // Thread procedure for test action run
     static void action_thread_proc(void* p) {
         tthread::thread::make_cancel_safe();
+	
+	ScoprLog sl()
+
         test_run_spec* _this = (test_run_spec*)p;
         g2::fasth::test_outcome outcome;
         try {
