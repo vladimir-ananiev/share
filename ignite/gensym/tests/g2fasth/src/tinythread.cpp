@@ -269,7 +269,6 @@ void thread::cancel()
   TerminateThread(native_handle(), 0);
 #elif defined(_TTHREAD_POSIX_)
   pthread_cancel(native_handle());
-  pthread_join(native_handle(), NULL);
 #endif
   detach();
 }

@@ -12,13 +12,13 @@ public:
         : suite("TestTimeouts", g2::fasth::test_order::implied, g2::fasth::log_level::NONE)
     {
         async_timeout = 0; // default will be used
-        sleep_time = 1000;
+        sleep_time = 10000;
     };
     TestTimeouts(chrono::milliseconds default_timeout)
         : suite("TestTimeouts", g2::fasth::test_order::implied, g2::fasth::log_level::NONE, "", default_timeout)
     {
         async_timeout = 0; // default will be used
-        sleep_time = 1000;
+        sleep_time = 10000;
     };
 
     void sync_test(const std::string& test_case_name)
@@ -44,7 +44,7 @@ TEST_CASE("Timeout is not specified") {
 TEST_CASE("Test is in time") {
     TestTimeouts test_suite;
     test_suite.sleep_time = 500;
-    test_suite.run(&TestTimeouts::sync_test, "sync_test", chrono::milliseconds(1000));
+    test_suite.run(&TestTimeouts::sync_test, "sync_test", chrono::milliseconds(10000));
     test_suite.execute();
     auto results = test_suite.get_results();
     REQUIRE(results[0].outcome() == test_outcome::pass);
@@ -52,7 +52,7 @@ TEST_CASE("Test is in time") {
 
 TEST_CASE("Test is timed out") {
     TestTimeouts test_suite;
-    test_suite.sleep_time = 1000;
+    test_suite.sleep_time = 10000;
     test_suite.run(&TestTimeouts::sync_test, "sync_test", chrono::milliseconds(500));
     test_suite.execute();
     auto results = test_suite.get_results();
@@ -60,7 +60,7 @@ TEST_CASE("Test is timed out") {
 }
 
 TEST_CASE("Default timeout pass test") {
-    TestTimeouts test_suite(chrono::milliseconds(1000));
+    TestTimeouts test_suite(chrono::milliseconds(10000));
     test_suite.sleep_time = 500;
     test_suite.run(&TestTimeouts::sync_test, "sync_test");
     test_suite.execute();
@@ -70,7 +70,7 @@ TEST_CASE("Default timeout pass test") {
 
 TEST_CASE("Default timeout fail test") {
     TestTimeouts test_suite(chrono::milliseconds(500));
-    test_suite.sleep_time = 1000;
+    test_suite.sleep_time = 10000;
     test_suite.run(&TestTimeouts::sync_test, "sync_test");
     test_suite.execute();
     auto results = test_suite.get_results();
@@ -78,7 +78,7 @@ TEST_CASE("Default timeout fail test") {
 }
 
 TEST_CASE("Async test, default timeout pass test") {
-    TestTimeouts test_suite(chrono::milliseconds(1000));
+    TestTimeouts test_suite(chrono::milliseconds(10000));
     test_suite.sleep_time = 500;
     test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
@@ -88,7 +88,7 @@ TEST_CASE("Async test, default timeout pass test") {
 
 TEST_CASE("Async test, default timeout fail test") {
     TestTimeouts test_suite(chrono::milliseconds(500));
-    test_suite.sleep_time = 1000;
+    test_suite.sleep_time = 10000;
     test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
     auto results = test_suite.get_results();
@@ -98,7 +98,7 @@ TEST_CASE("Async test, default timeout fail test") {
 TEST_CASE("Async test, timeout pass test") {
     TestTimeouts test_suite;
     test_suite.sleep_time = 500;
-    test_suite.async_timeout = 1000;
+    test_suite.async_timeout = 10000;
     test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
     auto results = test_suite.get_results();
@@ -107,7 +107,7 @@ TEST_CASE("Async test, timeout pass test") {
 
 TEST_CASE("Async test, timeout fail test") {
     TestTimeouts test_suite;
-    test_suite.sleep_time = 1000;
+    test_suite.sleep_time = 10000;
     test_suite.async_timeout = 500;
     test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
