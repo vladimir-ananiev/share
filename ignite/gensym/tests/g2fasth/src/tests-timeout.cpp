@@ -43,25 +43,28 @@ public:
     TestTimeouts(const char* name="")
         : suite(name, g2::fasth::test_order::implied, g2::fasth::log_level::NONE)
     {
-        s_mutex.lock();
+        FUNCLOG_DATA(get_suite_name().c_str());
+        //s_mutex.lock();
         async_timeout = 0; // default will be used
         sleep_time = 1000;
     };
     TestTimeouts(chrono::milliseconds default_timeout, const char* name="")
         : suite(name, g2::fasth::test_order::implied, g2::fasth::log_level::NONE, "", default_timeout)
     {
-        s_mutex.lock();
+        FUNCLOG_DATA(get_suite_name().c_str());
+        //s_mutex.lock();
         async_timeout = 0; // default will be used
         sleep_time = 1000;
     };
     ~TestTimeouts()
     {
-        s_mutex.unlock();
+        FUNCLOG_DATA(get_suite_name().c_str());
+        //s_mutex.unlock();
     };
 
     void sync_test(const std::string& test_case_name)
     {
-        //FUNCLOG_DATA(get_suite_name().c_str());
+        FUNCLOG_DATA(get_suite_name().c_str());
 
         tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep_time));
         
@@ -69,7 +72,7 @@ public:
     }
     void async_test(const std::string& test_case_name)
     {
-        //FUNCLOG_DATA(get_suite_name().c_str());
+        FUNCLOG_DATA(get_suite_name().c_str());
 
         go_async(test_case_name, &TestTimeouts::sync_test, chrono::milliseconds(async_timeout));
     }
