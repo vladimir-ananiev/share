@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
 */
 
 #include <exception>
+#include <time.h>
 #include "tinythread.h"
 
 #if defined(_TTHREAD_POSIX_)

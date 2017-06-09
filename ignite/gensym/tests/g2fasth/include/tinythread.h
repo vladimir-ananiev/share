@@ -83,8 +83,6 @@ freely, subject to the following restrictions:
   #include <unistd.h>
 #endif
 
-#include <time.h>
-
 // Generic includes
 #include <ostream>
 
@@ -714,24 +712,15 @@ namespace this_thread {
   }
 }
 
-}
-
-inline void get_sec_msec(int*sec, int*msec)
+class copyable_recursive_mutex: public recursive_mutex
 {
-#if defined(_TTHREAD_WIN32_)
-    DWORD ticks = GetTickCount();
-    if (sec)
-        *sec = (int)ticks / 1000;
-    if (msec)
-        *msec = (int)ticks % 1000;
-#else
-    timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    if (sec)
-        *sec = (int)ts.tv_sec;
-    if (msec)
-        *msec = ts.tv_nsec / 1000000;
-#endif
+public:
+    copyable_recursive_mutex() {}
+    ~copyable_recursive_mutex() {}
+    copyable_recursive_mutex(const copyable_recursive_mutex& src) { *this = src; }
+    copyable_recursive_mutex& operator=(const copyable_recursive_mutex& src) { return *this; }
+};
+
 }
 
 // Define/macro cleanup

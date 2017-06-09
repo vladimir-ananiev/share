@@ -2,6 +2,7 @@
 #ifndef INC_LIBG2FASTH_TEST_RUN_SPEC_H
 #define INC_LIBG2FASTH_TEST_RUN_SPEC_H
 
+#include <memory>
 #include <vector>
 #include <map>
 #include <functional>
@@ -9,40 +10,10 @@
 #include <stdexcept>
 #include <iterator>
 #include <assert.h>
-#include "test_run_instance.hpp"
 #include "g2fasth_typedefs.hpp"
 #include "test_case_graph.hpp"
-#include <tinythread.h>
+#include "tinythread.h"
 #include <ctime>
-#include <time.h>
-
-class ScopeLog
-{
-  std::string _name;
-public:
-  ScopeLog(const std::string& ame) : _name( ame)
-  {
-    print(_name + " ENTER");
-  }
-  ~ScopeLog()
-  {
-    print(_name + " LEAVE");
-  }
-
-  static void print(const char* line)
-  {
-      int sec, msec;
-      get_sec_msec(&sec, &msec);
-      printf("%08d:%03d %s\n", sec, msec, line);
-  }
-  static void print(const std::string& line)
-  {
-    print(line.c_str());
-  }
-};
-
-#define FUNCLOG ScopeLog _sl_(__FUNCTION__)
-
 
 namespace g2 {
 namespace fasth {
@@ -57,7 +28,7 @@ class suite;
 * as well as guard conditions be added before the execution of test case.
 */
 template <class T>
-class test_run_spec : public test_run_instance {
+class test_run_spec {
 public :
     /**
     * Default constructor.
@@ -70,6 +41,8 @@ public :
         , d_after_success_of_run(nullptr)
         , d_suite(nullptr)
         , d_timeout(0)
+        , d_state(test_run_state::not_yet)
+        , d_outcome(test_outcome::fail)
     {
     }
     /**
@@ -78,27 +51,53 @@ public :
     * @param test_case_name test case name.
     * @param ptr_test_case pointer to test case.
     */
-    test_run_spec(std::function<test_outcome(g2::fasth::test_run_instance&)> test_case_action, std::string test_case_name, typename g2::fasth::test_helper<T>::pmf_t ptr_test_case
-        , g2::fasth::suite<T> & test_suite, const chrono::milliseconds& timeout)
-        : d_action(test_case_action)
+    test_run_spec(std::function<void(const std::string&)> action, const std::string& name, typename test_helper<T>::pmf_t ptr_test_case
+        , suite<T>* suite, const chrono::milliseconds& timeout)
+        : d_action(action)
         , ptr_test_case(ptr_test_case)
-        , d_test_case_name(test_case_name)
+        , d_name(name)
         , d_after(nullptr)
         , d_after_success_of(nullptr)
         , d_after_run(nullptr)
         , d_after_success_of_run(nullptr)
-        , d_suite(&test_suite)
+        , d_suite(suite)
         , d_timeout(timeout)
+        , d_state(test_run_state::not_yet)
+        , d_outcome(test_outcome::fail)
     {
     }
-    ~test_run_spec() {};
+    ~test_run_spec() {
+        while (d_threads.size())
+        {
+            d_threads.front()->cancel();
+            d_threads.pop_front();
+        }
+    };
+    
+    std::shared_ptr<test_run_spec<T>> clone(const std::string& name) const
+    {
+        assert(name != d_name);
+        if (name == d_name)
+            return nullptr;
+        std::shared_ptr<test_run_spec<T>> cloned =
+            std::make_shared<test_run_spec<T>>(d_action, name, ptr_test_case, d_suite, d_timeout);
+        cloned->d_after = d_after;
+        cloned->d_after_success_of = d_after_success_of;
+        cloned->d_after_run = d_after_run;
+        cloned->d_after_success_of_run = d_after_success_of_run;
+        cloned->d_state = d_state;
+        cloned->d_outcome = d_outcome;
+        cloned->guard_condition = guard_condition;
+        return cloned;
+    }
     /**
     * This method schedules a test case after execution of given test case.
     * @param after_test_case name of the test to schedule after.
     * @return A test_run_spec object containing schedule of test cases.
     */
-    inline test_run_spec<T>& after(typename g2::fasth::test_helper<T>::pmf_t after_test_case) {
-        if (d_test_case_name.empty())
+    inline test_run_spec<T>& after(typename test_helper<T>::pmf_t after_test_case) {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        if (d_name.empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
@@ -125,7 +124,8 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after(test_run_spec& spec) {
-        if (d_test_case_name.empty())
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        if (d_name.empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
@@ -146,8 +146,9 @@ public :
     * @param after_test_case name of the test to schedule after.
     * @return A test_run_spec object containing schedule of test cases.
     */
-    inline test_run_spec& after_success_of(typename g2::fasth::test_helper<T>::pmf_t after_test_case) {
-        if (d_test_case_name.empty())
+    inline test_run_spec& after_success_of(typename test_helper<T>::pmf_t after_test_case) {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        if (d_name.empty())
         {
             throw std::invalid_argument("after_success_of can only be called after scheduling a test case.");
         }
@@ -174,7 +175,8 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after_success_of(test_run_spec& spec) {
-        if (d_test_case_name.empty())
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        if (d_name.empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a function.");
         }
@@ -192,6 +194,7 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& guard(std::function<bool()> func) {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
         guard_condition = func;
         return *this;
     }
@@ -199,102 +202,79 @@ public :
     * This method executes test cases setup in test track.
     * It validates every condition before executing a test case.
     */
-    inline bool execute() {
-        auto execute_test_case = true;
-        if (d_after_run != nullptr)
+    inline void execute(std::function<void(const std::string&)> async_func_obj=nullptr
+        , const chrono::milliseconds& timeout=chrono::milliseconds(0)) {
+        if (async_func_obj)
         {
-            if (d_after_run->state() != test_run_state::done)
-            {
-                execute_test_case = false;
-            }
-        }
-        if (d_after_success_of_run != nullptr)
-        {
-            if (d_after_success_of_run->outcome() != test_outcome::pass)
-            {
-                execute_test_case = false;
-            }
-        }
-        if (guard_condition && !guard_condition())
-        {
-            execute_test_case = false;
-        }
-        if (execute_test_case)
-        {
-            set_state(test_run_state::ongoing);
-
-            char buf[10];
-            sprintf(buf, "%d", d_timeout.count());
-            ScopeLog sl(d_test_case_name + " execute, timeout = " + buf);
-
-            // Run test case body in separate thread to have
-            // possibility of time measurement and test canceling
-            tthread::thread thread(action_thread_proc, this);
-            // Wait for the thread completion during the timeout
-            if (!thread.join(d_timeout))
-            {   // Timed out, so
-                ScopeLog::print(d_test_case_name + " killed");
-                // cancel the test
-                thread.cancel();
-                // set outcome as fail
-                set_outcome(g2::fasth::test_outcome::fail);
-            }
-            else
-            {   // Completed in time (sync body or async starter)
-                if (outcome() == g2::fasth::test_outcome::by_instance)
-                {   // Test went async
-                    return true;
-                }
-            }
-
-            set_state(test_run_state::done);
+            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            d_action = async_func_obj;
+            d_timeout = timeout;
         }
         else
+            d_suite->before();
+
+        std::shared_ptr<tthread::thread> thread;
         {
-            set_outcome(g2::fasth::test_outcome::fail);
+            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            if (d_state == test_run_state::not_yet)
+                d_state = test_run_state::ongoing;
+            // Run test case body in separate thread to have possibility of time measurement
+            thread = std::make_shared<tthread::thread>(action_thread_proc, this);
+            d_threads.push_back(thread);
         }
-        return false;
+
+        // Wait for the thread completion during the timeout
+        bool test_done;
+        bool timed_out = !thread->join(d_timeout);
+        {
+            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            if (timed_out)
+            {   // Timed out. We don't cancel the thread here. We do this in destructor.
+                if (d_state == test_run_state::done)
+                    // The test called complete_test_case() before timed out. So mean test timed in.
+                    timed_out = false;
+                else
+                    complete(test_outcome::fail);
+            }
+            test_done = d_state == test_run_state::done;
+        }
+        if (timed_out)
+            d_suite->d_logger.log(log_level::REGULAR, "Test case '" + name() + "' is timed out");
+        if (test_done)
+            d_suite->after();
     }
     /**
     * This method returns name of test case.
     * @return name of test case.
     */
     const std::string& name() {
-        return d_test_case_name;
-    }
-    /**
-    * This method sets name of test case.
-    */
-    void set_name(const std::string& name) {
-        d_test_case_name = name;
+        return d_name;
     }
     /**
     * Returns pointer to test case.
     * @return pointer to test case.
     */
-    typename g2::fasth::test_helper<T>::pmf_t get_ptr_test_case() const {
+    typename test_helper<T>::pmf_t get_ptr_test_case() const {
         return ptr_test_case;
     }
     /**
     * Returns pointer to test case after which this test case can run.
     * @return pointer to test case.
     */
-    typename g2::fasth::test_helper<T>::pmf_t get_ptr_after_test_case() const {
+    typename test_helper<T>::pmf_t get_ptr_after_test_case() const {
         return d_after;
     }
 
-    test_outcome execution_outcome() {
-        return d_async_instance.outcome();
-    }
     /**
     * Returns pointer to test case after success of which this test case can run.
     * @return pointer to test case.
     */
-    typename g2::fasth::test_helper<T>::pmf_t get_ptr_after_success_of_test_case() const {
+    typename test_helper<T>::pmf_t get_ptr_after_success_of_test_case() const {
         return d_after_success_of;
     }
 
     bool valid_to_execute() {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
         // If current test case depends on some other test, and other test case is not done, return.
         // We will try to execute this again in next iteration.
         if (d_after != nullptr && d_suite->get_spec(d_after).state() != test_run_state::done)
@@ -322,59 +302,89 @@ public :
         }
         // If current test case depends on some guard condition, and that condition fails,
         // we fail this test case too and return.
-        if (guard_condition && !guard_condition())
+        if (guard_condition)
         {
-            d_state = test_run_state::done;
-            set_outcome(test_outcome::fail);
+            lg.~lock_guard();
+            if (!guard_condition())
+                complete(test_outcome::fail);
             return false;
         }
         // Test case has passed pre-conditions and ready to execute.
         return true;
     }
-private:
-    typename g2::fasth::test_helper<T>::pmf_t ptr_test_case;
-    std::function<g2::fasth::test_outcome(g2::fasth::test_run_instance &)> d_action;
-    std::string d_test_case_name;
-    typename g2::fasth::test_helper<T>::pmf_t d_after;
-    typename g2::fasth::test_helper<T>::pmf_t d_after_success_of;
-    test_run_spec* d_after_run;
-    test_run_spec* d_after_success_of_run;
-    std::function<bool()> guard_condition;
-    g2::fasth::suite<T> * d_suite;
-    g2::fasth::test_run_instance d_async_instance;
-    chrono::milliseconds d_timeout;
 
-    bool validate_after_success_of(g2::fasth::test_run_spec<T> d_after_success_of_test_case) {
+    test_run_state state() const {
+        return d_state; 
+    }
+    /**
+    * This method sets the instance state.
+    */
+    void set_state(test_run_state state) {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        d_state = state;
+    };
+    /**
+    * Returns outcome of test run instance.
+    * @return Outcome of test run instance.
+    */
+    test_outcome outcome() const {
+        return d_outcome; 
+    }
+    /**
+    * This method completes the test.
+    */
+    void complete(test_outcome outcome) {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        if (d_state == test_run_state::done)
+            return;
+        d_outcome = outcome;
+        d_state = test_run_state::done;
+    };
+
+private:
+    bool validate_after_success_of(const test_run_spec<T>& d_after_success_of_test_case) {
+        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        
         // and other test case is not done or yet to start, return.
-        if (d_after_success_of_test_case.state() == test_run_state::ongoing
-            || d_after_success_of_test_case.state() == test_run_state::not_yet)
-        {
+        if (d_after_success_of_test_case.state() != test_run_state::done)
             return false;
-        }
         // and other test case has failed, we fail this test case too and return.
-        else if (d_after_success_of_test_case.outcome() != test_outcome::pass)
+        if (d_after_success_of_test_case.outcome() == test_outcome::fail)
         {
-            d_state = test_run_state::done;
-            set_outcome(test_outcome::fail);
+            complete(test_outcome::fail);
             return false;
         }
         return true;
     }
 
+
     // Thread procedure for test action run
     static void action_thread_proc(void* p) {
         tthread::thread::make_cancel_safe();
         test_run_spec* _this = (test_run_spec*)p;
-        ScopeLog sl(_this->d_test_case_name + " thread");
-        g2::fasth::test_outcome outcome;
         try {
-            outcome = _this->d_action(_this->d_async_instance);
+            _this->d_action(_this->d_name);
         }
         catch(...) {
-            outcome = g2::fasth::test_outcome::fail;
+            _this->complete(test_outcome::fail);
         }
-        _this->set_outcome(outcome);
     }
+
+private:
+    std::list<std::shared_ptr<tthread::thread>> d_threads;
+    tthread::recursive_mutex d_mutex;
+    std::string d_name;
+    test_run_state d_state;
+    test_outcome d_outcome;
+    typename test_helper<T>::pmf_t ptr_test_case;
+    std::function<void(const std::string&)> d_action;
+    typename test_helper<T>::pmf_t d_after;
+    typename test_helper<T>::pmf_t d_after_success_of;
+    test_run_spec* d_after_run;
+    test_run_spec* d_after_success_of_run;
+    std::function<bool()> guard_condition;
+    suite<T>* d_suite;
+    chrono::milliseconds d_timeout;
 };
 }
 }

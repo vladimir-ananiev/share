@@ -17,12 +17,10 @@ enum test_order {
 */
 enum test_outcome {
     fail,
-    pass,
-    indeterminate,
-    by_instance
+    pass
 };
 
-static const char* test_outcome_str[] = { "Fail", "Pass", "Indeterminate", "By Instance" };
+static const char* test_outcome_str[] = { "Fail", "Pass" };
 
 /**
 * This enum tells current state of test execution.

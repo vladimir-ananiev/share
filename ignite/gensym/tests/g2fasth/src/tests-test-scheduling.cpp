@@ -1,7 +1,5 @@
 #include "catch.hpp"
 #include "suite.hpp"
-#include "g2fasth_enums.hpp"
-#include "test_run_spec.hpp"
 
 using namespace g2::fasth;
 
@@ -17,17 +15,17 @@ public:
         run(&TestSuiteCycle::first_test, "third_test").after(&TestSuiteCycle::second_test);
         run(&TestSuiteCycle::first_test, "first_test").after(&TestSuiteCycle::third_test);
     };
-    test_outcome first_test(test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    test_outcome second_test(test_run_instance &)
+    void second_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    test_outcome third_test(test_run_instance &)
+    void third_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 
@@ -43,17 +41,17 @@ public:
         run(&TestSuiteAfterSuccessOfCycle::first_test, "third_test").after_success_of(&TestSuiteAfterSuccessOfCycle::second_test);
         run(&TestSuiteAfterSuccessOfCycle::first_test, "first_test").after_success_of(&TestSuiteAfterSuccessOfCycle::third_test);
     };
-    test_outcome first_test(test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    test_outcome second_test(test_run_instance &)
+    void second_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    test_outcome third_test(test_run_instance &)
+    void third_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 
@@ -67,9 +65,9 @@ public:
         run(&TestSuiteSameTestCase::first_test, "first_test");
         run(&TestSuiteSameTestCase::first_test, "first_test").after(&TestSuiteSameTestCase::first_test);
     };
-    test_outcome first_test(test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 
@@ -83,9 +81,9 @@ public:
         run(&TestSuiteSameSuccessTestCase::first_test, "first_test");
         run(&TestSuiteSameSuccessTestCase::first_test, "first_test").after_success_of(&TestSuiteSameSuccessTestCase::first_test);
     };
-    test_outcome first_test(test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 

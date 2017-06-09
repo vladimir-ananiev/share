@@ -1,6 +1,5 @@
 #include "catch.hpp"
 #include "suite.hpp"
-#include "g2fasth_typedefs.hpp"
 
 using namespace g2::fasth;
 
@@ -11,7 +10,7 @@ std::string stringify_output(std::vector<g2::fasth::test_result> results)
     {
         if (i != 0)
             imploded << ",";
-        imploded << test_outcome_str[(int)results[i].test_outcome()];
+        imploded << test_outcome_str[(int)results[i].outcome()];
     }
     return imploded.str();
 }
@@ -104,25 +103,25 @@ public:
         run(&TestExecutionScenario1::third_test, "C");
         run(&TestExecutionScenario1::second_test, "B").after(instance("C"));
     }
-    g2::fasth::test_outcome first_test(test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
         output += "<A>";
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    g2::fasth::test_outcome second_test(test_run_instance &)
+    void second_test(const std::string& test_case_name)
     {
         output += "<B>";
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    g2::fasth::test_outcome third_test(test_run_instance &)
+    void third_test(const std::string& test_case_name)
     {
         output += "<C>";
-        return test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    g2::fasth::test_outcome fourth_test(test_run_instance &)
+    void fourth_test(const std::string& test_case_name)
     {
         output += "<D>";
-        return test_outcome::fail;
+        complete_test_case(test_case_name, test_outcome::fail);
     }
     std::string output;
 };

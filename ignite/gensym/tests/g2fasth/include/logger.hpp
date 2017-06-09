@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include "tinythread.h"
 #include "g2fasth_enums.hpp"
 
 namespace g2 {
@@ -26,6 +27,12 @@ public:
     * Accepts log level of application.
     */
     logger(g2::fasth::log_level);
+    logger(const logger& src) { *this = src; }
+    logger& operator=(const logger& src) {
+        d_loglevel = src.d_loglevel;
+        d_outputStreams = src.d_outputStreams;
+        return *this;
+    }
     /**
     * This method accepts reference output stream instance and log level associated with it.
     */
@@ -39,6 +46,7 @@ public:
     */
     void log(log_level, std::string);
 private:
+    tthread::recursive_mutex d_mutex;
     log_level d_loglevel;
     std::vector<stream_info> d_outputStreams;
     bool write(const char* data, bool written, std::ostream* stream);

@@ -1,14 +1,12 @@
 #include "catch.hpp"
 #include "suite.hpp"
-#include "g2fasth_enums.hpp"
-#include "test_run_spec.hpp"
 
 using namespace g2::fasth;
 
-class TestBeforeAfterConstruct : public g2::fasth::suite<TestBeforeAfterConstruct> {
+class TestBeforeAfterConstruct : public suite<TestBeforeAfterConstruct> {
 public:
     TestBeforeAfterConstruct()
-        : suite("TestBeforeAfterConstruct", g2::fasth::test_order::implied, g2::fasth::log_level::SILENT)
+        : suite("TestBeforeAfterConstruct", test_order::implied, g2::fasth::log_level::SILENT)
     {
     }
     void before() override
@@ -24,15 +22,15 @@ public:
         run(&TestBeforeAfterConstruct::first_test, "first_test");
         run(&TestBeforeAfterConstruct::second_test, "second_test");
     };
-    g2::fasth::test_outcome first_test(test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
         output.push_back("first_test");
-        return g2::fasth::test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    g2::fasth::test_outcome second_test(test_run_instance &)
+    void second_test(const std::string& test_case_name)
     {
         output.push_back("second_test");
-        return g2::fasth::test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
     std::vector<std::string> output;
 };
