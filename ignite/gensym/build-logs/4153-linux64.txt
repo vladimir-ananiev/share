@@ -95,8 +95,7 @@ build_64_ent_wout_32:
      [exec] /gensym/src/g2fasth/include/libgsi.hpp: In member function ???void g2::fasth::libgsi::gsi_get_data_(void**, gsi_int)???:
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:287:56: warning: deprecated conversion from string constant to ???gsi_symbol {aka char*}??? [-Wwrite-strings]
      [exec] Linking CXX executable ../../bin/basetest
-     [exec] [100%] 
-     [exec] Built target basetest
+     [exec] [100%] Built target basetest
 
 BUILD SUCCESSFUL
 Total time: 29 seconds
