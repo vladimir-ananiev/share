@@ -36,20 +36,27 @@ bool ScopeLog::enabled = false;
 #define FUNCLOG_DATA(data) ScopeLog __func_log__(__FUNCTION__, data)
 
 class TestTimeouts : public g2::fasth::suite<TestTimeouts> {
+    static tthread::mutex s_mutex;
 public:
     int sleep_time;
     int async_timeout;
     TestTimeouts(const char* name="")
         : suite(name, g2::fasth::test_order::implied, g2::fasth::log_level::NONE)
     {
+        s_mutex.lock();
         async_timeout = 0; // default will be used
         sleep_time = 1000;
     };
     TestTimeouts(chrono::milliseconds default_timeout, const char* name="")
         : suite(name, g2::fasth::test_order::implied, g2::fasth::log_level::NONE, "", default_timeout)
     {
+        s_mutex.lock();
         async_timeout = 0; // default will be used
         sleep_time = 1000;
+    };
+    ~TestTimeouts()
+    {
+        s_mutex.unlock();
     };
 
     void sync_test(const std::string& test_case_name)
@@ -67,6 +74,7 @@ public:
         go_async(test_case_name, &TestTimeouts::sync_test, chrono::milliseconds(async_timeout));
     }
 };
+tthread::mutex TestTimeouts::s_mutex;
 
 TEST_CASE("Timeout is not specified") {
     TestTimeouts test_suite("Timeout is not specified");
