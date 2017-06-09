@@ -3,15 +3,17 @@
 
 using namespace g2::fasth;
 
-void test_case_pass_thread(void * aArg);
-void test_case_fail_thread(void * aArg);
+void test_case_fail_thread(void* p);
 
 class TestAsyncScenarios : public suite<TestAsyncScenarios> {
 public:
-    static TestAsyncScenarios* s_suite;
+    struct thread_data
+    {
+        TestAsyncScenarios* suite;
+        std::string test_case_name;
+    };
     TestAsyncScenarios()
         : suite("TestAsync", test_order::implied, log_level::NONE) {
-        s_suite = this;
     };
     ~TestAsyncScenarios()
     {
@@ -54,8 +56,12 @@ public:
     }
     void second_test(const std::string& test_case_name)
     {
+        thread_data* data = new thread_data;
+        data->suite = this;
+        data->test_case_name = test_case_name;
+
         output += "<B>";
-        std::shared_ptr<tthread::thread> ptr = std::make_shared<tthread::thread>(test_case_fail_thread, new std::string(test_case_name));
+        std::shared_ptr<tthread::thread> ptr = std::make_shared<tthread::thread>(test_case_fail_thread, data);
         threads.push_back(ptr);
     }
     void third_test(const std::string& test_case_name)
@@ -73,7 +79,6 @@ public:
     std::string output;
     std::list<std::shared_ptr<tthread::thread>> threads;
 };
-TestAsyncScenarios* TestAsyncScenarios::s_suite = nullptr;
 
 TEST_CASE("Test Suite should run async test in finite time") {
     TestAsyncScenarios test_async;
@@ -122,12 +127,14 @@ TEST_CASE("Test should fail and not execute if dependent method (after_sccess_of
     REQUIRE(test_async.output == "<B>");
 }
 
-void test_case_fail_thread(void * aArg)
+void test_case_fail_thread(void* p)
 {
-    std::string test_case_name = *((std::string*)aArg); delete (std::string*)aArg;
+    TestAsyncScenarios::thread_data* data = (TestAsyncScenarios::thread_data*)p;
 
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
     // Complete test case
-    TestAsyncScenarios::s_suite->complete_test_case(test_case_name, test_outcome::fail);
+    data->suite->complete_test_case(data->test_case_name, test_outcome::fail);
+
+    delete data;
 }
 

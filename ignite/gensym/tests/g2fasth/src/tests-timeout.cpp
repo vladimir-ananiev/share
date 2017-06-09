@@ -113,15 +113,15 @@ TEST_CASE("Default timeout fail test") {
 }
 
 TEST_CASE("Async test, default timeout pass test") {
-    FUNCLOG;
     ScopeLog::enabled = true;
+    FUNCLOG;
     TestTimeouts test_suite(chrono::milliseconds(1000));
     test_suite.sleep_time = 500;
     test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
     auto results = test_suite.get_results();
     REQUIRE(results[0].outcome() == test_outcome::pass);
-    ScopeLog::enabled = false;;
+    ScopeLog::enabled = false;
 }
 
 TEST_CASE("Async test, default timeout fail test") {
