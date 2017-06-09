@@ -2,7 +2,38 @@
 #include "suite.hpp"
 #include "tinythread.h"
 
+#ifndef WIN32
+#include <sys/time.h>
+unsigned GetTickCount()
+{
+        struct timeval tv;
+        if(gettimeofday(&tv, NULL) != 0)
+                return 0;
+
+        return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+}
+#endif
+
 using namespace g2::fasth;
+
+class ScopeLog
+{
+    std::string name;
+public:
+    ScopeLog(const std::string& name): name(name)
+    {
+        if (!enabled) return;
+        printf("%08u %s ENTER\n", GetTickCount(), this->name.c_str());
+    }
+    ~ScopeLog()
+    {
+        if (!enabled) return;
+        printf("%08u %s LEAVE\n", GetTickCount(), this->name.c_str());
+    }
+    static bool enabled;
+};
+bool ScopeLog::enabled = false;
+#define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
 
 class TestTimeouts : public g2::fasth::suite<TestTimeouts> {
 public:
@@ -23,12 +54,16 @@ public:
 
     void sync_test(const std::string& test_case_name)
     {
+        FUNCLOG;
+
         tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep_time));
         
         complete_test_case(test_case_name, test_outcome::pass);
     }
     void async_test(const std::string& test_case_name)
     {
+        FUNCLOG;
+
         go_async(test_case_name, &TestTimeouts::sync_test, chrono::milliseconds(async_timeout));
     }
 };
@@ -78,12 +113,15 @@ TEST_CASE("Default timeout fail test") {
 }
 
 TEST_CASE("Async test, default timeout pass test") {
+    FUNCLOG;
+    ScopeLog::enabled = true;
     TestTimeouts test_suite(chrono::milliseconds(1000));
     test_suite.sleep_time = 500;
     test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
     auto results = test_suite.get_results();
     REQUIRE(results[0].outcome() == test_outcome::pass);
+    ScopeLog::enabled = false;;
 }
 
 TEST_CASE("Async test, default timeout fail test") {
