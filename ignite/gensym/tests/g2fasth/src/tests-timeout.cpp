@@ -61,7 +61,7 @@ public:
 
     void sync_test(const std::string& test_case_name)
     {
-        FUNCLOG_DATA(get_suite_name().c_str());
+        //FUNCLOG_DATA(get_suite_name().c_str());
 
         tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep_time));
         
@@ -69,7 +69,7 @@ public:
     }
     void async_test(const std::string& test_case_name)
     {
-        FUNCLOG_DATA(get_suite_name().c_str());
+        //FUNCLOG_DATA(get_suite_name().c_str());
 
         go_async(test_case_name, &TestTimeouts::sync_test, chrono::milliseconds(async_timeout));
     }
@@ -121,9 +121,9 @@ TEST_CASE("Default timeout fail test") {
 }
 
 TEST_CASE("Async test, default timeout pass test") {
-    ScopeLog::enabled = true;
+    //ScopeLog::enabled = true;
     {
-        FUNCLOG;
+        //FUNCLOG;
         TestTimeouts test_suite(chrono::milliseconds(1000), "Async test, default timeout pass test");
         test_suite.sleep_time = 500;
         test_suite.run(&TestTimeouts::async_test, "async_test");
@@ -131,7 +131,7 @@ TEST_CASE("Async test, default timeout pass test") {
         auto results = test_suite.get_results();
         REQUIRE(results[0].outcome() == test_outcome::pass);
     }
-    ScopeLog::enabled = false;
+    //ScopeLog::enabled = false;
 }
 
 TEST_CASE("Async test, default timeout fail test") {
