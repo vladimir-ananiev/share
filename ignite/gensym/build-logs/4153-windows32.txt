@@ -21,7 +21,7 @@ build_32_std:
      [exec] [Microsoft .NET Framework, version 4.0.30319.36365]
      [exec] Copyright (C) Microsoft Corporation. All rights reserved.
      [exec] 
-     [exec] Build started 6/9/2017 7:06:57 AM.
+     [exec] Build started 6/9/2017 10:18:49 AM.
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" on node 1 (default targets).
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" (1) is building "D:\develop\ignite-gensym\g2fasth\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
      [exec] PrepareForBuild:
@@ -497,33 +497,30 @@ build_32_std:
      [exec]           ]
      [exec] d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(66): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   tests-timeout.cpp
-     [exec] ..\src\tests-timeout.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(14): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(14): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(23): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(29): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(35): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(48): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(61): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(70): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(70): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(78): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(78): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(86): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(86): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(94): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(94): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(102): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(102): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(110): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(110): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(118): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(118): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(127): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(127): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(136): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] ..\src\tests-timeout.cpp(136): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(11): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(11): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(17): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(17): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(28): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(38): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(47): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(47): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(56): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(56): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(65): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(65): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(83): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(83): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(92): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(92): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(101): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(101): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(111): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(111): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(121): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] ..\src\tests-timeout.cpp(121): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(67): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(57) : while compiling class template member function 'g2::fasth::suite<T>::suite(std::string,g2::fasth::test_order,g2::fasth::log_level,std::string,const tthread::chrono::milliseconds &)'
      [exec]           with
@@ -563,7 +560,7 @@ build_32_std:
      [exec]           [
      [exec]               T=TestTimeouts
      [exec]           ]
-     [exec]           ..\src\tests-timeout.cpp(67) : see reference to class template instantiation 'g2::fasth::test_run_spec<T>' being compiled
+     [exec]           ..\src\tests-timeout.cpp(44) : see reference to class template instantiation 'g2::fasth::test_run_spec<T>' being compiled
      [exec]           with
      [exec]           [
      [exec]               T=TestTimeouts
@@ -2259,33 +2256,30 @@ build_32_std:
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(354): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(65): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(66): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(14): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(14): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(23): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(29): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(35): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(48): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(61): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(70): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(70): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(78): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(78): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(86): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(86): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(94): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(94): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(102): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(102): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(110): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(110): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(118): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(118): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(127): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(127): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(136): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   ..\src\tests-timeout.cpp(136): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(11): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(11): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(17): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(17): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(28): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(38): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(47): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(47): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(56): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(56): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(65): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(65): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(74): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(83): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(83): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(92): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(92): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(101): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(101): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(111): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(111): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(121): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   ..\src\tests-timeout.cpp(121): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(67): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(70): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(94): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
@@ -2766,10 +2760,10 @@ build_32_std:
      [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(156): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(157): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] 
-     [exec]     653 Warning(s)
+     [exec]     650 Warning(s)
      [exec]     0 Error(s)
      [exec] 
-     [exec] Time Elapsed 00:00:43.95
+     [exec] Time Elapsed 00:00:43.48
 
 BUILD SUCCESSFUL
-Total time: 55 seconds
+Total time: 51 seconds
