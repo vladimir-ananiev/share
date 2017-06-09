@@ -40,39 +40,38 @@ build_32_std:
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:192:75: warning: deprecated conversion from string constant to 'gsi_char* {aka char*}' [-Wwrite-strings]
      [exec] /gensym/src/g2fasth/include/libgsi.hpp: In member function 'void g2::fasth::libgsi::gsi_get_data_(void**, gsi_int)':
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:287:56: warning: deprecated conversion from string constant to 'gsi_symbol {aka char*}' [-Wwrite-strings]
-     [exec] [ 14%] Building CXX object CMakeFiles/libg2fasth.dir/src/logger.cpp.o
-     [exec] [ 18%] Building CXX object CMakeFiles/libg2fasth.dir/src/test_run_instance.cpp.o
-     [exec] [ 22%] Building CXX object CMakeFiles/libg2fasth.dir/src/tinyxml2.cpp.o
-     [exec] [ 25%] Building CXX object CMakeFiles/libg2fasth.dir/src/tinythread.cpp.o
-     [exec] [ 29%] Building CXX object CMakeFiles/libg2fasth.dir/src/xml_serialization.cpp.o
+     [exec] [ 15%] Building CXX object CMakeFiles/libg2fasth.dir/src/logger.cpp.o
+     [exec] [ 19%] Building CXX object CMakeFiles/libg2fasth.dir/src/tinyxml2.cpp.o
+     [exec] [ 23%] Building CXX object CMakeFiles/libg2fasth.dir/src/tinythread.cpp.o
+     [exec] [ 26%] Building CXX object CMakeFiles/libg2fasth.dir/src/xml_serialization.cpp.o
      [exec] Linking CXX static library ../lib/liblibg2fasth.a
-     [exec] [ 29%] Built target libg2fasth
+     [exec] [ 26%] Built target libg2fasth
      [exec] Scanning dependencies of target testg2fasth
-     [exec] [ 33%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-async.cpp.o
-     [exec] [ 37%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-timeout.cpp.o
-     [exec] [ 40%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-execution-engine.cpp.o
-     [exec] [ 44%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-before-after.cpp.o
-     [exec] [ 48%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-g2-options.cpp.o
-     [exec] [ 51%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-graph.cpp.o
-     [exec] [ 55%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-graph-of-test-cases.cpp.o
-     [exec] [ 59%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-junit.cpp.o
-     [exec] [ 62%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-logger.cpp.o
-     [exec] [ 66%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-main.cpp.o
-     [exec] [ 70%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-declare-g2-variable.cpp.o
+     [exec] [ 30%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-async.cpp.o
+     [exec] [ 34%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-timeout.cpp.o
+     [exec] [ 38%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-execution-engine.cpp.o
+     [exec] [ 42%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-before-after.cpp.o
+     [exec] [ 46%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-g2-options.cpp.o
+     [exec] [ 50%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-graph.cpp.o
+     [exec] [ 53%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-graph-of-test-cases.cpp.o
+     [exec] [ 57%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-junit.cpp.o
+     [exec] [ 61%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-logger.cpp.o
+     [exec] [ 65%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-main.cpp.o
+     [exec] [ 69%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-declare-g2-variable.cpp.o
      [exec] In file included from /gensym/src/g2fasth/src/tests-declare-g2-variable.cpp:4:0:
      [exec] /gensym/src/g2fasth/include/libgsi.hpp: In member function 'void g2::fasth::libgsi::signal_error(int, const char*)':
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:192:75: warning: deprecated conversion from string constant to 'gsi_char* {aka char*}' [-Wwrite-strings]
      [exec] /gensym/src/g2fasth/include/libgsi.hpp: In member function 'void g2::fasth::libgsi::gsi_get_data_(void**, gsi_int)':
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:287:56: warning: deprecated conversion from string constant to 'gsi_symbol {aka char*}' [-Wwrite-strings]
-     [exec] [ 74%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-gsi-variables.cpp.o
+     [exec] [ 73%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-gsi-variables.cpp.o
      [exec] In file included from /gensym/src/g2fasth/src/tests-gsi-variables.cpp:2:0:
      [exec] /gensym/src/g2fasth/include/libgsi.hpp: In member function 'void g2::fasth::libgsi::signal_error(int, const char*)':
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:192:75: warning: deprecated conversion from string constant to 'gsi_char* {aka char*}' [-Wwrite-strings]
      [exec] /gensym/src/g2fasth/include/libgsi.hpp: In member function 'void g2::fasth::libgsi::gsi_get_data_(void**, gsi_int)':
      [exec] /gensym/src/g2fasth/include/libgsi.hpp:287:56: warning: deprecated conversion from string constant to 'gsi_symbol {aka char*}' [-Wwrite-strings]
-     [exec] [ 77%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite.cpp.o
-     [exec] [ 81%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite-results.cpp.o
-     [exec] [ 85%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite-scheduling.cpp.o
+     [exec] [ 76%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite.cpp.o
+     [exec] [ 80%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite-results.cpp.o
+     [exec] [ 84%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-suite-scheduling.cpp.o
      [exec] [ 88%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-test-scheduling.cpp.o
      [exec] [ 92%] Building CXX object CMakeFiles/testg2fasth.dir/src/tests-wide-strings.cpp.o
      [exec] In file included from /gensym/src/g2fasth/src/tests-wide-strings.cpp:3:0:
@@ -99,4 +98,4 @@ build_32_std:
      [exec] [100%] Built target basetest
 
 BUILD SUCCESSFUL
-Total time: 26 seconds
+Total time: 27 seconds
