@@ -12,7 +12,6 @@
 #include <ios>
 #include "g2fasth_enums.hpp"
 #include "test_run_spec.hpp"
-#include "logger.hpp"
 #include "g2fasth_typedefs.hpp"
 #include "junit_report.hpp"
 #include "base_suite.hpp"
@@ -59,7 +58,7 @@ public:
         const chrono::milliseconds& default_timeout=chrono::milliseconds(G2FASTH_DEFAULT_TIMEOUT))
         : base_suite(suite_name)
         , d_order(test_order)
-        , d_logger(logger(suite_log_level))
+        , d_logger(suite_log_level)
         , d_default_timeout(default_timeout)
     {
         if (d_default_timeout.count() > G2FASTH_MAX_TIMEOUT)
@@ -257,12 +256,12 @@ protected:
         assert(async_func_obj != nullptr);
         if (async_func_obj == nullptr)
             return;
-        go_async_data* data = new go_async_data;
+        std::unique_ptr<go_async_data> data(new go_async_data);
         data->_this = this;
         data->test_case_name = test_case_name;
         data->func_obj = std::bind(async_func_obj, static_cast<T*>(this), std::placeholders::_1);
         data->timeout = (int)timeout.count();
-        std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data);
+        std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
         tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
         d_threads.push_back(thread);
     }
@@ -272,7 +271,8 @@ protected:
         try {
             test_run_spec<T>& test = data->_this->instance(data->test_case_name);
             try {
-                test.execute(data->func_obj, data->_this->correct_timeout(chrono::milliseconds(data->timeout)));
+                if (test.execute(data->func_obj, data->_this->correct_timeout(chrono::milliseconds(data->timeout))))
+                    data->_this->after();
             }
             catch (... ) {
                 test.complete(test_outcome::fail);
@@ -291,7 +291,9 @@ private:
             if (test_case_it != d_test_specs.end())
             {
                 std::shared_ptr<test_run_spec<T>> test_case = *test_case_it;
-                test_case->execute();
+                before();
+                if (test_case->execute())
+                    after();
             }
             else if (are_all_tests_completed())
                 break;
@@ -392,7 +394,6 @@ private:
     std::vector<test_result> d_results;
     chrono::milliseconds d_default_timeout;
     std::list<std::shared_ptr<tthread::thread>> d_threads;
-friend class test_run_spec<T>;
 };
 
 }

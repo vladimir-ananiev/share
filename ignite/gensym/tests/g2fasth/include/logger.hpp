@@ -27,12 +27,6 @@ public:
     * Accepts log level of application.
     */
     logger(g2::fasth::log_level);
-    logger(const logger& src) { *this = src; }
-    logger& operator=(const logger& src) {
-        d_loglevel = src.d_loglevel;
-        d_outputStreams = src.d_outputStreams;
-        return *this;
-    }
     /**
     * This method accepts reference output stream instance and log level associated with it.
     */

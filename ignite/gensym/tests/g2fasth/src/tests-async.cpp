@@ -56,12 +56,12 @@ public:
     }
     void second_test(const std::string& test_case_name)
     {
-        thread_data* data = new thread_data;
+        std::unique_ptr<thread_data> data(new thread_data);
         data->suite = this;
         data->test_case_name = test_case_name;
 
         output += "<B>";
-        std::shared_ptr<tthread::thread> ptr = std::make_shared<tthread::thread>(test_case_fail_thread, data);
+        std::shared_ptr<tthread::thread> ptr = std::make_shared<tthread::thread>(test_case_fail_thread, data.release());
         threads.push_back(ptr);
     }
     void third_test(const std::string& test_case_name)
@@ -129,12 +129,10 @@ TEST_CASE("Test should fail and not execute if dependent method (after_sccess_of
 
 void test_case_fail_thread(void* p)
 {
-    TestAsyncScenarios::thread_data* data = (TestAsyncScenarios::thread_data*)p;
+    std::unique_ptr<TestAsyncScenarios::thread_data> data((TestAsyncScenarios::thread_data*)p);
 
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
     // Complete test case
     data->suite->complete_test_case(data->test_case_name, test_outcome::fail);
-
-    delete data;
 }
 

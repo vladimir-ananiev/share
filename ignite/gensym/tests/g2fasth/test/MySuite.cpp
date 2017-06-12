@@ -187,23 +187,21 @@ void MySuite::async_test_uncontrolled(const std::string& test_case_name)
 {
     FUNCLOG;
 
-    thread_data* data = new thread_data;
+    std::unique_ptr<thread_data> data(new thread_data);
     data->suite = this;
     data->test_case_name = test_case_name;
 
-    std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(uncontrolled_test_case_thread, data);
+    std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(uncontrolled_test_case_thread, data.release());
     d_threads.push_back(thread);
 }
 void uncontrolled_test_case_thread(void* p)
 {
     FUNCLOG;
 
-    thread_data* data = (thread_data*)p;
+    std::unique_ptr<thread_data> data((thread_data*)p);
 
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
 
     data->suite->complete_test_case(data->test_case_name, test_outcome::pass);
-
-    delete data;
 }
 

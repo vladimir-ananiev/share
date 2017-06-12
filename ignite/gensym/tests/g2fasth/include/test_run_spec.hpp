@@ -12,6 +12,7 @@
 #include <assert.h>
 #include "g2fasth_typedefs.hpp"
 #include "test_case_graph.hpp"
+#include "logger.hpp"
 #include "tinythread.h"
 #include <ctime>
 
@@ -202,7 +203,7 @@ public :
     * This method executes test cases setup in test track.
     * It validates every condition before executing a test case.
     */
-    inline void execute(std::function<void(const std::string&)> async_func_obj=nullptr
+    inline bool execute(std::function<void(const std::string&)> async_func_obj=nullptr
         , const chrono::milliseconds& timeout=chrono::milliseconds(0)) {
         if (async_func_obj)
         {
@@ -210,8 +211,6 @@ public :
             d_action = async_func_obj;
             d_timeout = timeout;
         }
-        else
-            d_suite->before();
 
         std::shared_ptr<tthread::thread> thread;
         {
@@ -239,9 +238,8 @@ public :
             test_done = d_state == test_run_state::done;
         }
         if (timed_out)
-            d_suite->d_logger.log(log_level::REGULAR, "Test case '" + name() + "' is timed out");
-        if (test_done)
-            d_suite->after();
+            d_suite->get_logger().log(log_level::REGULAR, "Test case '" + name() + "' is timed out");
+        return test_done;
     }
     /**
     * This method returns name of test case.
