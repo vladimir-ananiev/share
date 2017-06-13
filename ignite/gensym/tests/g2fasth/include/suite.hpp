@@ -149,7 +149,7 @@ public:
     * @param ptr_test_case pointer to test case for which test spec is to be returned.
     * @return instance of test spec.
     */
-    const test_run_spec<T>& get_spec(typename test_helper<T>::pmf_t test_case) {
+    test_run_spec<T>& get_spec(typename test_helper<T>::pmf_t test_case) {
         return *(std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->get_ptr_test_case() == test_case;
         })->get());

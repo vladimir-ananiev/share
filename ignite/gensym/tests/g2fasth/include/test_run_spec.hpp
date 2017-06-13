@@ -97,11 +97,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec<T>& after(typename test_helper<T>::pmf_t after_test_case) {
-        if (name().empty())
+        if (d_name.empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
-        if (get_ptr_test_case() == after_test_case)
+        if (ptr_test_case == after_test_case)
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -127,11 +127,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after(test_run_spec& spec) {
-        if (name().empty())
+        if (d_name.empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
-        if (get_ptr_test_case() == spec.get_ptr_after_test_case())
+        if (ptr_test_case == spec.get_ptr_after_test_case())
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -152,11 +152,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after_success_of(typename test_helper<T>::pmf_t after_test_case) {
-        if (name().empty())
+        if (d_name.empty())
         {
             throw std::invalid_argument("after_success_of can only be called after scheduling a test case.");
         }
-        if (get_ptr_test_case() == after_test_case)
+        if (ptr_test_case == after_test_case)
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -182,11 +182,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after_success_of(test_run_spec& spec) {
-        if (name().empty())
+        if (d_name.empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a function.");
         }
-        if (get_ptr_test_case() == spec.get_ptr_after_test_case())
+        if (ptr_test_case == spec.get_ptr_after_test_case())
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -267,7 +267,8 @@ public :
     * Returns pointer to test case after which this test case can run.
     * @return pointer to test case.
     */
-    typename test_helper<T>::pmf_t get_ptr_after_test_case() const {
+    typename test_helper<T>::pmf_t get_ptr_after_test_case() {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return d_after;
     }
 
@@ -275,7 +276,8 @@ public :
     * Returns pointer to test case after success of which this test case can run.
     * @return pointer to test case.
     */
-    typename test_helper<T>::pmf_t get_ptr_after_success_of_test_case() const {
+    typename test_helper<T>::pmf_t get_ptr_after_success_of_test_case() {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return d_after_success_of;
     }
 
@@ -319,8 +321,9 @@ public :
         return true;
     }
 
-    test_run_state state() const {
-        return d_state; 
+    test_run_state state() {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        return d_state;
     }
     /**
     * This method sets the instance state.
@@ -333,8 +336,9 @@ public :
     * Returns outcome of test run instance.
     * @return Outcome of test run instance.
     */
-    test_outcome outcome() const {
-        return d_outcome; 
+    test_outcome outcome() {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        return d_outcome;
     }
     /**
     * This method completes the test.
@@ -351,7 +355,7 @@ private:
         d_outcome = outcome;
         d_state = test_run_state::done;
     };
-    bool validate_after_success_of(const test_run_spec<T>& d_after_success_of_test_case) {
+    bool validate_after_success_of(test_run_spec<T>& d_after_success_of_test_case) {
         // and other test case is not done or yet to start, return.
         if (d_after_success_of_test_case.state() != test_run_state::done)
             return false;
