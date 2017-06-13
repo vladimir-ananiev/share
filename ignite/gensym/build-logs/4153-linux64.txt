@@ -98,4 +98,4 @@ build_64_ent_wout_32:
      [exec] [100%] Built target basetest
 
 BUILD SUCCESSFUL
-Total time: 29 seconds
+Total time: 53 seconds
