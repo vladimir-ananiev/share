@@ -85,7 +85,7 @@ public:
     inline std::string execute(std::string report_file_name = "") override {
         int count;
         {
-            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
             count = d_test_specs.size();
         }
         if (count == 0)
@@ -118,7 +118,7 @@ public:
     * @return Handle of specified test run instance.
     */
     inline test_run_spec<T>& instance(const std::string& name) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         auto it = std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->name() == name;
         });
@@ -141,10 +141,8 @@ public:
     * @return true or false.
     */
     inline bool test_case_exists(typename test_helper<T>::pmf_t test_case) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            return spec->get_ptr_test_case() == test_case;
-        }) != d_test_specs.end();
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        return internal_test_case_exists(test_case);
     }
     /**
     * This function returns instance of spec.
@@ -152,7 +150,6 @@ public:
     * @return instance of test spec.
     */
     const test_run_spec<T>& get_spec(typename test_helper<T>::pmf_t test_case) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
         return *(std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->get_ptr_test_case() == test_case;
         })->get());
@@ -162,7 +159,7 @@ public:
     * @return true or false.
     */
     inline bool validate_cycle() {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         graph<T> test_case_graph(d_test_specs.size());
         for (auto it = d_test_specs.begin(); it != d_test_specs.end(); ++it)
         {
@@ -184,7 +181,7 @@ public:
     * @return true or false.
     */
     inline bool are_all_tests_completed() {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->state() != test_run_state::done;
         }) == d_test_specs.end();
@@ -194,16 +191,15 @@ public:
     * @return collection of result.
     */
     inline std::vector<test_result> get_results() {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return d_results;
     }
     /**
     * This function validates if a schedule is invalid.
     */
     inline void schedule_before(typename test_helper<T>::pmf_t before, typename test_helper<T>::pmf_t after) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        if (test_case_exists(before)
-            && test_case_exists(after)
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        if (internal_test_case_exists(before) && internal_test_case_exists(after)
             && get_index_of_test_case(before) > get_index_of_test_case(after))
         {
             auto after_it = d_test_specs.begin();
@@ -229,7 +225,7 @@ protected:
     */
     inline test_run_spec<T>& clone(const test_run_spec<T>& instance, const std::string& name) {
         d_logger.log(log_level::VERBOSE, "Cloning test case " + name + " for execution");
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         d_test_specs.push_back(instance.clone(name));
         test_run_spec<T>& new_spec = *d_test_specs.back();
         return new_spec;
@@ -262,7 +258,7 @@ protected:
         data->func_obj = std::bind(async_func_obj, static_cast<T*>(this), std::placeholders::_1);
         data->timeout = (int)timeout.count();
         std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         d_threads.push_back(thread);
     }
     static void s_async_thread_proc(void* p)
@@ -309,13 +305,13 @@ private:
         return generate_junit_report(report_file_name);
     }
     typename std::list<std::shared_ptr<test_run_spec<T>>>::iterator get_test_case_to_execute() {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->state()==test_run_state::not_yet && spec->valid_to_execute();
         });
     }
     inline std::string generate_junit_report(std::string report_file_name) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         testsuite_data test_suite(d_test_specs.size());
         for (auto it = d_test_specs.begin(); it != d_test_specs.end(); ++it)
         {
@@ -334,7 +330,7 @@ private:
             typename test_helper<T>::pmf_t ptr_test_case,
             const chrono::milliseconds& timeout) {
         auto insert = true;
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         if (std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->get_ptr_test_case() == ptr_test_case && spec->name() == test_case_name;
         }) != d_test_specs.end())
@@ -357,7 +353,7 @@ private:
         return nullptr;
     }
     void extract_result() {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         d_results.clear();
         for (auto it = d_test_specs.begin(); it != d_test_specs.end(); ++it)
         {
@@ -366,7 +362,6 @@ private:
     }
     int get_index_of_test_case(typename test_helper<T>::pmf_t test_case) {
         auto index = 0;
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
         for (auto it = d_test_specs.begin(); it != d_test_specs.end(); ++it, ++index)
         {
             if ((*it)->get_ptr_test_case() == test_case)
@@ -385,9 +380,14 @@ private:
             timeout = chrono::milliseconds(G2FASTH_MAX_TIMEOUT);
         return timeout;
     }
+    bool internal_test_case_exists(typename test_helper<T>::pmf_t test_case) {
+        return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+            return spec->get_ptr_test_case() == test_case;
+        }) != d_test_specs.end();
+    }
 
 private:
-    tthread::recursive_mutex d_mutex;
+    tthread::mutex d_mutex;
     test_order d_order;
     std::list<std::shared_ptr<test_run_spec<T>>> d_test_specs;
     logger d_logger;

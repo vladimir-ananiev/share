@@ -97,12 +97,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec<T>& after(typename test_helper<T>::pmf_t after_test_case) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        if (d_name.empty())
+        if (name().empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
-        if (ptr_test_case == after_test_case)
+        if (get_ptr_test_case() == after_test_case)
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -111,7 +110,10 @@ public :
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
-        d_after = after_test_case;
+        {
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
+            d_after = after_test_case;
+        }
         d_suite->schedule_before(after_test_case, ptr_test_case);
         if (d_suite->validate_cycle())
         {
@@ -125,12 +127,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after(test_run_spec& spec) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        if (d_name.empty())
+        if (name().empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a test case.");
         }
-        if (ptr_test_case == spec.get_ptr_after_test_case())
+        if (get_ptr_test_case() == spec.get_ptr_after_test_case())
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -138,7 +139,10 @@ public :
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
-        d_after_run = &spec;
+        {
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
+            d_after_run = &spec;
+        }
         d_suite->schedule_before(spec.get_ptr_test_case(), ptr_test_case);
         return *this;
     }
@@ -148,12 +152,11 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after_success_of(typename test_helper<T>::pmf_t after_test_case) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        if (d_name.empty())
+        if (name().empty())
         {
             throw std::invalid_argument("after_success_of can only be called after scheduling a test case.");
         }
-        if (ptr_test_case == after_test_case)
+        if (get_ptr_test_case() == after_test_case)
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
@@ -162,7 +165,10 @@ public :
         {
             throw std::invalid_argument("after_success_of can only be called after scheduling a test case.");
         }
-        d_after_success_of = after_test_case;
+        {
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
+            d_after_success_of = after_test_case;
+        }
         d_suite->schedule_before(after_test_case, ptr_test_case);
         if (d_suite->validate_cycle())
         {
@@ -176,16 +182,18 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& after_success_of(test_run_spec& spec) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        if (d_name.empty())
+        if (name().empty())
         {
             throw std::invalid_argument("after can only be called after scheduling a function.");
         }
-        if (ptr_test_case == spec.get_ptr_after_test_case())
+        if (get_ptr_test_case() == spec.get_ptr_after_test_case())
         {
             throw std::invalid_argument("same test case cannot be scheduled as dependent of itself.");
         }
-        d_after_success_of_run = &spec;
+        {
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
+            d_after_success_of_run = &spec;
+        }
         d_suite->schedule_before(spec.get_ptr_test_case(), ptr_test_case);
         return *this;
     }
@@ -195,7 +203,7 @@ public :
     * @return A test_run_spec object containing schedule of test cases.
     */
     inline test_run_spec& guard(std::function<bool()> func) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         guard_condition = func;
         return *this;
     }
@@ -207,14 +215,14 @@ public :
         , const chrono::milliseconds& timeout=chrono::milliseconds(0)) {
         if (async_func_obj)
         {
-            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
             d_action = async_func_obj;
             d_timeout = timeout;
         }
 
         std::shared_ptr<tthread::thread> thread;
         {
-            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
             if (d_state == test_run_state::not_yet)
                 d_state = test_run_state::ongoing;
             // Run test case body in separate thread to have possibility of time measurement
@@ -226,14 +234,14 @@ public :
         bool test_done;
         bool timed_out = !thread->join(d_timeout);
         {
-            tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
             if (timed_out)
             {   // Timed out. We don't cancel the thread here. We do this in destructor.
                 if (d_state == test_run_state::done)
                     // The test called complete_test_case() before timed out. So mean test timed in.
                     timed_out = false;
                 else
-                    complete(test_outcome::fail);
+                    internal_complete(test_outcome::fail);
             }
             test_done = d_state == test_run_state::done;
         }
@@ -272,7 +280,7 @@ public :
     }
 
     bool valid_to_execute() {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         // If current test case depends on some other test, and other test case is not done, return.
         // We will try to execute this again in next iteration.
         if (d_after != nullptr && d_suite->get_spec(d_after).state() != test_run_state::done)
@@ -318,7 +326,7 @@ public :
     * This method sets the instance state.
     */
     void set_state(test_run_state state) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
         d_state = state;
     };
     /**
@@ -332,24 +340,25 @@ public :
     * This method completes the test.
     */
     void complete(test_outcome outcome) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        internal_complete(outcome);
+    }
+
+private:
+    void internal_complete(test_outcome outcome) {
         if (d_state == test_run_state::done)
             return;
         d_outcome = outcome;
         d_state = test_run_state::done;
     };
-
-private:
     bool validate_after_success_of(const test_run_spec<T>& d_after_success_of_test_case) {
-        tthread::lock_guard<tthread::recursive_mutex> lg(d_mutex);
-        
         // and other test case is not done or yet to start, return.
         if (d_after_success_of_test_case.state() != test_run_state::done)
             return false;
         // and other test case has failed, we fail this test case too and return.
         if (d_after_success_of_test_case.outcome() == test_outcome::fail)
         {
-            complete(test_outcome::fail);
+            internal_complete(test_outcome::fail);
             return false;
         }
         return true;
@@ -370,7 +379,7 @@ private:
 
 private:
     std::list<std::shared_ptr<tthread::thread>> d_threads;
-    tthread::recursive_mutex d_mutex;
+    tthread::mutex d_mutex;
     std::string d_name;
     test_run_state d_state;
     test_outcome d_outcome;
