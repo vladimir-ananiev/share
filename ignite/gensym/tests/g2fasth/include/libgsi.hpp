@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <stdexcept>
 
 namespace g2 {
 namespace fasth {
