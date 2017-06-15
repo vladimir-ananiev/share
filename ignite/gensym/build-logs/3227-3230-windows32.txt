@@ -21,7 +21,7 @@ build_32_std:
      [exec] [Microsoft .NET Framework, version 4.0.30319.36365]
      [exec] Copyright (C) Microsoft Corporation. All rights reserved.
      [exec] 
-     [exec] Build started 6/15/2017 8:01:58 PM.
+     [exec] Build started 6/15/2017 11:00:30 PM.
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" on node 1 (default targets).
      [exec] Project "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" (1) is building "D:\develop\ignite-gensym\g2fasth\build\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
      [exec] PrepareForBuild:
@@ -60,11 +60,11 @@ build_32_std:
      [exec] ..\src\g2fasth.cpp(179): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec] ..\src\g2fasth.cpp(203): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   gsi_callbacks.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   libgsi.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec] ..\src\libgsi.cpp(12): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   logger.cpp
      [exec]   test_run_instance.cpp
@@ -101,8 +101,8 @@ build_32_std:
      [exec] ClCompile:
      [exec]   C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"D:\develop\ignite-gensym\g2fasth\include" /I"D:\develop\ignite-gensym\g2fasth\..\gsi\c" /nologo /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D _WINDOWS /D NDEBUG /D CATCH_CONFIG_NO_WINDOWS_SEH /D CATCH_CONFIG_NO_POSIX_SIGNALS /D GSI_USE_DLL /D "CMAKE_INTDIR=\"Release\"" /D _MBCS /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"basetest.dir\Release\\" /Fd"basetest.dir\Release\vc100.pdb" /Gd /TP /analyze- /errorReport:queue ..\..\test\basetest.cpp ..\..\test\MySuite.cpp
      [exec]   basetest.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec] D:\develop\ignite-gensym\g2fasth\include\suite.hpp(84): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]           D:\develop\ignite-gensym\g2fasth\include\suite.hpp(81) : while compiling class template member function 'std::string g2::fasth::suite<T>::execute(std::string)'
      [exec]           with
@@ -199,8 +199,8 @@ build_32_std:
      [exec]               T=MySuite
      [exec]           ]
      [exec]   MySuite.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec] ..\..\test\MySuite.cpp(13): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec] ..\..\test\MySuite.cpp(19): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec] ..\..\test\MySuite.cpp(20): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
@@ -1059,11 +1059,11 @@ build_32_std:
      [exec] ..\src\tests-logger.cpp(43): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   tests-main.cpp
      [exec]   tests-declare-g2-variable.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   tests-gsi-variables.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   tests-suite.cpp
      [exec] ..\src\tests-suite.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] ..\src\tests-suite.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
@@ -2025,8 +2025,8 @@ build_32_std:
      [exec]               T=TestSuiteSameSuccessTestCase
      [exec]           ]
      [exec]   tests-wide-strings.cpp
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec] D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   Generating Code...
      [exec] Link:
      [exec]   C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:QUEUE /OUT:"D:\develop\ignite-gensym\g2fasth\bin\Release\testg2fasth.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"D:/develop/ignite-gensym/g2fasth/lib" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/lib/Release" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/../../dst/gsi/opt" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/../../dst/gsi/opt/Release" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/../../dst/rtl/opt" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/../../dst/rtl/opt/Release" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/../../dst/ext/opt" /LIBPATH:"D:/develop/ignite-gensym/g2fasth/../../dst/ext/opt/Release" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib ..\lib\Release\libg2fasth.lib gsi.lib /MANIFEST /ManifestFile:"testg2fasth.dir\Release\testg2fasth.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /PDB:"D:/develop/ignite-gensym/g2fasth/bin/Release/testg2fasth.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/develop/ignite-gensym/g2fasth/lib/Release/testg2fasth.lib" /MACHINE:X86 "testg2fasth.dir\Release\tests-async.obj"
@@ -2091,10 +2091,10 @@ build_32_std:
      [exec]   ..\src\g2fasth.cpp(176): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   ..\src\g2fasth.cpp(179): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   ..\src\g2fasth.cpp(203): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   ..\src\libgsi.cpp(12): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   ..\src\test_run_instance.cpp(6): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
      [exec]   ..\src\test_run_instance.cpp(6): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\libg2fasth.vcxproj]
@@ -2102,8 +2102,8 @@ build_32_std:
      [exec] 
      [exec] "D:\develop\ignite-gensym\g2fasth\build\ALL_BUILD.vcxproj" (default target) (1) ->
      [exec] "D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj" (default target) (3) ->
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(84): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(86): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   D:\develop\ignite-gensym\g2fasth\include\suite.hpp(233): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
@@ -2138,8 +2138,8 @@ build_32_std:
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(324): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(325): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(340): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   ..\..\test\MySuite.cpp(13): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   ..\..\test\MySuite.cpp(19): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
      [exec]   ..\..\test\MySuite.cpp(20): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\test\basetest.vcxproj]
@@ -2489,10 +2489,10 @@ build_32_std:
      [exec]   ..\src\tests-logger.cpp(41): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-logger.cpp(42): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-logger.cpp(43): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-suite.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::test_order' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-suite.cpp(10): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   ..\src\tests-suite.cpp(37): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
@@ -2850,13 +2850,13 @@ build_32_std:
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(324): warning C4482: nonstandard extension used: enum 'g2::fasth::test_run_state' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(325): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec]   d:\develop\ignite-gensym\g2fasth\include\test_run_spec.hpp(340): warning C4482: nonstandard extension used: enum 'g2::fasth::test_outcome' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(194): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
-     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(196): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(195): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
+     [exec]   D:\develop\ignite-gensym\g2fasth\include\libgsi.hpp(197): warning C4482: nonstandard extension used: enum 'g2::fasth::log_level' used in qualified name [D:\develop\ignite-gensym\g2fasth\build\testg2fasth.vcxproj]
      [exec] 
      [exec]     762 Warning(s)
      [exec]     0 Error(s)
      [exec] 
-     [exec] Time Elapsed 00:00:46.41
+     [exec] Time Elapsed 00:00:46.64
 
 BUILD SUCCESSFUL
-Total time: 58 seconds
+Total time: 55 seconds
