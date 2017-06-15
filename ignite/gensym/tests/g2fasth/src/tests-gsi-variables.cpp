@@ -23,22 +23,24 @@ std::string string_handler()
 
 TEST_CASE("Tests returning the empty value when no other values are set") {
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    const g2::fasth::libgsi::variable_map& vars = gsiobj.get_declared_g2_variables();
+    gsiobj.ignore_not_registered_variables();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("INT-VAR-0"));
     REQUIRE(true == gsiobj.declare_g2_variable<double>("FLOAT-VAR-0"));
     REQUIRE(true == gsiobj.declare_g2_variable<bool>("BOOL-VAR-0"));
     REQUIRE(true == gsiobj.declare_g2_variable<std::string>("STRING-VAR-0"));
 
+    g2::fasth::libgsi::variable_map vars = gsiobj.get_g2_variables();
+
     g2::fasth::g2_variable* int_ptr = vars.find("INT-VAR-0")->second.get();
     g2::fasth::g2_variable* float_ptr = vars.find("FLOAT-VAR-0")->second.get();
     g2::fasth::g2_variable* bool_ptr = vars.find("BOOL-VAR-0")->second.get();
     g2::fasth::g2_variable* string_ptr = vars.find("STRING-VAR-0")->second.get();
 
-    REQUIRE(int_ptr->type == g2::fasth::g2_integer);
-    REQUIRE(float_ptr->type == g2::fasth::g2_float);
-    REQUIRE(bool_ptr->type == g2::fasth::g2_logical);
-    REQUIRE(string_ptr->type == g2::fasth::g2_string);
+    REQUIRE(int_ptr->dec_type == g2::fasth::g2_integer);
+    REQUIRE(float_ptr->dec_type == g2::fasth::g2_float);
+    REQUIRE(bool_ptr->dec_type == g2::fasth::g2_logical);
+    REQUIRE(string_ptr->dec_type == g2::fasth::g2_string);
 
     REQUIRE(((g2::fasth::g2_typed_variable<int>*) int_ptr)->value() == 0);
     REQUIRE(((g2::fasth::g2_typed_variable<double>*) float_ptr)->value() == 0.0);
@@ -48,22 +50,24 @@ TEST_CASE("Tests returning the empty value when no other values are set") {
 
 TEST_CASE("Tests handlers for providing a variable value") {
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    const g2::fasth::libgsi::variable_map& vars = gsiobj.get_declared_g2_variables();
+    gsiobj.ignore_not_registered_variables();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("INT-VAR-1", int_handler));
     REQUIRE(true == gsiobj.declare_g2_variable<double>("FLOAT-VAR-1", float_handler));
     REQUIRE(true == gsiobj.declare_g2_variable<bool>("BOOL-VAR-1", bool_handler));
     REQUIRE(true == gsiobj.declare_g2_variable<std::string>("STRING-VAR-1", string_handler));
 
+    g2::fasth::libgsi::variable_map vars = gsiobj.get_g2_variables();
+
     g2::fasth::g2_variable* int_ptr = vars.find("INT-VAR-1")->second.get();
     g2::fasth::g2_variable* float_ptr = vars.find("FLOAT-VAR-1")->second.get();
     g2::fasth::g2_variable* bool_ptr = vars.find("BOOL-VAR-1")->second.get();
     g2::fasth::g2_variable* string_ptr = vars.find("STRING-VAR-1")->second.get();
 
-    REQUIRE(int_ptr->type == g2::fasth::g2_integer);
-    REQUIRE(float_ptr->type == g2::fasth::g2_float);
-    REQUIRE(bool_ptr->type == g2::fasth::g2_logical);
-    REQUIRE(string_ptr->type == g2::fasth::g2_string);
+    REQUIRE(int_ptr->dec_type == g2::fasth::g2_integer);
+    REQUIRE(float_ptr->dec_type == g2::fasth::g2_float);
+    REQUIRE(bool_ptr->dec_type == g2::fasth::g2_logical);
+    REQUIRE(string_ptr->dec_type == g2::fasth::g2_string);
 
     REQUIRE(((g2::fasth::g2_typed_variable<int>*) int_ptr)->value() == 1234);
     REQUIRE(((g2::fasth::g2_typed_variable<double>*) float_ptr)->value() == 3.14);
@@ -73,7 +77,7 @@ TEST_CASE("Tests handlers for providing a variable value") {
 
 TEST_CASE("Tests setting the default value which returns always") {
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    const g2::fasth::libgsi::variable_map& vars = gsiobj.get_declared_g2_variables();
+    gsiobj.ignore_not_registered_variables();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("INT-VAR-2"));
     REQUIRE(true == gsiobj.declare_g2_variable<double>("FLOAT-VAR-2"));
@@ -84,6 +88,8 @@ TEST_CASE("Tests setting the default value which returns always") {
     REQUIRE(true == gsiobj.assign_def_value("FLOAT-VAR-2", 9.9));
     REQUIRE(true == gsiobj.assign_def_value("BOOL-VAR-2", false));
     REQUIRE(true == gsiobj.assign_def_value("STRING-VAR-2", std::string("Default string value")));
+
+    g2::fasth::libgsi::variable_map vars = gsiobj.get_g2_variables();
 
     g2::fasth::g2_variable* int_ptr = vars.find("INT-VAR-2")->second.get();
     g2::fasth::g2_variable* float_ptr = vars.find("FLOAT-VAR-2")->second.get();
@@ -98,7 +104,7 @@ TEST_CASE("Tests setting the default value which returns always") {
 
 TEST_CASE("Tests returning the value for just one read") {
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    const g2::fasth::libgsi::variable_map& vars = gsiobj.get_declared_g2_variables();
+    gsiobj.ignore_not_registered_variables();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("INT-VAR-3"));
     REQUIRE(true == gsiobj.declare_g2_variable<double>("FLOAT-VAR-3"));
@@ -114,6 +120,8 @@ TEST_CASE("Tests returning the value for just one read") {
     REQUIRE(true == gsiobj.assign_temp_value("FLOAT-VAR-3", 19.9));
     REQUIRE(true == gsiobj.assign_temp_value("BOOL-VAR-3", true));
     REQUIRE(true == gsiobj.assign_temp_value("STRING-VAR-3", std::string("Temporary string value")));
+
+    g2::fasth::libgsi::variable_map vars = gsiobj.get_g2_variables();
 
     g2::fasth::g2_variable* int_ptr = vars.find("INT-VAR-3")->second.get();
     g2::fasth::g2_variable* float_ptr = vars.find("FLOAT-VAR-3")->second.get();
@@ -135,7 +143,7 @@ TEST_CASE("Tests returning the value for just one read") {
 
 TEST_CASE("Tests returning the value for next N reads") {
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    const g2::fasth::libgsi::variable_map& vars = gsiobj.get_declared_g2_variables();
+    gsiobj.ignore_not_registered_variables();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("INT-VAR-4"));
     REQUIRE(true == gsiobj.declare_g2_variable<double>("FLOAT-VAR-4"));
@@ -151,6 +159,8 @@ TEST_CASE("Tests returning the value for next N reads") {
     REQUIRE(true == gsiobj.assign_temp_value("FLOAT-VAR-4", 19.9, 2));  // 2 reads
     REQUIRE(true == gsiobj.assign_temp_value("BOOL-VAR-4", true, 2));   // 2 reads
     REQUIRE(true == gsiobj.assign_temp_value("STRING-VAR-4", std::string("Temporary string value"), 3));    // 3 reads
+
+    g2::fasth::libgsi::variable_map vars = gsiobj.get_g2_variables();
 
     g2::fasth::g2_variable* int_ptr = vars.find("INT-VAR-4")->second.get();
     g2::fasth::g2_variable* float_ptr = vars.find("FLOAT-VAR-4")->second.get();
@@ -184,7 +194,7 @@ TEST_CASE("Tests returning the value for next N reads") {
 
 TEST_CASE("Assigning to undeclared variable or variable with wrong type should fail") {
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    const g2::fasth::libgsi::variable_map& vars = gsiobj.get_declared_g2_variables();
+    gsiobj.ignore_not_registered_variables();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("INT-VAR-5"));
     REQUIRE(true == gsiobj.declare_g2_variable<double>("FLOAT-VAR-5"));

@@ -50,6 +50,7 @@ SET (SRCS include/base_suite.hpp
 	include/suite.hpp
 	include/test_agent.hpp
 	include/test_case_graph.hpp
+	include/test_run_instance.hpp
 	include/test_run_spec.hpp
 	include/tinyxml2.hpp
 	include/xml_serialization.hpp
@@ -59,6 +60,7 @@ SET (SRCS include/base_suite.hpp
 	src/gsi_callbacks.cpp
 	src/libgsi.cpp
 	src/logger.cpp
+	src/test_run_instance.cpp
 	src/tinyxml2.cpp
 	src/tinythread.cpp
 	src/xml_serialization.cpp)

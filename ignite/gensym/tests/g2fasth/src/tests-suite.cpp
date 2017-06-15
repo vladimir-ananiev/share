@@ -1,5 +1,7 @@
 #include "catch.hpp"
 #include "suite.hpp"
+#include "g2fasth_enums.hpp"
+#include "test_run_spec.hpp"
 
 using namespace g2::fasth;
 
@@ -28,21 +30,21 @@ public:
         run(&TestSuite::third_test, "third_test");
         run(&TestSuite::third_test, "third_test_again");
     };
-    void first_test(const std::string& test_case_name)
+    g2::fasth::test_outcome first_test(test_run_instance &)
     {
         firstCalled = true;
         ++testExecutionCounterOFirstTest;
-        complete_test_case(test_case_name, test_outcome::pass);
+        return g2::fasth::test_outcome::pass;
     }
-    void second_test(const std::string& test_case_name)
+    g2::fasth::test_outcome second_test(test_run_instance &)
     {
         secondCalled = true;
-        complete_test_case(test_case_name, test_outcome::pass);
+        return g2::fasth::test_outcome::pass;
     }
-    void third_test(const std::string& test_case_name)
+    g2::fasth::test_outcome third_test(test_run_instance &)
     {
         ++testExecutionCounterOThirdTest;
-        complete_test_case(test_case_name, test_outcome::pass);
+        return g2::fasth::test_outcome::pass;
     }
     bool setupTestTrackCalled;
     bool beforeCalled;
@@ -66,14 +68,14 @@ public:
         run(&TestAfterConstruct::first_test, "first_test");
         run(&TestAfterConstruct::second_test, "second_test").after_success_of(&TestAfterConstruct::first_test);
     };
-    void first_test(const std::string& test_case_name)
+    g2::fasth::test_outcome first_test(test_run_instance &)
     {
-        complete_test_case(test_case_name, test_outcome::fail);
+        return g2::fasth::test_outcome::fail;
     }
-    void second_test(const std::string& test_case_name)
+    g2::fasth::test_outcome second_test(test_run_instance &)
     {
         second_test_executed = true;
-        complete_test_case(test_case_name, test_outcome::pass);
+        return g2::fasth::test_outcome::pass;
     }
     bool second_test_executed;
 };
@@ -91,14 +93,14 @@ TEST_CASE("Test Run Spec should throw exception on calling after_success_of with
 TEST_CASE("Test Run Spec should return false on calling testcaseExists if no test exists") {
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
-    REQUIRE(testsuite.are_all_tests_completed());
+    REQUIRE_FALSE(testsuite.test_case_running_or_pending());
 }
 
 TEST_CASE("Test Run Spec should schedule test case on calling schedule") {
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
     testsuite.run(&TestSuite::first_test, "sample_test");
-    REQUIRE_FALSE(testsuite.are_all_tests_completed());
+    REQUIRE(testsuite.test_case_running_or_pending());
 }
 
 TEST_CASE("Test Run Spec should validate parent method on calling after") {
@@ -121,7 +123,7 @@ TEST_CASE("Test Run Spec should set pointer on calling after after scheduling a 
     testsuite.run(&TestSuite::first_test, "sample1_test");
     testsuite.run(&TestSuite::second_test, "sample2_test");
     testsuite.instance("sample2_test").after_success_of(&TestSuite::first_test);
-    REQUIRE_FALSE(testsuite.are_all_tests_completed());
+    REQUIRE(testsuite.test_case_running_or_pending());
 }
 
 TEST_CASE("Test Suite should setup test track before execution") {

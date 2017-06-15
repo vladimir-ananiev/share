@@ -1,5 +1,8 @@
 #include "catch.hpp"
 #include "suite.hpp"
+#include "g2fasth_enums.hpp"
+#include "test_run_spec.hpp"
+#include "test_run_instance.hpp"
 
 using namespace g2::fasth;
 
@@ -13,15 +16,15 @@ public:
     {
         run(&TestJUnit::first_test, "first_test");
     };
-    void first_test(const std::string& test_case_name)
+    g2::fasth::test_outcome first_test(test_run_instance &)
     {
         if (first_test_should_fail)
         {
-            complete_test_case(test_case_name, test_outcome::fail);
+            return g2::fasth::test_outcome::fail;
         }
         else
         {
-            complete_test_case(test_case_name, test_outcome::pass);
+            return g2::fasth::test_outcome::pass;
         }
     }
     bool first_test_should_fail;
@@ -33,7 +36,7 @@ TEST_CASE("Test Suite should return JUnit report after all success") {
     auto results = test_junit.get_results();
     REQUIRE(report == "<testsuite tests=\"1\">\n    <testcase classname=\"TestJUnit.first_test\" name=\"first_test\"/>\n</testsuite>\n");
     REQUIRE(results.size() == 1);
-    REQUIRE(results[0].outcome() == g2::fasth::test_outcome::pass);
+    REQUIRE(results[0].test_outcome() == g2::fasth::test_outcome::pass);
 }
 
 TEST_CASE("Test Suite should return JUnit report after some success") {
@@ -43,5 +46,5 @@ TEST_CASE("Test Suite should return JUnit report after some success") {
     auto results = test_junit.get_results();
     REQUIRE(report == "<testsuite tests=\"1\">\n    <testcase classname=\"TestJUnit.first_test\" name=\"first_test\">\n        <failure type=\"Fail\">This has failed due to unknow reasons.</failure>\n    </testcase>\n</testsuite>\n");
     REQUIRE(results.size() == 1);
-    REQUIRE(results[0].outcome() == g2::fasth::test_outcome::fail);
+    REQUIRE(results[0].test_outcome() == g2::fasth::test_outcome::fail);
 }

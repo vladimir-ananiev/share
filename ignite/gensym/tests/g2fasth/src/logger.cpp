@@ -18,13 +18,11 @@ void logger::add_output_stream(std::ostream &output_stream, log_level level)
 void logger::add_output_stream(std::ostream *output_stream, log_level level)
 {
     stream_info stream_info(output_stream, level);
-    tthread::lock_guard<tthread::mutex> lg(d_mutex);
     d_outputStreams.push_back(stream_info);
 }
 
 void logger::log(log_level log_level, std::string text)
 {
-    tthread::lock_guard<tthread::mutex> lg(d_mutex);
     // If the log level passed is greater then permissible log level of suite, quit.
     if (log_level > d_loglevel)
     {

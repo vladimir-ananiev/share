@@ -44,7 +44,10 @@ public:
     * Returns state of test run instance.
     * @return State of test run instance.
     */
-    test_run_state state() const { return d_state; }
+    test_run_state state(){
+        tthread::lock_guard<tthread::fast_mutex> lg(d_mutex);
+        return d_state; 
+    }
     /**
     * This method sets the instance state.
     */
@@ -56,7 +59,10 @@ public:
     * Returns outcome of test run instance.
     * @return Outcome of test run instance.
     */
-    test_outcome outcome() const { return d_outcome; }
+    test_outcome outcome(){
+        tthread::lock_guard<tthread::fast_mutex> lg(d_mutex);
+        return d_outcome; 
+    }
     /**
     * This method sets the instance outcome.
     */

@@ -1,24 +1,23 @@
 #include "catch.hpp"
 #include "suite.hpp"
 #include "test_agent.hpp"
-
-using namespace g2::fasth;
+#include "g2fasth_enums.hpp"
 
 std::string output = "";
 
-class TestOne : public suite<TestOne> {
+class TestOne : public g2::fasth::suite<TestOne> {
 public:
     TestOne()
-        : suite("TestOne", test_order::implied, log_level::SILENT) {
+        : suite("TestOne", g2::fasth::test_order::implied, g2::fasth::log_level::SILENT) {
     }
     void setup_test_track() override
     {
         output += "One";
         run(&TestOne::first_test, "first_test");
     };
-    void first_test(const std::string& test_case_name)
+    g2::fasth::test_outcome first_test(g2::fasth::test_run_instance &)
     {
-        complete_test_case(test_case_name, test_outcome::pass);
+        return g2::fasth::test_outcome::pass;
     }
 };
 
@@ -32,9 +31,9 @@ public:
         output += "Two";
         run(&TestTwo::first_test, "first_test");
     };
-    void first_test(const std::string& test_case_name)
+    g2::fasth::test_outcome first_test(g2::fasth::test_run_instance &)
     {
-        complete_test_case(test_case_name, test_outcome::pass);
+        return g2::fasth::test_outcome::pass;
     }
 };
 

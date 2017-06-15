@@ -1,7 +1,6 @@
 #include <signal.h>
 #include "catch.hpp"
 #include "g2fasth.hpp"
-
 using namespace g2::fasth;
 
 TEST_CASE("is_g2_tests_initialized should be FALSE before initialization and TRUE after") {
