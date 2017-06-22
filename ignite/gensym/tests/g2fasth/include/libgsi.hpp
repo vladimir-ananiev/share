@@ -411,9 +411,9 @@ public:
                         {
                             printf("VARIABLES += %s\n", var.first.c_str());
                             if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
-                                var_str += var.first + ",";
+                                var_str.append(var.first + ",");
                             else if (d_ignore_not_registered_variables)
-                                var_str += var.first + ",";
+                                var_str.append(var.first + ",");
                         });
                         puts("gsi_get_data(7)");
                         puts(var_str.c_str());
