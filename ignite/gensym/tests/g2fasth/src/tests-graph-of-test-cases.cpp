@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "suite.hpp"
-#include "g2fasth_enums.hpp"
+
+using namespace g2::fasth;
 
 class TestSuiteComplexCycle : public g2::fasth::suite<TestSuiteComplexCycle> {
 public:
@@ -14,17 +15,17 @@ public:
         run(&TestSuiteComplexCycle::third_test, "third_test").after(&TestSuiteComplexCycle::second_test);
         run(&TestSuiteComplexCycle::first_test, "first_test").after_success_of(&TestSuiteComplexCycle::third_test);
     };
-    g2::fasth::test_outcome first_test(g2::fasth::test_run_instance &)
+    void first_test(const std::string& test_case_name)
     {
-        return g2::fasth::test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    g2::fasth::test_outcome second_test(g2::fasth::test_run_instance &)
+    void second_test(const std::string& test_case_name)
     {
-        return g2::fasth::test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
-    g2::fasth::test_outcome third_test(g2::fasth::test_run_instance &)
+    void third_test(const std::string& test_case_name)
     {
-        return g2::fasth::test_outcome::pass;
+        complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 

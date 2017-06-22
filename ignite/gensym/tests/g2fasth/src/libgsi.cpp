@@ -9,7 +9,7 @@ void g2::fasth::libgsi::error_handler_function(gsi_int error_context, gsi_int er
     ss << "GSI error in context " << error_context;
     ss << ". Code: " << error_code;
     ss << ". Message: " << error_message;
-    d_logger.log(g2::fasth::log_level::REGULAR, ss.str());
+    getInstance().d_logger.log(g2::fasth::log_level::REGULAR, ss.str());
 }
 
 short* g2::fasth::libgsi::gensym_string(const std::wstring& wstr, short* dest, size_t num)

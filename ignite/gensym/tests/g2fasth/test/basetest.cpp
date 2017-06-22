@@ -20,7 +20,8 @@ int main(int argc, char **argv) {
 
     g2::fasth::test_agent agent;
     agent.run_suite(suiteA).after(suiteB);
-    
+    //agent.run_suite(suiteB);
+
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.continuous(true);
     gsiobj.port(22040);

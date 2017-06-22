@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+#include "tinythread.h"
 #include "g2fasth_enums.hpp"
 
 namespace g2 {
@@ -39,6 +40,7 @@ public:
     */
     void log(log_level, std::string);
 private:
+    tthread::mutex d_mutex;
     log_level d_loglevel;
     std::vector<stream_info> d_outputStreams;
     bool write(const char* data, bool written, std::ostream* stream);

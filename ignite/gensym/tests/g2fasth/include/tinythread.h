@@ -712,6 +712,15 @@ namespace this_thread {
   }
 }
 
+class copyable_recursive_mutex: public recursive_mutex
+{
+public:
+    copyable_recursive_mutex() {}
+    ~copyable_recursive_mutex() {}
+    copyable_recursive_mutex(const copyable_recursive_mutex& src) { *this = src; }
+    copyable_recursive_mutex& operator=(const copyable_recursive_mutex& src) { return *this; }
+};
+
 }
 
 // Define/macro cleanup

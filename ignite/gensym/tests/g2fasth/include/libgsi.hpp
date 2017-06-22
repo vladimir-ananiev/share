@@ -193,7 +193,8 @@ inline void g2_typed_variable<double>::set_val(gsi_registered_item item) { assig
 class libgsi : public singleton<libgsi> {
 public:
     libgsi() : d_logger(g2::fasth::log_level::REGULAR), d_continuous(false), d_port(22041),
-            d_ignore_not_registered_variables(false), d_ignore_not_declared_variables(false) {
+            d_ignore_not_registered_variables(false), d_ignore_not_declared_variables(false),
+            d_vars_string_handle(0) {
         d_logger.add_output_stream(std::cout, g2::fasth::log_level::REGULAR);
     }
     /**
@@ -273,6 +274,15 @@ public:
         if (!d_continuous)
             gsi_set_option(GSI_ONE_CYCLE);
         gsi_install_error_handler(&libgsi::error_handler_function);
+        // Declare RPC handlers
+        for (auto it = d_g2_declared_functions.begin(); it != d_g2_declared_functions.end(); it++ ) {
+#if defined(GSI_USE_WIDE_STRING_API)
+            short buf[100];
+            gsi_rpc_declare_local(it->second, (gsi_char*)g2::fasth::libgsi::gensym_string(it->first, &buf[0], 100));
+#else
+            gsi_rpc_declare_local(it->second, const_cast<char*>(it->first.c_str()));
+#endif
+        }
     }
 
     void gsi_resume_context_() {
@@ -281,54 +291,57 @@ public:
     void gsi_receive_registration_(gsi_registration registration) {
         gsi_attr identifying_attribute_one = identifying_attr_of(registration,1);
         std::string name = name_of(registration);
-        std::string type = str_of(identifying_attribute_one);
+        gsi_int type = type_of(registration);
 
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         std::shared_ptr<g2_variable> var;
 
-        if (d_g2_variables.count(name))
-        {   // Variable was declared
-            var = d_g2_variables[name];
-            if (type == "integer")
-                var->reg_type = g2_integer;
-            else if (type == "float64")
-                var->reg_type = g2_float;
-            else if (type == "logical")
-                var->reg_type = g2_logical;
-            else if (type == "string")
-                var->reg_type = g2_string;
-            else if (type == "symbol")
-                var->reg_type = g2_symbol;
-            else
-                return;
-        }
-        else
+        if (name == "VARIABLES")
         {
-            if (type == "integer")
-                var = std::shared_ptr<g2_variable>(new g2_typed_variable<int>(false));
-            else if (type == "float64")
-                var = std::shared_ptr<g2_variable>(new g2_typed_variable<double>(false));
-            else if (type == "logical")
-                var = std::shared_ptr<g2_variable>(new g2_typed_variable<bool>(false));
-            else if (type == "string" || type == "symbol")
-            {
-                var = std::shared_ptr<g2_variable>(new g2_typed_variable<std::string>(false));
-                var->reg_type = type=="string" ? g2_string : g2_symbol;
+            d_vars_string_handle = handle_of(registration);
+        }
+        else 
+        {
+            if (d_g2_variables.count(name))
+            {   // Variable was declared
+                var = d_g2_variables[name];
+                if (type>=GSI_INTEGER_TAG && type<=GSI_FLOAT64_TAG)
+                    var->reg_type = (g2_type)type;
+                else
+                    return;
             }
             else
-                return;
-            d_g2_variables[name] = var;
+            {
+                if (type == GSI_INTEGER_TAG)
+                    var = std::shared_ptr<g2_variable>(new g2_typed_variable<int>(false));
+                else if (type == GSI_FLOAT64_TAG)
+                    var = std::shared_ptr<g2_variable>(new g2_typed_variable<double>(false));
+                else if (type == GSI_LOGICAL_TAG)
+                    var = std::shared_ptr<g2_variable>(new g2_typed_variable<bool>(false));
+                else if (type == GSI_STRING_TAG || type == GSI_SYMBOL_TAG)
+                {
+                    var = std::shared_ptr<g2_variable>(new g2_typed_variable<std::string>(false));
+                    var->reg_type = (g2_type)type;
+                }
+                else
+                    return;
+                d_g2_variables[name] = var;
+            }
+            var->handle = handle_of(registration);
         }
-        var->handle = (int)handle_of(registration);
 
-        //printf("Variable %s:%s is registered\n", name.c_str(), type.c_str());
+        printf("Variable %s (type tag %d) is registered\n", name.c_str(), type);
     }
 
     gsi_int gsi_initialize_context_(char* remote_process_init_string, gsi_int length) {
+        if (d_g2_init)
+            d_g2_init();
         return GSI_ACCEPT; 
     }
 
     void gsi_shutdown_context_() {
+        if (d_g2_shutdown)
+            d_g2_shutdown();
     }
 
     void gsi_g2_poll_() {
@@ -351,13 +364,13 @@ public:
                 if (!it->second->declared())
                 {
                     ok = false;
-                    if (!d_ignore_not_declared_variables)
+                    if (!d_ignore_not_declared_variables && !d_vars_string_handle)
                         throw std::runtime_error("Variable was not declared");
                 }
                 else if (!it->second->type_ok())
                 {
                     ok = false;
-                    if (!d_ignore_not_declared_variables)
+                    if (!d_ignore_not_declared_variables && !d_vars_string_handle)
                         throw std::runtime_error("Variable was declared with different type");
                 }
             }
@@ -369,6 +382,7 @@ public:
     }
 
     void gsi_get_data_(gsi_registered_item* registered_item_array, gsi_int count) {
+        puts("gsi_get_data()");
         {
             tthread::lock_guard<tthread::mutex> guard(d_mutex);
 
@@ -381,30 +395,33 @@ public:
                     return v.second->handle == handle;
                 });
                 bool ok = it != d_g2_variables.end(); // Shoud be true
-                if (ok)
+                if (!ok)
                 {
-                    //printf("Get variable %s\n", it->first.c_str());
-                    if (!it->second->declared())
+                    // For regression tests
+                    if (handle == d_vars_string_handle)
                     {
-                        ok = false;
-                        if (!d_ignore_not_declared_variables)
-                            throw std::runtime_error("Variable was not declared");
+                        std::string var_str;
+                        std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
+                        {
+                            if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
+                                var_str += var.first + ",";
+                            else if (d_ignore_not_registered_variables)
+                                var_str += var.first + ",";
+                        });
+                        if (var_str.length())
+                            var_str = var_str.substr(0, var_str.length()-1);
+                        gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
+                        puts(var_str.c_str());
                     }
-                    else if (!it->second->type_ok())
-                    {
-                        ok = false;
-                        if (!d_ignore_not_declared_variables)
-                            throw std::runtime_error("Variable was declared with different type");
-                    }
+                    continue;
                 }
-                if (ok)
+
+                it->second->get_val(registered_item_array[i]);
+
+                if (!it->second->declared() || !it->second->type_ok())
                 {
-                    it->second->get_val(registered_item_array[i]);
-                }
-                else
-                {
-                    set_type(registered_item_array[i], NULL_TAG); 
-                    set_status(registered_item_array[i], GSI_CUSTOM_USER_ERROR);
+                    if (!d_ignore_not_declared_variables && !d_vars_string_handle)
+                        throw std::runtime_error("Variable was not declared");
                 }
             }
         }
@@ -423,7 +440,11 @@ public:
                 return v.second->handle == handle;
             });
             if (it == d_g2_variables.end())
+            {
+                if (handle == d_vars_string_handle)
+                    d_vars_string_handle = 0;
                 continue;
+            }
             //printf("Variable %s is unregistered\n", it->first.c_str());
             if (!it->second->declared())
                 d_g2_variables.erase(it);
@@ -442,6 +463,7 @@ public:
     }
 
     typedef std::map<std::string, std::shared_ptr<g2_variable>> variable_map;
+    typedef std::map<std::string, gsi_rpc_local_fn_type*> function_map;
     /**  
     * This function declares G2 variable for using in the tests.  
     * @param name Name of G2 variable as it's named in KB.  
@@ -577,17 +599,57 @@ public:
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         d_ignore_not_declared_variables = false;
     }
+    /**
+    * This function declares G2 local function for using in the tests.
+    * @param name Name of G2 local function as it's named in KB.
+    * @param function Pointer to the local function.
+    * @return true (if success) or false (if function with such name was declared before).  
+    */  
+    bool declare_g2_function(const char* name, gsi_rpc_local_fn_type* function) {
+        tthread::lock_guard<tthread::mutex> guard(d_mutex);
+        // Check if already declared
+        if (d_g2_declared_functions.count(name))
+            return false;
+        d_g2_declared_functions[name] = function;
+        return true;  
+    }
+    /**
+    * This function declares G2 context initialization function.
+    * @param init_fn Pointer to the initialization function.
+    * @return true (if success) or false (if function was declared before).
+    */
+    bool declare_g2_init(std::function<void()> init_fn) {
+        if (d_g2_init)
+            return false;   // Already declared
+        d_g2_init = init_fn;
+        return true;
+    }
+    /**
+    * This function declares G2 context shutdown function.
+    * @param shutdown_fn Pointer to the shutdown function.
+    * @return true (if success) or false (if function was declared before).
+    */
+    bool declare_g2_shutdown(std::function<void()> shutdown_fn) {
+        if (d_g2_shutdown)
+            return false;   // Already declared
+        d_g2_shutdown = shutdown_fn;
+        return true;
+    }
 
 private:
-    variable_map d_g2_variables; // map key is a name
     tthread::mutex d_mutex;
+    variable_map d_g2_variables; // map key is a name
+    function_map d_g2_declared_functions; // map key is a name
+    std::function<void()> d_g2_init;
+    std::function<void()> d_g2_shutdown;
     bool d_continuous;
     int d_port;
     bool d_ignore_not_registered_variables;
     bool d_ignore_not_declared_variables;
+    gsi_int d_vars_string_handle; // For regression tests
 
     g2::fasth::logger d_logger;
-    void error_handler_function(gsi_int error_context, gsi_int error_code, gsi_char *error_message);
+    static void error_handler_function(gsi_int error_context, gsi_int error_code, gsi_char *error_message);
 };
 
 template <>

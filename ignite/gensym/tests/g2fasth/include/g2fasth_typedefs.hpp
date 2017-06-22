@@ -9,7 +9,7 @@ namespace fasth {
 */
 template <typename T>
 struct test_helper {
-    typedef g2::fasth::test_outcome(T::*pmf_t)(g2::fasth::test_run_instance &);
+    typedef void(T::*pmf_t)(const std::string&);
 };
 }
 }
