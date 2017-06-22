@@ -406,7 +406,7 @@ public:
                     if (handle == d_vars_string_handle)
                     {
                         puts("gsi_get_data(6)");
-                        std::string var_str;
+                        std::string var_str = "";
                         std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
                         {
                             printf("VARIABLES += %s\n", var.first.c_str());
