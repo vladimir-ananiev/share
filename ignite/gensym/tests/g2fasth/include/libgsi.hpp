@@ -416,9 +416,11 @@ public:
                                 var_str += var.first + ",";
                         });
                         puts("gsi_get_data(7)");
+                        puts(var_str.c_str());
                         if (var_str.length())
                             var_str = var_str.substr(0, var_str.length()-1);
                         puts("gsi_get_data(8)");
+                        puts(var_str.c_str());
                         gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
                         puts("gsi_get_data(9)");
                         puts(var_str.c_str());
