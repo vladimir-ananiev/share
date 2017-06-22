@@ -11,7 +11,6 @@
 #include <string>
 #include <memory>
 #include <stdexcept>
-#include <string.h>
 
 namespace g2 {
 namespace fasth {
@@ -383,73 +382,39 @@ public:
     }
 
     void gsi_get_data_(gsi_registered_item* registered_item_array, gsi_int count) {
-        puts("gsi_get_data(0)");
+        puts("gsi_get_data()");
         {
             tthread::lock_guard<tthread::mutex> guard(d_mutex);
 
             for (int i=0; i<count; i++) {
-                puts("gsi_get_data(1)");
                 set_status(registered_item_array[i], NO_ERR);
-                puts("gsi_get_data(2)");
                 // Get item handle
                 gsi_int handle = handle_of(registered_item_array[i]);
-                puts("gsi_get_data(3)");
                 // Find variable by handle
                 auto it = std::find_if(d_g2_variables.begin(), d_g2_variables.end(), [handle](const std::pair<std::string, std::shared_ptr<g2_variable>> v) {
                     return v.second->handle == handle;
                 });
-                puts("gsi_get_data(4)");
                 bool ok = it != d_g2_variables.end(); // Shoud be true
                 if (!ok)
                 {
-                    puts("gsi_get_data(5)");
                     // For regression tests
                     if (handle == d_vars_string_handle)
                     {
-                        puts("gsi_get_data(6)");
-                        std::string var_str = "";
-                        char vars[256] = "";
+                        std::string var_str;
                         std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
                         {
-                            printf("VARIABLES += %s\n", var.first.c_str());
                             if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
-                            {
-                                puts("gsi_get_data(6-1)");
-                                var_str.append(var.first + ",");
-                                strcat(vars, var.first.c_str());
-                                strcat(vars, ",");
-                            }
+                                var_str += var.first + ",";
                             else if (d_ignore_not_registered_variables)
-                            {
-                                puts("gsi_get_data(6-2)");
-                                var_str.append(var.first + ",");
-                                strcat(vars, var.first.c_str());
-                                strcat(vars, ",");
-                            }
-                            else
-                            {
-                                puts("gsi_get_data(6-3)");
-                            }
+                                var_str += var.first + ",";
                         });
-                        puts("gsi_get_data(7)");
-                        puts(var_str.c_str());
-                        puts(vars);
                         if (var_str.length())
                             var_str = var_str.substr(0, var_str.length()-1);
-                        if (strlen(vars))
-                            vars[strlen(vars)-1] = 0;
-                        puts("gsi_get_data(8)");
+                        gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
                         puts(var_str.c_str());
-                        //gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
-                        gsi_set_str(registered_item_array[i], vars);
-                        puts("gsi_get_data(9)");
-                        puts(var_str.c_str());
-                        puts(vars);
                     }
                     continue;
                 }
-                else
-                    printf("Var name = %s\n", it->first.c_str());
 
                 it->second->get_val(registered_item_array[i]);
 
@@ -525,6 +490,9 @@ public:
             d_g2_variables[name] = var;
         }
         ((g2_typed_variable<T>*)var.get())->d_handler = handler;
+
+        printf("Variable %s (type tag %d) is declared\n", name, var->dec_type);
+
         return true;
     }
     /**
