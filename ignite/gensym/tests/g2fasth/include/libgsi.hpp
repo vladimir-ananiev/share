@@ -414,15 +414,21 @@ public:
                             printf("VARIABLES += %s\n", var.first.c_str());
                             if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
                             {
+                                puts("gsi_get_data(6-1)");
                                 var_str.append(var.first + ",");
                                 strcat(vars, var.first.c_str());
                                 strcat(vars, ",");
                             }
                             else if (d_ignore_not_registered_variables)
                             {
+                                puts("gsi_get_data(6-2)");
                                 var_str.append(var.first + ",");
                                 strcat(vars, var.first.c_str());
                                 strcat(vars, ",");
+                            }
+                            else
+                            {
+                                puts("gsi_get_data(6-3)");
                             }
                         });
                         puts("gsi_get_data(7)");
