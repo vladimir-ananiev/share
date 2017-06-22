@@ -382,24 +382,30 @@ public:
     }
 
     void gsi_get_data_(gsi_registered_item* registered_item_array, gsi_int count) {
-        puts("gsi_get_data()");
+        puts("gsi_get_data(0)");
         {
             tthread::lock_guard<tthread::mutex> guard(d_mutex);
 
             for (int i=0; i<count; i++) {
+                puts("gsi_get_data(1)");
                 set_status(registered_item_array[i], NO_ERR);
+                puts("gsi_get_data(2)");
                 // Get item handle
                 gsi_int handle = handle_of(registered_item_array[i]);
+                puts("gsi_get_data(3)");
                 // Find variable by handle
                 auto it = std::find_if(d_g2_variables.begin(), d_g2_variables.end(), [handle](const std::pair<std::string, std::shared_ptr<g2_variable>> v) {
                     return v.second->handle == handle;
                 });
+                puts("gsi_get_data(4)");
                 bool ok = it != d_g2_variables.end(); // Shoud be true
                 if (!ok)
                 {
+                    puts("gsi_get_data(5)");
                     // For regression tests
                     if (handle == d_vars_string_handle)
                     {
+                        puts("gsi_get_data(6)");
                         std::string var_str;
                         std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
                         {
@@ -408,9 +414,12 @@ public:
                             else if (d_ignore_not_registered_variables)
                                 var_str += var.first + ",";
                         });
+                        puts("gsi_get_data(7)");
                         if (var_str.length())
                             var_str = var_str.substr(0, var_str.length()-1);
+                        puts("gsi_get_data(8)");
                         gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
+                        puts("gsi_get_data(9)");
                         puts(var_str.c_str());
                     }
                     continue;
