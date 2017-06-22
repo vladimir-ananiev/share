@@ -11,6 +11,7 @@
 #include <string>
 #include <memory>
 #include <stdexcept>
+#include <string.h>
 
 namespace g2 {
 namespace fasth {
