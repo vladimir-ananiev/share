@@ -409,6 +409,7 @@ public:
                         std::string var_str;
                         std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
                         {
+                            printf("VARIABLES += %s\n", var.first.c_str());
                             if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
                                 var_str += var.first + ",";
                             else if (d_ignore_not_registered_variables)
@@ -424,6 +425,8 @@ public:
                     }
                     continue;
                 }
+                else
+                    printf("Var name = %s\n", it->first.c_str());
 
                 it->second->get_val(registered_item_array[i]);
 
