@@ -407,23 +407,37 @@ public:
                     {
                         puts("gsi_get_data(6)");
                         std::string var_str = "";
+                        char vars[256] = "";
                         std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
                         {
                             printf("VARIABLES += %s\n", var.first.c_str());
                             if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
+                            {
                                 var_str.append(var.first + ",");
+                                strcat(vars, var.first.c_str());
+                                strcat(vars, ",");
+                            }
                             else if (d_ignore_not_registered_variables)
+                            {
                                 var_str.append(var.first + ",");
+                                strcat(vars, var.first.c_str());
+                                strcat(vars, ",");
+                            }
                         });
                         puts("gsi_get_data(7)");
                         puts(var_str.c_str());
+                        puts(vars);
                         if (var_str.length())
                             var_str = var_str.substr(0, var_str.length()-1);
+                        if (strlen(vars))
+                            vars[strlen(vars)-1] = 0;
                         puts("gsi_get_data(8)");
                         puts(var_str.c_str());
-                        gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
+                        //gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
+                        gsi_set_str(registered_item_array[i], vars);
                         puts("gsi_get_data(9)");
                         puts(var_str.c_str());
+                        puts(vars);
                     }
                     continue;
                 }
