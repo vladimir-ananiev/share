@@ -97,6 +97,35 @@ void rpc_declare_variable(gsi_item rpc_args[],gsi_int count,call_identifier_type
     gsi_rpc_return_values(NULL, 0, call_index, current_context);
 }
 
+void set_variable_value(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
+{
+    std::string name(str_of(rpc_args[0]));
+    std::string value(str_of(rpc_args[1]));
+    printf("set_variable_value(%s, %s);\n", name.c_str(), value.c_str());
+
+    libgsi::variable_map vars = libgsi::getInstance().get_g2_variables(false);
+    if (!vars.count(name))
+        return;
+
+    switch (vars[name]->reg_type)
+    {
+    case g2_integer:
+        libgsi::getInstance().assign_temp_value<int>(name.c_str(), atoi(value.c_str()));
+        break;
+    case g2_float:
+        libgsi::getInstance().assign_temp_value<double>(name.c_str(), atof(value.c_str()));
+        break;
+    case g2_string:
+        libgsi::getInstance().assign_temp_value<std::string>(name.c_str(), value);
+        break;
+    case g2_logical:
+        libgsi::getInstance().assign_temp_value<bool>(name.c_str(), value=="true");
+        break;
+    default:
+        return;
+    }
+}
+
 void receive_item_or_value(gsi_item arg_array[],gsi_int count,call_identifier_type call_index)
 {
 /*
@@ -197,6 +226,7 @@ void receive_request_for_copy(gsi_item arg_array[],gsi_int count,call_identifier
 } /* receive_request_for_copy */
 
 
+void prepare_test_3226();
 void prepare_test_3227();
 void prepare_test_3228();
 void prepare_test_3229();
@@ -215,7 +245,9 @@ int main(int argc, char **argv) {
     {
         string test_code = argv[1];
 
-        if (test_code == "3227")
+        if (test_code == "3226")
+            prepare_test_3226();
+        else if (test_code == "3227")
             prepare_test_3227();
         else if (test_code == "3228")
             prepare_test_3228();
@@ -239,11 +271,20 @@ int main(int argc, char **argv) {
     gsiobj.declare_g2_function("RPC-EXIT", rpc_exit);
     gsiobj.declare_g2_function("RPC-TEST", rpc_test);
     gsiobj.declare_g2_function("RPC-DECLARE-VARIABLE", rpc_declare_variable);
+    gsiobj.declare_g2_function("SET-VARIABLE-VALUE", set_variable_value);
     gsiobj.declare_g2_init(init);
     gsiobj.declare_g2_shutdown(shutdown);
 
     gsiobj.startgsi();
     return 0;
+}
+
+void prepare_test_3226()
+{
+    libgsi& gsi = libgsi::getInstance();
+
+    gsi.declare_g2_variable<int>("INTEGER-DAT");
+    gsi.declare_g2_variable<double>("FLOAT64-DAT");
 }
 
 void prepare_test_3227()
