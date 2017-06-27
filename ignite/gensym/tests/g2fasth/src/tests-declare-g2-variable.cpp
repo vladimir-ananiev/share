@@ -17,6 +17,8 @@ TEST_CASE("G2 variable declartion with not registered ignored") {
 
     REQUIRE(1 == vars.count("T1-VAR-2"));
     REQUIRE(vars.find("T1-VAR-2")->second->dec_type == g2::fasth::g2_float);
+
+    REQUIRE(0 == gsiobj.get_not_registered_variables().size());
 }
 
 TEST_CASE("Variable duplicate declartion is not allowed") {
@@ -36,16 +38,7 @@ TEST_CASE("G2 variable declartion with not registered not ignored") {
     REQUIRE(true == gsiobj.declare_g2_variable<double>("T3-VAR-2"));
 
     g2::fasth::libgsi::getInstance().dont_ignore_not_registered_variables();
-    bool exception = false;
-    try
-    {
-        g2::fasth::libgsi::variable_map vars = gsiobj.get_g2_variables();
-    }
-    catch(const std::exception&)
-    {
-        exception = true;
-    }
 
-    REQUIRE(true == exception);
+    REQUIRE(0 != gsiobj.get_not_registered_variables().size());
 }
 
