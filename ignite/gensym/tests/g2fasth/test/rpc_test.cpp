@@ -76,6 +76,26 @@ void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
     gsi_rpc_return_values(rpc_args, 1, call_index, current_context);
 }
 
+void rpc_declare_variable(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
+{
+    string var_name(str_of(rpc_args[0]));
+    string var_type(str_of(rpc_args[1]));
+
+    printf("rpc_declare_variable(%s:%s)\n", var_name.c_str(), var_type.c_str());
+
+    libgsi& gsi = libgsi::getInstance();
+
+    if (var_type == "integer")
+        gsi.declare_g2_variable<int>(var_name);
+    else if (var_type == "float")
+        gsi.declare_g2_variable<double>(var_name);
+    else if (var_type == "logical")
+        gsi.declare_g2_variable<bool>(var_name);
+    else if (var_type == "string" || var_type == "text")
+        gsi.declare_g2_variable<string>(var_name);
+
+    gsi_rpc_return_values(NULL, 0, call_index, current_context);
+}
 
 void receive_item_or_value(gsi_item arg_array[],gsi_int count,call_identifier_type call_index)
 {
@@ -218,6 +238,7 @@ int main(int argc, char **argv) {
 
     gsiobj.declare_g2_function("RPC-EXIT", rpc_exit);
     gsiobj.declare_g2_function("RPC-TEST", rpc_test);
+    gsiobj.declare_g2_function("RPC-DECLARE-VARIABLE", rpc_declare_variable);
     gsiobj.declare_g2_init(init);
     gsiobj.declare_g2_shutdown(shutdown);
 

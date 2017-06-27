@@ -9,17 +9,8 @@ class RegTestSuite : public suite<RegTestSuite>
 {
 public:
     RegTestSuite(string suite_name): suite(suite_name, test_order::implied, g2::fasth::log_level::VERBOSE)
-        , gsi(libgsi::getInstance())
-    {
-    }
-    ~RegTestSuite()
-    {
-        //while (d_threads.size())
-        //{
-        //    d_threads.front()->join();
-        //    d_threads.pop_front();
-        //}
-    }
+        , gsi(libgsi::getInstance()) {}
+
     void test_3227(const string&);
     void test_3228(const string&);
     void test_3229(const string&);
@@ -27,8 +18,5 @@ public:
 
 private:
     libgsi& gsi;
-    //void before() override;
-    //void after() override;
     void setup_test_track() override;
-    //list<shared_ptr<tthread::thread>> d_threads;
 };

@@ -425,7 +425,7 @@ public:
     * @return true (if success) or false (if variable with such name was declared before).  
     */  
     template <typename T>
-    bool declare_g2_variable(const char* name, std::function<T()> handler = nullptr) {
+    bool declare_g2_variable(const std::string& name, std::function<T()> handler = nullptr) {
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         std::shared_ptr<g2_variable> var;
         if (d_g2_variables.count(name))
@@ -445,7 +445,7 @@ public:
         }
         ((g2_typed_variable<T>*)var.get())->d_handler = handler;
 
-        printf("Variable %s (type tag %d) is declared\n", name, var->dec_type);
+        //printf("Variable %s (type tag %d) is declared\n", name, var->dec_type);
 
         return true;
     }
@@ -474,7 +474,7 @@ public:
     * @return true (if success) or false.
     */
     template <typename T>
-    bool assign_def_value(const char* name, T new_val) {
+    bool assign_def_value(const std::string& name, T new_val) {
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         // Must be already declared
         if (!d_g2_variables.count(name))
@@ -493,7 +493,7 @@ public:
     * @return true (if success) or false.
     */
     template <typename T>
-    bool assign_temp_value(const char* name, T new_val, int count = 1) {
+    bool assign_temp_value(const std::string& name, T new_val, int count = 1) {
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         // Must be already declared
         if (!d_g2_variables.count(name))
@@ -583,7 +583,7 @@ public:
     * @param function Pointer to the local function.
     * @return true (if success) or false (if function with such name was declared before).  
     */  
-    bool declare_g2_function(const char* name, gsi_rpc_local_fn_type* function) {
+    bool declare_g2_function(const std::string& name, gsi_rpc_local_fn_type* function) {
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         // Check if already declared
         if (d_g2_declared_functions.count(name))
