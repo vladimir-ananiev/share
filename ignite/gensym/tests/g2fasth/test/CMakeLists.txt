@@ -30,7 +30,7 @@ else()
 	TARGET_LINK_LIBRARIES (basetest gsi rtl tcp dl libg2fasth rt)
 endif()
 
-ADD_EXECUTABLE(rpc_test rpc_test.cpp ../../gsi/c/gsi_misc.c)
+ADD_EXECUTABLE(rpc_test rpc_test.cpp ../../gsi/c/gsi_misc.c rt-suite.cpp rt-suite.hpp)
 
 if(WIN32) 
 	add_definitions(-DGSI_USE_DLL) 

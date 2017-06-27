@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include "suite.hpp"
-#include "MySuite.hpp"
+#include "rt-suite.hpp"
 #include "g2fasth.hpp"
 #include "test_agent.hpp"
 
 #include "libgsi.hpp"
 #include "gsi_misc.h"
+
+using namespace g2::fasth;
 
 #define STORE_SIZE               5
 #define MAX_STORE_INDEX          STORE_SIZE - 1
@@ -49,15 +50,32 @@ void rpc_text(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
 void exit_thread(void*)
 {
-    //puts("Exiting in 1 sec...");
+    puts("exit_thread(): exiting in 1 sec...");
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
     exit(0);
 }
 void rpc_exit(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 {
-    //exit(0);
+    puts("rpc_exit()");
     new tthread::thread(exit_thread, NULL);
 }
+
+void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
+{
+    string test_code(str_of(rpc_args[0]));
+
+    printf("rpc_test(%s)\n", test_code.c_str());
+
+    RegTestSuite rts(test_code);
+
+    rts.execute();
+
+    string result = rts.get_results()[0].outcome() == test_outcome::pass ? "pass" : "fail";
+
+    gsi_set_str(rpc_args[0], (char*)result.c_str());
+    gsi_rpc_return_values(rpc_args, 1, call_index, current_context);
+}
+
 
 void receive_item_or_value(gsi_item arg_array[],gsi_int count,call_identifier_type call_index)
 {
@@ -159,32 +177,32 @@ void receive_request_for_copy(gsi_item arg_array[],gsi_int count,call_identifier
 } /* receive_request_for_copy */
 
 
-using namespace g2::fasth;
-
-void run_3227();
-void run_3228();
-void run_3229();
-void run_3230();
+void prepare_test_3227();
+void prepare_test_3228();
+void prepare_test_3229();
+void prepare_test_3230();
 
 int main(int argc, char **argv) {
     g2_options options;
     options.parse_arguments(&argc, argv);
     options.set_signal_handler();
 
-    g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
+    libgsi& gsiobj = libgsi::getInstance();
     gsiobj.continuous(true);
     gsiobj.port(22060);
 
     if (argc > 1)
     {
-        if (std::string(argv[1]) == "3227")
-            run_3227();
-        else if (std::string(argv[1]) == "3228")
-            run_3228();
-        else if (std::string(argv[1]) == "3229")
-            run_3229();
-        else if (std::string(argv[1]) == "3230")
-            run_3230();
+        string test_code = argv[1];
+
+        if (test_code == "3227")
+            prepare_test_3227();
+        else if (test_code == "3228")
+            prepare_test_3228();
+        else if (test_code == "3229")
+            prepare_test_3229();
+        else if (test_code == "3230")
+            prepare_test_3230();
     }
     else
     {
@@ -199,6 +217,7 @@ int main(int argc, char **argv) {
     }
 
     gsiobj.declare_g2_function("RPC-EXIT", rpc_exit);
+    gsiobj.declare_g2_function("RPC-TEST", rpc_test);
     gsiobj.declare_g2_init(init);
     gsiobj.declare_g2_shutdown(shutdown);
 
@@ -206,27 +225,28 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void run_3227()
+void prepare_test_3227()
 {
-    g2::fasth::libgsi& gsi = g2::fasth::libgsi::getInstance();
+    libgsi& gsi = libgsi::getInstance();
 
     gsi.dont_ignore_not_declared_variables();
 
     gsi.declare_g2_variable<int>("INTEGER-DAT");
+    //gsi.declare_g2_variable<double>("FLOAT64-DAT"); // uncomment to cause an error
 }
 
-void run_3228()
+void prepare_test_3228()
 {
-    g2::fasth::libgsi& gsi = g2::fasth::libgsi::getInstance();
+    libgsi& gsi = libgsi::getInstance();
 
     gsi.ignore_not_declared_variables();
 
     gsi.declare_g2_variable<int>("INTEGER-DAT");
 }
 
-void run_3229()
+void prepare_test_3229()
 {
-    g2::fasth::libgsi& gsi = g2::fasth::libgsi::getInstance();
+    libgsi& gsi = libgsi::getInstance();
 
     gsi.ignore_not_registered_variables();
 
@@ -234,9 +254,9 @@ void run_3229()
     gsi.declare_g2_variable<int>("NOT-REGISTERED");
 }
 
-void run_3230()
+void prepare_test_3230()
 {
-    g2::fasth::libgsi& gsi = g2::fasth::libgsi::getInstance();
+    libgsi& gsi = libgsi::getInstance();
 
     gsi.dont_ignore_not_registered_variables();
 

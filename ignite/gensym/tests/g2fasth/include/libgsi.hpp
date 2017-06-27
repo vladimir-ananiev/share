@@ -8,9 +8,12 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <list>
 #include <string>
 #include <memory>
 #include <stdexcept>
+#include <fstream>
+#include <iostream>
 
 namespace g2 {
 namespace fasth {
@@ -193,8 +196,7 @@ inline void g2_typed_variable<double>::set_val(gsi_registered_item item) { assig
 class libgsi : public singleton<libgsi> {
 public:
     libgsi() : d_logger(g2::fasth::log_level::REGULAR), d_continuous(false), d_port(22041),
-            d_ignore_not_registered_variables(false), d_ignore_not_declared_variables(false),
-            d_vars_string_handle(0) {
+            d_ignore_not_registered_variables(false), d_ignore_not_declared_variables(false) {
         d_logger.add_output_stream(std::cout, g2::fasth::log_level::REGULAR);
     }
     /**
@@ -296,11 +298,11 @@ public:
         tthread::lock_guard<tthread::mutex> guard(d_mutex);
         std::shared_ptr<g2_variable> var;
 
-        if (name == "VARIABLES")
-        {
-            d_vars_string_handle = handle_of(registration);
-        }
-        else 
+        //if (name == "VARIABLES")
+        //{
+        //    d_vars_string_handle = handle_of(registration);
+        //}
+        //else 
         {
             if (d_g2_variables.count(name))
             {   // Variable was declared
@@ -357,32 +359,14 @@ public:
             auto it = std::find_if(d_g2_variables.begin(), d_g2_variables.end(), [handle](const std::pair<std::string, std::shared_ptr<g2_variable>> v) {
                 return v.second->handle == handle;
             });
-            bool ok = it != d_g2_variables.end(); // Shoud be true
-            if (ok)
-            {
-                //printf("Set variable %s\n", it->first.c_str());
-                if (!it->second->declared())
-                {
-                    ok = false;
-                    if (!d_ignore_not_declared_variables && !d_vars_string_handle)
-                        throw std::runtime_error("Variable was not declared");
-                }
-                else if (!it->second->type_ok())
-                {
-                    ok = false;
-                    if (!d_ignore_not_declared_variables && !d_vars_string_handle)
-                        throw std::runtime_error("Variable was declared with different type");
-                }
-            }
-            if (ok)
-            {
-                it->second->set_val(registered_item_array[i]);
-            }
+            if (it == d_g2_variables.end())
+                continue;
+            it->second->set_val(registered_item_array[i]);
         }
     }
 
     void gsi_get_data_(gsi_registered_item* registered_item_array, gsi_int count) {
-        puts("gsi_get_data()");
+        printf("gsi_get_data(%d)\n", count);
         {
             tthread::lock_guard<tthread::mutex> guard(d_mutex);
 
@@ -394,35 +378,9 @@ public:
                 auto it = std::find_if(d_g2_variables.begin(), d_g2_variables.end(), [handle](const std::pair<std::string, std::shared_ptr<g2_variable>> v) {
                     return v.second->handle == handle;
                 });
-                bool ok = it != d_g2_variables.end(); // Shoud be true
-                if (!ok)
-                {
-                    // For regression tests
-                    if (handle == d_vars_string_handle)
-                    {
-                        std::string var_str;
-                        std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
-                        {
-                            if ((var.second->declared() && var.second->type_ok()) || d_ignore_not_declared_variables)
-                                var_str += var.first + ",";
-                            else if (d_ignore_not_registered_variables)
-                                var_str += var.first + ",";
-                        });
-                        if (var_str.length())
-                            var_str = var_str.substr(0, var_str.length()-1);
-                        gsi_set_str(registered_item_array[i], (char*)var_str.c_str());
-                        puts(var_str.c_str());
-                    }
+                if (it == d_g2_variables.end())
                     continue;
-                }
-
                 it->second->get_val(registered_item_array[i]);
-
-                if (!it->second->declared() || !it->second->type_ok())
-                {
-                    if (!d_ignore_not_declared_variables && !d_vars_string_handle)
-                        throw std::runtime_error("Variable was not declared");
-                }
             }
         }
         // Pass variable values to G2
@@ -440,11 +398,7 @@ public:
                 return v.second->handle == handle;
             });
             if (it == d_g2_variables.end())
-            {
-                if (handle == d_vars_string_handle)
-                    d_vars_string_handle = 0;
                 continue;
-            }
             //printf("Variable %s is unregistered\n", it->first.c_str());
             if (!it->second->declared())
                 d_g2_variables.erase(it);
@@ -501,26 +455,11 @@ public:
     * @return The copy of declared G2 variables map
     */
     variable_map get_g2_variables(bool only_declared=true) {
-        tthread::lock_guard<tthread::mutex> guard(d_mutex);
         variable_map vars;
+        tthread::lock_guard<tthread::mutex> guard(d_mutex);
         std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
         {
-            bool insert = false;
-            if (var.second->declared())
-            {
-                insert = var.second->registered();
-                if (!insert)
-                {
-                    if (!d_ignore_not_registered_variables)
-                        throw std::runtime_error("Variable was not registered");
-                    insert = true;
-                }
-            }
-            else
-            {   // Registered but not declared
-                insert = !only_declared;
-            }
-            if (insert)
+            if (var.second->declared() || !only_declared)
             {
                 std::shared_ptr<g2_variable> copy(var.second->clone());
                 vars[var.first] = copy;
@@ -603,6 +542,42 @@ public:
         d_ignore_not_declared_variables = false;
     }
     /**
+    * Returns a list of variable names, which were registered, but not declared.
+    * @return Variable name list.
+    */
+    std::list<std::string> get_not_declared_variables()
+    {
+        std::list<std::string> list;
+        tthread::lock_guard<tthread::mutex> guard(d_mutex);
+        std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
+        {
+            if (var.second->registered() && !(var.second->declared() && var.second->type_ok()))
+            {
+                if (!d_ignore_not_declared_variables)
+                    list.push_back(var.first);
+            }
+        });
+        return list;
+    }
+    /**
+    * Returns a list of variable names, which were declared, but not registered.
+    * @return Variable name list.
+    */
+    std::list<std::string> get_not_registered_variables()
+    {
+        std::list<std::string> list;
+        tthread::lock_guard<tthread::mutex> guard(d_mutex);
+        std::for_each(d_g2_variables.begin(), d_g2_variables.end(), [&](const std::pair<std::string, std::shared_ptr<g2_variable>>& var)
+        {
+            if (var.second->declared() && !(var.second->registered() && var.second->type_ok()))
+            {
+                if (!d_ignore_not_registered_variables)
+                    list.push_back(var.first);
+            }
+        });
+        return list;
+    }
+    /**
     * This function declares G2 local function for using in the tests.
     * @param name Name of G2 local function as it's named in KB.
     * @param function Pointer to the local function.
@@ -649,7 +624,7 @@ private:
     int d_port;
     bool d_ignore_not_registered_variables;
     bool d_ignore_not_declared_variables;
-    gsi_int d_vars_string_handle; // For regression tests
+    
 
     g2::fasth::logger d_logger;
     static void error_handler_function(gsi_int error_context, gsi_int error_code, gsi_char *error_message);
