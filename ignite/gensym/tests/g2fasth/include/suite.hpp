@@ -89,6 +89,7 @@ public:
         {   // Let cancelled threads (in Linux) to stop
             int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
             int sleep = 10000 - elapsed;
+            printf("Wait %d ms for cancelled threads(%d)\n...", sleep, cancelled);
             if (sleep > 0)
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
         }
