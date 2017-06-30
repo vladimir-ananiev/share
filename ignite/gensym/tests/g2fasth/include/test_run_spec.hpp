@@ -34,6 +34,7 @@ struct thread_waiter
 #ifndef WIN32
         if (cancelled)
         {   // Let cancelled threads (in Linux) to stop
+            puts("Wait for cancelled thraeds...");
             tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10000));
         }
 #endif
@@ -313,7 +314,7 @@ public :
             data->test_case = this;
             // Run test case body in separate thread to have possibility of time measurement
             thread = std::make_shared<tthread::thread>(action_thread_proc, data.release());
-            s_thread_waiter.add_thread(thread);
+            d_suite->add_thread(thread);
             //d_threads.push_back(thread);
         }
 
@@ -533,12 +534,12 @@ private:
     chrono::milliseconds d_timeout;
     clock_t d_start;
     std::list<typename test_helper<T>::pmf_t> d_stop_timers;
-    static thread_waiter s_thread_waiter;
+    //static thread_waiter s_thread_waiter;
 
 };
 
-template <class T>
-thread_waiter test_run_spec<T>::s_thread_waiter;
+//template <class T>
+//thread_waiter test_run_spec<T>::s_thread_waiter;
 
 }
 }

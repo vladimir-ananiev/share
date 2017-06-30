@@ -225,6 +225,12 @@ public:
     {
         instance(name).complete(outcome);
     }
+
+    void add_thread(std::shared_ptr<tthread::thread> thread)
+    {
+        d_thread_waiter.add_thread(thread);
+    }
+
 protected:
     virtual void before() {};
     virtual void after() {};
@@ -439,6 +445,7 @@ private:
     std::vector<test_result> d_results;
     chrono::milliseconds d_default_timeout;
     std::list<std::shared_ptr<tthread::thread>> d_threads;
+    thread_waiter d_thread_waiter;
 };
 
 }
