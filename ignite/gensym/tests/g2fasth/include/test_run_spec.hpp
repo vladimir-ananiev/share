@@ -444,7 +444,7 @@ private:
                 do 
                 {
                     int next_interval = interval - action_elapsed_ms;
-                    //SCOPELOG(data->test_case_name+" - iteration, next interval="+std::to_string((long long)next_interval));
+                    SCOPELOG(data->test_case_name+" - iteration, next interval="+std::to_string((long long)next_interval));
                     bool stop;
                     // Sleep between action calls with state checking
                     while (!(stop = _this->is_timer_stopped(data->user_func_ptr)))
@@ -464,6 +464,7 @@ private:
             }
             else
             {   // simple async
+                SCOPELOG(data->test_case_name+" - func obj call");
                 data->func_obj(data->test_case_name);
             }
         }
