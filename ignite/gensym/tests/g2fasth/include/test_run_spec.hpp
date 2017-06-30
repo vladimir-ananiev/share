@@ -240,7 +240,7 @@ public :
     * It validates every condition before executing a test case.
     */
     inline bool execute(async_run_data<T>* async_data=nullptr) {
-        //FUNCLOG2(d_name+(async_data?"-ASYNC":""));
+        FUNCLOG2(d_name+(async_data?"-ASYNC":""));
         std::unique_ptr<async_run_data<T>> data(async_data);
         std::shared_ptr<tthread::thread> thread;
         chrono::milliseconds timeout(0);
@@ -434,7 +434,7 @@ private:
     static void action_thread_proc(void* p) {
         tthread::thread::make_cancel_safe();
         std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
-        //FUNCLOG2(data->test_case_name);
+        FUNCLOG2(data->test_case_name);
         test_run_spec* _this = data->test_case;
         try {
             int interval = data->interval;

@@ -87,14 +87,10 @@ public:
 #ifndef WIN32
         if (cancelled)
         {   // Let cancelled threads (in Linux) to stop
-            //puts("Wait for cancelled threads...");
             int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
             int sleep = 10000 - elapsed;
             if (sleep > 0)
-            {
-                printf("Wait % ms...\n", sleep);
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
-            }
         }
 #endif
     }
@@ -318,6 +314,7 @@ private:
         // Execute tests
         while(true)
         {
+            SCOPELOG("Start");
             check_test_timeouts();
             auto test_case_it = get_test_case_to_execute();
             if (test_case_it != d_test_specs.end())
@@ -330,7 +327,10 @@ private:
             else if (are_all_tests_completed())
                 break;
             else
+            {
+                puts("Start - wait 100 ms...");
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(100));
+            }
         }
         extract_result();
         for (auto result = d_results.begin(); result != d_results.end(); ++result)

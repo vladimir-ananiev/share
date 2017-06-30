@@ -61,6 +61,8 @@ inline unsigned GetTickCount()
 }
 #endif
 
+#define ENABLE_FUNCLOG
+
 class ScopeLog
 {
     std::string name;
