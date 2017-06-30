@@ -78,6 +78,9 @@ public:
 #define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
 #define FUNCLOG2(suffix) ScopeLog __func_log__(__FUNCTION__,suffix)
 #define SCOPELOG(name) ScopeLog __scope_log__(name)
+#define FUNCLOG
+#define FUNCLOG2(suffix)
+#define SCOPELOG(name)
 #endif
 
 

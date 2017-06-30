@@ -20,6 +20,34 @@
 namespace g2 {
 namespace fasth {
 
+struct thread_waiter
+{
+    ~thread_waiter()
+    {
+        int cancelled = 0;
+        while (threads.size())
+        {
+            if (threads.front()->cancel())
+                cancelled++;
+            threads.pop_front();
+        }
+#ifndef WIN32
+        if (cancelled)
+        {   // Let cancelled threads (in Linux) to stop
+            tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10000));
+        }
+#endif
+    }
+    void add_thread(std::shared_ptr<tthread::thread> thread)
+    {
+        tthread::lock_guard<tthread::mutex> lg(mutex);
+        threads.push_back(thread);
+    }
+private:
+    std::list<std::shared_ptr<tthread::thread>> threads;
+    tthread::mutex mutex;
+};
+
 namespace chrono = tthread::chrono;
 
 template <class T>
@@ -81,13 +109,21 @@ public :
         , d_outcome(test_outcome::fail)
     {
     }
-    ~test_run_spec() {
-        while (d_threads.size())
-        {
-            d_threads.front()->cancel();
-            d_threads.pop_front();
-        }
-    };
+//    ~test_run_spec() {
+//        int cancelled = 0;
+//        while (d_threads.size())
+//        {
+//            if (d_threads.front()->cancel())
+//                cancelled++;
+//            d_threads.pop_front();
+//        }
+//#ifndef WIN32
+//        if (cancelled)
+//        {   // Let cancelled threads (in Linux) to stop
+//            tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10000));
+//        }
+//#endif
+//    };
     
     std::shared_ptr<test_run_spec<T>> clone(const std::string& name) const
     {
@@ -277,7 +313,8 @@ public :
             data->test_case = this;
             // Run test case body in separate thread to have possibility of time measurement
             thread = std::make_shared<tthread::thread>(action_thread_proc, data.release());
-            d_threads.push_back(thread);
+            s_thread_waiter.add_thread(thread);
+            //d_threads.push_back(thread);
         }
 
         // Wait for the thread completion during the timeout
@@ -481,7 +518,6 @@ private:
     }
 
 private:
-    std::list<std::shared_ptr<tthread::thread>> d_threads;
     tthread::mutex d_mutex;
     std::string d_name;
     test_run_state d_state;
@@ -497,7 +533,13 @@ private:
     chrono::milliseconds d_timeout;
     clock_t d_start;
     std::list<typename test_helper<T>::pmf_t> d_stop_timers;
+    static thread_waiter s_thread_waiter;
+
 };
+
+template <class T>
+thread_waiter test_run_spec<T>::s_thread_waiter;
+
 }
 }
 
