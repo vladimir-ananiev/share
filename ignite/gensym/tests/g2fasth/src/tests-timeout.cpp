@@ -10,12 +10,12 @@ public:
     TestTimeouts()
         : suite("TestTimeouts", g2::fasth::test_order::implied, g2::fasth::log_level::NONE)
     {
-        sleep_time = 10000;
+        sleep_time = 0;
     };
     TestTimeouts(chrono::milliseconds default_timeout)
         : suite("TestTimeouts", g2::fasth::test_order::implied, g2::fasth::log_level::NONE, "", default_timeout)
     {
-        sleep_time = 10000;
+        sleep_time = 0;
     };
 
     void sync_test(const std::string& test_case_name)
@@ -32,6 +32,7 @@ public:
 
 TEST_CASE("Timeout is not specified") {
     TestTimeouts test_suite;
+    test_suite.sleep_time = 500;
     test_suite.run(&TestTimeouts::sync_test, "sync_test");
     test_suite.execute();
     auto results = test_suite.get_results();

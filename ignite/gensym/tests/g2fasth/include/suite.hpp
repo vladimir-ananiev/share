@@ -246,7 +246,8 @@ public:
 
     void add_thread_to_cancel(std::shared_ptr<tthread::thread> thread)
     {
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        FUNCLOG;
+        tthread::lock_guard<tthread::mutex> lg(d_cancel_threads_mutex);
         d_threads_to_cancel.push_back(thread);
     }
 
@@ -436,7 +437,7 @@ private:
         data->user_func_ptr = func_obj;
         data->interval = (int)interval.count();
         std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        tthread::lock_guard<tthread::mutex> lg(d_wait_threads_mutex);
         d_threads_to_wait.push_back(thread);
     }
     static void s_async_thread_proc(void* p)
@@ -469,7 +470,9 @@ private:
     logger d_logger;
     std::vector<test_result> d_results;
     chrono::milliseconds d_default_timeout;
+    tthread::mutex d_wait_threads_mutex;
     std::list<std::shared_ptr<tthread::thread>> d_threads_to_wait;
+    tthread::mutex d_cancel_threads_mutex;
     std::list<std::shared_ptr<tthread::thread>> d_threads_to_cancel;
 };
 
