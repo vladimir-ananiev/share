@@ -51,7 +51,7 @@ private:
 #ifndef FUNCLOG
 #ifndef WIN32
 #include <sys/time.h>
-unsigned GetTickCount()
+inline unsigned GetTickCount()
 {
         struct timeval tv;
         if(gettimeofday(&tv, NULL) != 0)
