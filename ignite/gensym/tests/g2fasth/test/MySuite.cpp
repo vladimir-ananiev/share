@@ -3,34 +3,34 @@
 #include "tinythread.h"
 #include "libgsi.hpp"
 
-#ifndef FUNCLOG
-#ifndef WIN32
-#include <sys/time.h>
-unsigned GetTickCount()
-{
-        struct timeval tv;
-        if(gettimeofday(&tv, NULL) != 0)
-                return 0;
-
-        return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
-#endif
-
-class ScopeLog
-{
-    std::string name;
-public:
-    ScopeLog(const std::string& name): name(name)
-    {
-        printf("%08u %s ENTER\n", GetTickCount(), this->name.c_str());
-    }
-    ~ScopeLog()
-    {
-        printf("%08u %s LEAVE\n", GetTickCount(), this->name.c_str());
-    }
-};
-#define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
-#endif
+//#ifndef FUNCLOG
+//#ifndef WIN32
+//#include <sys/time.h>
+//unsigned GetTickCount()
+//{
+//        struct timeval tv;
+//        if(gettimeofday(&tv, NULL) != 0)
+//                return 0;
+//
+//        return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+//}
+//#endif
+//
+//class ScopeLog
+//{
+//    std::string name;
+//public:
+//    ScopeLog(const std::string& name): name(name)
+//    {
+//        printf("%08u %s ENTER\n", GetTickCount(), this->name.c_str());
+//    }
+//    ~ScopeLog()
+//    {
+//        printf("%08u %s LEAVE\n", GetTickCount(), this->name.c_str());
+//    }
+//};
+//#define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
+//#endif
 
 using namespace std;
 using namespace g2::fasth;
