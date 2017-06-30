@@ -274,7 +274,7 @@ public :
         if (tstate != test_run_state::ongoing)
             return false;
         int elapsed_ms = int(double(now - start) / CLOCKS_PER_SEC * 1000 + 0.5);
-        printf("is_timeout(%s): elapsed=%d\n", lock?"ext":"int", elapsed_ms);
+        //printf("is_timeout(%s): elapsed=%d\n", lock?"ext":"int", elapsed_ms);
         if (elapsed)
             *elapsed = elapsed_ms;
         return elapsed_ms >= timeout;
