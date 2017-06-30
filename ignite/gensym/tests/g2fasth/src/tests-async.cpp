@@ -84,6 +84,7 @@ TEST_CASE("Test Suite should run async test in finite time") {
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario1();
     test_async.execute();
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(2000));
     auto results = test_async.get_results();
     REQUIRE(results[0].outcome() == test_outcome::pass);
 }

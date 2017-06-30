@@ -3,6 +3,7 @@
 #include "tinythread.h"
 #include "libgsi.hpp"
 
+#ifndef FUNCLOG
 #ifndef WIN32
 #include <sys/time.h>
 unsigned GetTickCount()
@@ -14,9 +15,6 @@ unsigned GetTickCount()
         return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 }
 #endif
-
-using namespace std;
-using namespace g2::fasth;
 
 class ScopeLog
 {
@@ -32,6 +30,10 @@ public:
     }
 };
 #define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
+#endif
+
+using namespace std;
+using namespace g2::fasth;
 
 struct thread_data
 {
@@ -133,18 +135,6 @@ void MySuite::default_timeout_fail_test(const std::string& test_case_name)
 
 void MySuite::setup_test_track()
 {
-    g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-
-    gsiobj.ignore_not_declared_variables();
-    gsiobj.ignore_not_registered_variables();
-
-    gsiobj.declare_g2_variable<int>("INTEGER_DAT");
-    gsiobj.assign_def_value("INTEGER_DAT", 60);
-
-    gsiobj.declare_g2_variable<int>("INTEGER_DAT_NOT_REG");
-    gsiobj.assign_def_value("INTEGER_DAT_NOT_REG", 111);
-
-    libgsi::variable_map vars = gsiobj.get_g2_variables();
     auto& first = run(&MySuite::first_test, "TestA");
     //run(&MySuite::second_test, "TestB").after(first);
     run(&MySuite::second_test, "TestB").after(&MySuite::first_test);
@@ -165,6 +155,8 @@ void MySuite::setup_test_track()
     auto& stest = run(&MySuite::sync_test, "Sync-Test", tthread::chrono::milliseconds(500));
     clone(stest, "Sync-Test-2").after(atest);
     clone(atest, "Async-Test-2");
+
+    run(&MySuite::timer_test, "Timer-test");
 }
 
 void MySuite::sync_test(const std::string& test_case_name)
@@ -183,7 +175,6 @@ void MySuite::async_test_controlled(const std::string& test_case_name)
     go_async(
         test_case_name                   // Test case name
         , &MySuite::async_test_func_obj  // Pointer to asynchronous functional object
-        // , chrono::milliseconds(1000)     // Timeout for asynchronous functional object
     );
 }
 void MySuite::async_test_func_obj(const std::string& test_case_name)
@@ -215,5 +206,62 @@ void uncontrolled_test_case_thread(void* p)
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
 
     data->suite->complete_test_case(data->test_case_name, test_outcome::pass);
+}
+
+int timer_count = 10;
+tthread::mutex mutex;
+int dec_count()
+{
+    tthread::lock_guard<tthread::mutex> lg(mutex);
+    return --timer_count;
+}
+int get_count()
+{
+    tthread::lock_guard<tthread::mutex> lg(mutex);
+    return timer_count;
+}
+
+void MySuite::timer_test(const std::string& test_case_name)
+{
+    FUNCLOG;
+
+    // Start timer with 100 ms interval
+    start_timer(
+        test_case_name                  // Test case name
+        , &MySuite::timer_func_obj      // Pointer to timer functional object
+        , chrono::milliseconds(100)     // Timer interval
+    );
+
+    // Start async timer monitor
+    go_async(
+        test_case_name
+        , &MySuite::timer_monitor
+    );
+}
+
+void MySuite::timer_func_obj(const std::string& test_case_name)
+{
+    //FUNCLOG;
+
+    printf("Count = %d\n", dec_count());
+}
+
+void MySuite::timer_monitor(const std::string& test_case_name)
+{
+    FUNCLOG;
+
+    // Wait until count==0
+    while (get_count())
+        tthread::this_thread::sleep_for(tthread::chrono::milliseconds(20));
+
+    // Stop the timer, but it's not test end yet
+    stop_timer(test_case_name, &MySuite::timer_func_obj);
+
+    // 3 sec sleep
+    puts("Sleep for 3 second...");
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(3000));
+
+    // Complete the test
+    complete_test_case(test_case_name, test_outcome::pass);
 }
 

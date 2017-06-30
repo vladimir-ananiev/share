@@ -177,6 +177,17 @@ public:
         return test_case_graph.is_cyclic();
     }
     /**
+    * This function checks test timeouts.
+    * @return true or false.
+    */
+     void check_test_timeouts() {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+            if (spec->is_timeout())
+                spec->complete(test_outcome::fail);
+        });
+    }
+    /**
     * This function checks is all tests (sync & async) are completed.
     * @return true or false.
     */
@@ -231,51 +242,47 @@ protected:
         return new_spec;
     }
 
-    struct go_async_data
-    {
-        suite* _this;
-        std::string test_case_name;
-        std::function<void(const std::string&)> func_obj;
-        int timeout;
-    };
     /**
     * Continues test case execution asynchronously.
     * @param test_case_name Name of the test case.
     * @param async_func_obj Functional object to run asynchronously.
     * @param timeout Timeout of the functional object.
-    * @return Handle of cloned test run instance.
     */
     void go_async(const std::string& test_case_name
-        , typename test_helper<T>::pmf_t async_func_obj
-        , const chrono::milliseconds& timeout=chrono::milliseconds(0))
+        , typename test_helper<T>::pmf_t func_obj)
     {
-        assert(async_func_obj != nullptr);
-        if (async_func_obj == nullptr)
+        assert(func_obj != nullptr);
+        if (func_obj == nullptr)
             return;
-        std::unique_ptr<go_async_data> data(new go_async_data);
-        data->_this = this;
-        data->test_case_name = test_case_name;
-        data->func_obj = std::bind(async_func_obj, static_cast<T*>(this), std::placeholders::_1);
-        data->timeout = (int)timeout.count();
-        std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        d_threads.push_back(thread);
+        internal_async(test_case_name, func_obj, chrono::milliseconds(0));
     }
-    static void s_async_thread_proc(void* p)
+    /**
+    * Continues test case execution asynchronously as a timer.
+    * @param test_case_name Name of the test case.
+    * @param timer_func_obj Functional object to call periodically.
+    * @param interval Timer interval.
+    * @param timeout Timeout of the general further timer working.
+    */
+    void start_timer(const std::string& test_case_name
+        , typename test_helper<T>::pmf_t func_obj
+        , const chrono::milliseconds& interval)
     {
-        std::unique_ptr<go_async_data> data((go_async_data*)p);
-        try {
-            test_run_spec<T>& test = data->_this->instance(data->test_case_name);
-            try {
-                if (test.execute(data->func_obj, data->_this->correct_timeout(chrono::milliseconds(data->timeout))))
-                    data->_this->after();
-            }
-            catch (... ) {
-                test.complete(test_outcome::fail);
-            }
-        }
-        catch (... ) {
-        }
+        assert(func_obj != nullptr);
+        if (func_obj == nullptr)
+            return;
+        assert(interval.count() > 0);
+        if (interval.count() <= 0)
+            return;
+        internal_async(test_case_name, func_obj, interval);
+    }
+    /**
+    * Stops the timer.
+    * @param test_case_name Name of the test case.
+    * @param timer_func_obj Timer functional object
+    */
+    void stop_timer(const std::string& test_case_name, typename test_helper<T>::pmf_t timer_func_obj)
+    {
+        instance(test_case_name).stop_timer(timer_func_obj);
     }
 private:
     inline std::string start(std::string report_file_name) {
@@ -283,6 +290,7 @@ private:
         // Execute tests
         while(true)
         {
+            check_test_timeouts();
             auto test_case_it = get_test_case_to_execute();
             if (test_case_it != d_test_specs.end())
             {
@@ -384,6 +392,43 @@ private:
         return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->get_ptr_test_case() == test_case;
         }) != d_test_specs.end();
+    }
+    void internal_async(const std::string& test_case_name
+        , typename test_helper<T>::pmf_t func_obj
+        , const chrono::milliseconds& interval)
+    {
+        std::unique_ptr<async_run_data<T>> data(new async_run_data<T>);
+        data->test_suite = this;
+        data->test_case = nullptr;
+        data->test_case_name = test_case_name;
+        data->func_obj = std::bind(func_obj, static_cast<T*>(this), std::placeholders::_1);
+        data->user_func_ptr = func_obj;
+        data->interval = (int)interval.count();
+        std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        d_threads.push_back(thread);
+    }
+    static void s_async_thread_proc(void* p)
+    {
+        std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
+        try {
+            suite* _this = data->test_suite;
+            test_run_spec<T>& test = _this->instance(data->test_case_name);
+            if (test.state() != test_run_state::ongoing)
+            {
+                test.complete(test_outcome::fail);
+                return;
+            }
+            try {
+                if (test.execute(data.release()))
+                    _this->after();
+            }
+            catch (... ) {
+                test.complete(test_outcome::fail);
+            }
+        }
+        catch (... ) {
+        }
     }
 
 private:

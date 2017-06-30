@@ -23,10 +23,10 @@ int main(int argc, char **argv) {
     //agent.run_suite(suiteB);
 
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
-    gsiobj.continuous(true);
-    gsiobj.port(22040);
-    agent.execute();
+    gsiobj.continuous(false);
+    gsiobj.port(22041);
     gsiobj.startgsi();
+    agent.execute();
 
     return 0;
 }
