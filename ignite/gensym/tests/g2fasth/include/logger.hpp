@@ -68,11 +68,11 @@ class ScopeLog
 public:
     ScopeLog(const std::string& name, const std::string& suffix=""): name(name), suffix(suffix)
     {
-        printf("%08u ENTER %s%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
+        printf("%08u ENTER %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
     }
     ~ScopeLog()
     {
-        printf("%08u LEAVE %s%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
+        printf("%08u LEAVE %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
     }
 };
 #define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
