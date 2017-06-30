@@ -15,7 +15,7 @@ public:
 
     void test_case_1(const std::string& test_case_name)
     {
-        FUNCLOG;
+        //FUNCLOG;
         start_timer(test_case_name
             , &TestTimers::timer_func_obj
             , chrono::milliseconds(100)
@@ -23,14 +23,14 @@ public:
     }
     void timer_func_obj(const std::string& test_case_name)
     {
-        FUNCLOG;
+        //FUNCLOG;
         if (!--timer_count)
             complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 
 TEST_CASE("Functional object multiple calls") {
-    FUNCLOG2("Functional object multiple calls");
+    //FUNCLOG2("Functional object multiple calls");
     TestTimers test_suite;
     test_suite.run(&TestTimers::test_case_1, "test_case_1");
     test_suite.execute();
@@ -39,7 +39,7 @@ TEST_CASE("Functional object multiple calls") {
 }
 
 TEST_CASE("Timer-based test case ending by timeout") {
-    FUNCLOG2("Timer-based test case ending by timeout");
+    //FUNCLOG2("Timer-based test case ending by timeout");
     TestTimers test_suite;
     test_suite.run(&TestTimers::test_case_1, "test_case_1", chrono::milliseconds(3000));
     test_suite.timer_count = 0;

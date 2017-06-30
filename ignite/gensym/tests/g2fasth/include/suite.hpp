@@ -71,11 +71,29 @@ public:
     }
     ~suite()
     {
-        while (d_threads.size())
+        int cancelled = 0;
+        while (d_threads_to_cancel.size())
         {
-            d_threads.front()->join();
-            d_threads.pop_front();
+            if (d_threads_to_cancel.front()->cancel())
+                cancelled++;
+            d_threads_to_cancel.pop_front();
         }
+        clock_t start = clock();
+        while (d_threads_to_wait.size())
+        {
+            d_threads_to_wait.front()->join();
+            d_threads_to_wait.pop_front();
+        }
+#ifndef WIN32
+        if (cancelled)
+        {   // Let cancelled threads (in Linux) to stop
+            //puts("Wait for cancelled threads...");
+            int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
+            int sleep = 10000 - elapsed;
+            if (sleep > 0)
+                tthread::this_thread::sleep_for(tthread::chrono::milliseconds());
+        }
+#endif
     }
     /**
     * This function executes test suite. First it setups test track and then starts execution.
@@ -226,9 +244,10 @@ public:
         instance(name).complete(outcome);
     }
 
-    void add_thread(std::shared_ptr<tthread::thread> thread)
+    void add_thread_to_cancel(std::shared_ptr<tthread::thread> thread)
     {
-        d_thread_waiter.add_thread(thread);
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        d_threads_to_cancel.push_back(thread);
     }
 
 protected:
@@ -412,7 +431,7 @@ private:
         data->interval = (int)interval.count();
         std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        d_threads.push_back(thread);
+        d_threads_to_wait.push_back(thread);
     }
     static void s_async_thread_proc(void* p)
     {
@@ -444,8 +463,8 @@ private:
     logger d_logger;
     std::vector<test_result> d_results;
     chrono::milliseconds d_default_timeout;
-    std::list<std::shared_ptr<tthread::thread>> d_threads;
-    thread_waiter d_thread_waiter;
+    std::list<std::shared_ptr<tthread::thread>> d_threads_to_wait;
+    std::list<std::shared_ptr<tthread::thread>> d_threads_to_cancel;
 };
 
 }

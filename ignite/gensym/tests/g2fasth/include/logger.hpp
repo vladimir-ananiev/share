@@ -75,12 +75,15 @@ public:
         printf("%08u LEAVE %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
     }
 };
-#define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
-#define FUNCLOG2(suffix) ScopeLog __func_log__(__FUNCTION__,suffix)
-#define SCOPELOG(name) ScopeLog __scope_log__(name)
-#define FUNCLOG
-#define FUNCLOG2(suffix)
-#define SCOPELOG(name)
+#ifdef ENABLE_FUNCLOG
+#   define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
+#   define FUNCLOG2(suffix) ScopeLog __func_log__(__FUNCTION__,suffix)
+#   define SCOPELOG(name) ScopeLog __scope_log__(name)
+#else
+#   define FUNCLOG
+#   define FUNCLOG2(suffix)
+#   define SCOPELOG(name)
+#endif
 #endif
 
 
