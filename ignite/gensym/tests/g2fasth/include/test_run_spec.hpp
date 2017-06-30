@@ -463,7 +463,7 @@ private:
                 } while(true);
             }
             else
-            {   // simple async
+            {   // simple action call
                 SCOPELOG(data->test_case_name+" - func obj call");
                 data->func_obj(data->test_case_name);
             }

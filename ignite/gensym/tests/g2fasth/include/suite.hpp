@@ -275,6 +275,7 @@ protected:
     void go_async(const std::string& test_case_name
         , typename test_helper<T>::pmf_t func_obj)
     {
+        FUNCLOG2(test_case_name);
         assert(func_obj != nullptr);
         if (func_obj == nullptr)
             return;
@@ -425,6 +426,7 @@ private:
         , typename test_helper<T>::pmf_t func_obj
         , const chrono::milliseconds& interval)
     {
+        FUNCLOG2(test_case_name);
         std::unique_ptr<async_run_data<T>> data(new async_run_data<T>);
         data->test_suite = this;
         data->test_case = nullptr;
