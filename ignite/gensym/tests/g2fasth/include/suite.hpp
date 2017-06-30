@@ -91,7 +91,7 @@ public:
             int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
             int sleep = 10000 - elapsed;
             if (sleep > 0)
-                tthread::this_thread::sleep_for(tthread::chrono::milliseconds());
+                tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
         }
 #endif
     }
