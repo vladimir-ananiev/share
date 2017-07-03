@@ -30,7 +30,7 @@ else()
 	TARGET_LINK_LIBRARIES (basetest gsi rtl tcp dl libg2fasth rt)
 endif()
 
-ADD_EXECUTABLE(rpc_test rpc_test.cpp ../../gsi/c/gsi_misc.c)
+ADD_EXECUTABLE(rpc_test rpc_test.cpp ../../gsi/c/gsi_misc.c rt-suite.cpp rt-suite.hpp)
 
 if(WIN32) 
 	add_definitions(-DGSI_USE_DLL) 
@@ -38,5 +38,5 @@ if(WIN32)
 	add_custom_command(TARGET rpc_test POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/../../dst/gsi/opt${BIN_DIR}/gsi.dll $<TARGET_FILE_DIR:rpc_test>)
 else()
-	TARGET_LINK_LIBRARIES (rpc_test gsi rtl tcp dl libg2fasth)
+	TARGET_LINK_LIBRARIES (rpc_test gsi rtl tcp dl libg2fasth rt)
 endif()

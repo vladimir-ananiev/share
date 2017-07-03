@@ -61,7 +61,7 @@ inline unsigned GetTickCount()
 }
 #endif
 
-#define ENABLE_FUNCLOG
+//#define ENABLE_FUNCLOG
 
 class ScopeLog
 {

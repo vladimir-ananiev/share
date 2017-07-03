@@ -240,11 +240,9 @@ public :
     * It validates every condition before executing a test case.
     */
     inline bool execute(async_run_data<T>* async_data=nullptr) {
-        FUNCLOG2(d_name+(async_data?"-ASYNC":""));
         std::unique_ptr<async_run_data<T>> data(async_data);
         std::shared_ptr<tthread::thread> thread;
         chrono::milliseconds timeout(0);
-        int elapsed = 0;
         {
             tthread::lock_guard<tthread::mutex> lg(d_mutex);
             if (!data)
@@ -252,7 +250,7 @@ public :
                 data.reset(new async_run_data<T>);
                 data->test_case_name = d_name;
                 data->func_obj = d_action;
-                data->user_func_ptr = nullptr;
+                data->user_func_ptr = ptr_test_case;
                 data->interval = 0;
                 timeout = d_timeout;
                 d_state = test_run_state::ongoing;
@@ -260,12 +258,17 @@ public :
             }
             else
             {
+                int elapsed;
                 if (is_timeout(false, &elapsed))
                 {
                     internal_complete(test_outcome::fail);
                     return true;
                 }
                 timeout = chrono::milliseconds(d_timeout.count() - elapsed);
+                if (!data->func_obj)
+                    data->func_obj = d_action;
+                if (!data->user_func_ptr)
+                    data->user_func_ptr = ptr_test_case;
             }
             data->test_case = this;
             // Run test case body in separate thread to have possibility of time measurement
@@ -434,7 +437,6 @@ private:
     static void action_thread_proc(void* p) {
         tthread::thread::make_cancel_safe();
         std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
-        FUNCLOG2(data->test_case_name);
         test_run_spec* _this = data->test_case;
         try {
             int interval = data->interval;
@@ -444,7 +446,6 @@ private:
                 do 
                 {
                     int next_interval = interval - action_elapsed_ms;
-                    SCOPELOG(data->test_case_name+" - iteration, next interval="+std::to_string((long long)next_interval));
                     bool stop;
                     // Sleep between action calls with state checking
                     while (!(stop = _this->is_timer_stopped(data->user_func_ptr)))
@@ -464,7 +465,6 @@ private:
             }
             else
             {   // simple action call
-                SCOPELOG(data->test_case_name+" - func obj call");
                 data->func_obj(data->test_case_name);
             }
         }

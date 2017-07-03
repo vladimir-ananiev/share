@@ -107,6 +107,18 @@ void MySuite::default_timeout_fail_test(const std::string& test_case_name)
 
 void MySuite::setup_test_track()
 {
+    g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
+
+    gsiobj.ignore_not_declared_variables();
+    gsiobj.ignore_not_registered_variables();
+
+    gsiobj.declare_g2_variable<int>("INTEGER_DAT");
+    gsiobj.assign_def_value("INTEGER_DAT", 60);
+
+    gsiobj.declare_g2_variable<int>("INTEGER_DAT_NOT_REG");
+    gsiobj.assign_def_value("INTEGER_DAT_NOT_REG", 111);
+
+    libgsi::variable_map vars = gsiobj.get_g2_variables();
     auto& first = run(&MySuite::first_test, "TestA");
     //run(&MySuite::second_test, "TestB").after(first);
     run(&MySuite::second_test, "TestB").after(&MySuite::first_test);
@@ -200,8 +212,8 @@ void MySuite::timer_test(const std::string& test_case_name)
     // Start timer with 100 ms interval
     start_timer(
         test_case_name                  // Test case name
-        , &MySuite::timer_func_obj      // Pointer to timer functional object
         , chrono::milliseconds(100)     // Timer interval
+        , &MySuite::timer_func_obj      // Pointer to timer functional object
     );
 
     // Start async timer monitor

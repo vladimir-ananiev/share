@@ -89,7 +89,7 @@ public:
         {   // Let cancelled threads (in Linux) to stop
             int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
             int sleep = 10000 - elapsed;
-            printf("Wait %d ms for cancelled threads(%d)\n...", sleep, cancelled);
+            //printf("Wait %d ms for cancelled threads(%d)...\n", sleep, cancelled);
             if (sleep > 0)
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
         }
@@ -246,7 +246,6 @@ public:
 
     void add_thread_to_cancel(std::shared_ptr<tthread::thread> thread)
     {
-        FUNCLOG;
         tthread::lock_guard<tthread::mutex> lg(d_cancel_threads_mutex);
         d_threads_to_cancel.push_back(thread);
     }
@@ -272,31 +271,24 @@ protected:
     * Continues test case execution asynchronously.
     * @param test_case_name Name of the test case.
     * @param async_func_obj Functional object to run asynchronously.
-    * @param timeout Timeout of the functional object.
+    *   If not specified (nullptr), then test case itself will be called asynchronuosly,
     */
     void go_async(const std::string& test_case_name
-        , typename test_helper<T>::pmf_t func_obj)
+        , typename test_helper<T>::pmf_t func_obj=nullptr)
     {
-        FUNCLOG2(test_case_name);
-        assert(func_obj != nullptr);
-        if (func_obj == nullptr)
-            return;
         internal_async(test_case_name, func_obj, chrono::milliseconds(0));
     }
     /**
     * Continues test case execution asynchronously as a timer.
     * @param test_case_name Name of the test case.
-    * @param timer_func_obj Functional object to call periodically.
     * @param interval Timer interval.
-    * @param timeout Timeout of the general further timer working.
+    * @param timer_func_obj Functional object to call periodically.
+    *   If not specified (nullptr), then test case itself will be called as timer object,
     */
     void start_timer(const std::string& test_case_name
-        , typename test_helper<T>::pmf_t func_obj
-        , const chrono::milliseconds& interval)
+        , const chrono::milliseconds& interval
+        , typename test_helper<T>::pmf_t func_obj=nullptr)
     {
-        assert(func_obj != nullptr);
-        if (func_obj == nullptr)
-            return;
         assert(interval.count() > 0);
         if (interval.count() <= 0)
             return;
@@ -317,7 +309,6 @@ private:
         // Execute tests
         while(true)
         {
-            SCOPELOG("Start");
             check_test_timeouts();
             auto test_case_it = get_test_case_to_execute();
             if (test_case_it != d_test_specs.end())
@@ -331,7 +322,7 @@ private:
                 break;
             else
             {
-                puts("Start - wait 100 ms...");
+                //puts("Start - wait 100 ms...");
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(100));
             }
         }
@@ -428,13 +419,20 @@ private:
         , typename test_helper<T>::pmf_t func_obj
         , const chrono::milliseconds& interval)
     {
-        FUNCLOG2(test_case_name);
         std::unique_ptr<async_run_data<T>> data(new async_run_data<T>);
         data->test_suite = this;
         data->test_case = nullptr;
         data->test_case_name = test_case_name;
-        data->func_obj = std::bind(func_obj, static_cast<T*>(this), std::placeholders::_1);
-        data->user_func_ptr = func_obj;
+        if (func_obj)
+        {
+            data->func_obj = std::bind(func_obj, static_cast<T*>(this), std::placeholders::_1);
+            data->user_func_ptr = func_obj;
+        }
+        else
+        {
+            data->func_obj = nullptr;
+            data->user_func_ptr = nullptr;
+        }
         data->interval = (int)interval.count();
         std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
         tthread::lock_guard<tthread::mutex> lg(d_wait_threads_mutex);

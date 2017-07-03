@@ -12,6 +12,18 @@ void g2::fasth::libgsi::error_handler_function(gsi_int error_context, gsi_int er
     getInstance().d_logger.log(g2::fasth::log_level::REGULAR, ss.str());
 }
 
+/// Customized missing procedure handler
+void g2::fasth::libgsi::missing_procedure_function(gsi_char *name)
+{
+    tthread::lock_guard<tthread::mutex> guard(getInstance().d_mutex);
+    if (!getInstance().d_error_mode)
+        return;
+
+    std::stringstream ss;
+    ss << "GSI error: Remote procedure call to non-declared function " << name;
+    getInstance().d_logger.log(g2::fasth::log_level::REGULAR, ss.str());
+}
+
 short* g2::fasth::libgsi::gensym_string(const std::wstring& wstr, short* dest, size_t num)
 {
     if (!dest)
