@@ -1,6 +1,7 @@
 #include <iostream>
 #include <time.h>
 #include <stdarg.h>
+#include <memory>
 #include "logger.hpp"
 
 using namespace std;
