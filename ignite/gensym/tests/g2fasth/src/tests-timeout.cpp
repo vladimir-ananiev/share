@@ -7,15 +7,18 @@ using namespace g2::fasth;
 class TestTimeouts : public g2::fasth::suite<TestTimeouts> {
 public:
     int sleep_time;
+    int async_timeout;
     TestTimeouts()
         : suite("TestTimeouts", g2::fasth::test_order::implied, g2::fasth::log_level::NONE)
     {
-        sleep_time = 0;
+        async_timeout = 0; // default will be used
+        sleep_time = 10000;
     };
     TestTimeouts(chrono::milliseconds default_timeout)
         : suite("TestTimeouts", g2::fasth::test_order::implied, g2::fasth::log_level::NONE, "", default_timeout)
     {
-        sleep_time = 0;
+        async_timeout = 0; // default will be used
+        sleep_time = 10000;
     };
 
     void sync_test(const std::string& test_case_name)
@@ -26,13 +29,12 @@ public:
     }
     void async_test(const std::string& test_case_name)
     {
-        go_async(test_case_name, &TestTimeouts::sync_test);
+        go_async(test_case_name, &TestTimeouts::sync_test, chrono::milliseconds(async_timeout));
     }
 };
 
 TEST_CASE("Timeout is not specified") {
     TestTimeouts test_suite;
-    test_suite.sleep_time = 500;
     test_suite.run(&TestTimeouts::sync_test, "sync_test");
     test_suite.execute();
     auto results = test_suite.get_results();
@@ -96,7 +98,8 @@ TEST_CASE("Async test, default timeout fail test") {
 TEST_CASE("Async test, timeout pass test") {
     TestTimeouts test_suite;
     test_suite.sleep_time = 500;
-    test_suite.run(&TestTimeouts::async_test, "async_test", chrono::milliseconds(10000));
+    test_suite.async_timeout = 10000;
+    test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
     auto results = test_suite.get_results();
     REQUIRE(results[0].outcome() == test_outcome::pass);
@@ -105,7 +108,8 @@ TEST_CASE("Async test, timeout pass test") {
 TEST_CASE("Async test, timeout fail test") {
     TestTimeouts test_suite;
     test_suite.sleep_time = 10000;
-    test_suite.run(&TestTimeouts::async_test, "async_test", chrono::milliseconds(500));
+    test_suite.async_timeout = 500;
+    test_suite.run(&TestTimeouts::async_test, "async_test");
     test_suite.execute();
     auto results = test_suite.get_results();
     REQUIRE(results[0].outcome() == test_outcome::fail);

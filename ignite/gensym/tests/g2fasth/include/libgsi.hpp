@@ -345,7 +345,7 @@ public:
             var->handle = handle_of(registration);
         }
 
-        printf("Variable %s (type tag %d) is registered\n", name.c_str(), type);
+        d_logger.log_formatted(log_level::REGULAR, "Variable %s (type tag %d) is registered\n", name.c_str(), type);
     }
 
     gsi_int gsi_initialize_context_(char* remote_process_init_string, gsi_int length) {
@@ -374,7 +374,7 @@ public:
         tthread::lock_guard<tthread::mutex> guard(d_update_mutex);
 
         int count = d_g2_update_variables.size();
-        printf("gsi_g2_poll called with count=%d\n", count);
+        d_logger.log_formatted(log_level::REGULAR, "gsi_g2_poll called with count=%d\n", count);
         if (count)
         {
             gsi_registered_item* registered_item_array = gsi_make_registered_items(count);
@@ -418,7 +418,7 @@ public:
     }
 
     void gsi_get_data_(gsi_registered_item* registered_item_array, gsi_int count) {
-        printf("gsi_get_data(%d)\n", count);
+        d_logger.log_formatted(log_level::REGULAR, "gsi_get_data(count=%d)\n", count);
         {
             tthread::lock_guard<tthread::mutex> guard(d_mutex);
 
@@ -451,7 +451,7 @@ public:
             });
             if (it == d_g2_variables.end())
                 continue;
-            //printf("Variable %s is unregistered\n", it->first.c_str());
+            d_logger.log_formatted(log_level::REGULAR, "Variable %s is unregistered\n", it->first.c_str());
             if (!it->second->declared())
                 d_g2_variables.erase(it);
             else
@@ -498,8 +498,6 @@ public:
             d_g2_variables[name] = var;
         }
         ((g2_typed_variable<T>*)var.get())->d_handler = handler;
-
-        //printf("Variable %s (type tag %d) is declared\n", name, var->dec_type);
 
         return true;
     }
@@ -556,7 +554,7 @@ public:
         if (!check_type<T>(var->dec_type))
             return false;
         if (!var->registered() && !d_ignore_not_registered_variables)
-            throw std::runtime_error("Variable was not registered");
+            return false;
         ((g2_typed_variable<T>*)var.get())->assign_temp_value(new_val, count);
         return true;
     }

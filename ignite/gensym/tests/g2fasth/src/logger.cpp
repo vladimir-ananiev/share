@@ -1,5 +1,6 @@
 #include <iostream>
 #include <time.h>
+#include <stdarg.h>
 #include "logger.hpp"
 
 using namespace std;
@@ -61,4 +62,32 @@ bool logger::write(const char* data, bool written, std::ostream* stream)
     }
     (*stream) << data;
     return true;
+}
+
+void logger::log_formatted(log_level log_level, const std::string fmt_str, ...)
+{
+    tthread::lock_guard<tthread::mutex> lg(d_mutex);
+    // If the log level passed is greater then permissible log level of suite, quit.
+    if (log_level > d_loglevel)
+    {
+        return;
+    }
+
+    int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
+    std::unique_ptr<char[]> formatted;
+    va_list ap;
+    while(true)
+    {
+        formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
+        strcpy(&formatted[0], fmt_str.c_str());
+        va_start(ap, fmt_str);
+        final_n = vsnprintf(&formatted[0], n, fmt_str.c_str(), ap);
+        va_end(ap);
+        if (final_n < 0 || final_n >= n)
+            n += abs(final_n - n + 1);
+        else
+            break;
+    }
+
+    log(log_level, std::string(formatted.get()));
 }

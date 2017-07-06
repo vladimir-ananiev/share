@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <list>
 #include <functional>
 #include <algorithm>
 #include <stdexcept>
@@ -24,19 +23,6 @@ namespace chrono = tthread::chrono;
 
 template <class T>
 class suite;
-template <class T>
-class test_run_spec;
-
-template <class T>
-struct async_run_data
-{
-    suite<T>* test_suite;
-    test_run_spec<T>* test_case;
-    std::string test_case_name;
-    std::function<void(const std::string&)> func_obj;
-    typename test_helper<T>::pmf_t user_func_ptr;
-    int interval;
-};
 /**
 * This class is responsible storing relationships with other tests.
 * A test case can be scheduled after a test case, after success of a test case
@@ -81,6 +67,13 @@ public :
         , d_outcome(test_outcome::fail)
     {
     }
+    ~test_run_spec() {
+        while (d_threads.size())
+        {
+            d_threads.front()->cancel();
+            d_threads.pop_front();
+        }
+    };
     
     std::shared_ptr<test_run_spec<T>> clone(const std::string& name) const
     {
@@ -214,72 +207,32 @@ public :
         guard_condition = func;
         return *this;
     }
-    bool is_timeout(bool lock=true, int* elapsed=nullptr)
-    {
-        clock_t now = clock();
-        clock_t start;
-        int timeout;
-        test_run_state tstate;
-        if (lock)
-            d_mutex.lock();
-        tstate = d_state;
-        start = d_start;
-        timeout = (int)d_timeout.count();
-        if (lock)
-            d_mutex.unlock();
-        if (tstate != test_run_state::ongoing)
-            return false;
-        int elapsed_ms = int(double(now - start) / CLOCKS_PER_SEC * 1000 + 0.5);
-        //printf("is_timeout(%s): elapsed=%d\n", lock?"ext":"int", elapsed_ms);
-        if (elapsed)
-            *elapsed = elapsed_ms;
-        return elapsed_ms >= timeout;
-    }
     /**
     * This method executes test cases setup in test track.
     * It validates every condition before executing a test case.
     */
-    inline bool execute(async_run_data<T>* async_data=nullptr) {
-        std::unique_ptr<async_run_data<T>> data(async_data);
-        std::shared_ptr<tthread::thread> thread;
-        chrono::milliseconds timeout(0);
+    inline bool execute(std::function<void(const std::string&)> async_func_obj=nullptr
+        , const chrono::milliseconds& timeout=chrono::milliseconds(0)) {
+        if (async_func_obj)
         {
             tthread::lock_guard<tthread::mutex> lg(d_mutex);
-            if (!data)
-            {
-                data.reset(new async_run_data<T>);
-                data->test_case_name = d_name;
-                data->func_obj = d_action;
-                data->user_func_ptr = ptr_test_case;
-                data->interval = 0;
-                timeout = d_timeout;
+            d_action = async_func_obj;
+            d_timeout = timeout;
+        }
+
+        std::shared_ptr<tthread::thread> thread;
+        {
+            tthread::lock_guard<tthread::mutex> lg(d_mutex);
+            if (d_state == test_run_state::not_yet)
                 d_state = test_run_state::ongoing;
-                d_start = clock();
-            }
-            else
-            {
-                int elapsed;
-                if (is_timeout(false, &elapsed))
-                {
-                    internal_complete(test_outcome::fail);
-                    return true;
-                }
-                timeout = chrono::milliseconds(d_timeout.count() - elapsed);
-                if (!data->func_obj)
-                    data->func_obj = d_action;
-                if (!data->user_func_ptr)
-                    data->user_func_ptr = ptr_test_case;
-            }
-            data->test_case = this;
             // Run test case body in separate thread to have possibility of time measurement
-            thread = std::make_shared<tthread::thread>(action_thread_proc, data.release());
-            d_suite->add_thread_to_cancel(thread);
-            //d_threads.push_back(thread);
+            thread = std::make_shared<tthread::thread>(action_thread_proc, this);
+            d_threads.push_back(thread);
         }
 
         // Wait for the thread completion during the timeout
         bool test_done;
-        bool timed_out = !thread->join(timeout);
+        bool timed_out = !thread->join(d_timeout);
         {
             tthread::lock_guard<tthread::mutex> lg(d_mutex);
             if (timed_out)
@@ -395,25 +348,7 @@ public :
         internal_complete(outcome);
     }
 
-    void stop_timer(typename test_helper<T>::pmf_t func_ptr)
-    {
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        auto it = std::find(d_stop_timers.begin(), d_stop_timers.end(), func_ptr);
-        if (it != d_stop_timers.end())
-            return; // Already in list
-        d_stop_timers.push_back(func_ptr);
-    }
-
 private:
-    bool is_timer_stopped(typename test_helper<T>::pmf_t func_ptr)
-    {
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        auto it = std::find(d_stop_timers.begin(), d_stop_timers.end(), func_ptr);
-        bool stop = it != d_stop_timers.end();
-        if (stop)
-            d_stop_timers.remove(func_ptr);
-        return stop || (d_state != test_run_state::ongoing) || is_timeout(false);
-    }
     void internal_complete(test_outcome outcome) {
         if (d_state == test_run_state::done)
             return;
@@ -433,40 +368,13 @@ private:
         return true;
     }
 
+
     // Thread procedure for test action run
     static void action_thread_proc(void* p) {
         tthread::thread::make_cancel_safe();
-        std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
-        test_run_spec* _this = data->test_case;
+        test_run_spec* _this = (test_run_spec*)p;
         try {
-            int interval = data->interval;
-            if (interval > 0)
-            {   // timer
-                int action_elapsed_ms = 0;
-                do 
-                {
-                    int next_interval = interval - action_elapsed_ms;
-                    bool stop;
-                    // Sleep between action calls with state checking
-                    while (!(stop = _this->is_timer_stopped(data->user_func_ptr)))
-                    {
-                        if (next_interval <= 0)
-                            break;
-                        int sleep_time = next_interval<50 ? next_interval : 50;
-                        tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep_time));
-                        next_interval -= sleep_time;
-                    }
-                    if (stop)
-                        break;
-                    clock_t begin = clock();
-                    data->func_obj(data->test_case_name);
-                    action_elapsed_ms = (int)(double(clock() - begin) / CLOCKS_PER_SEC * 1000);
-                } while(true);
-            }
-            else
-            {   // simple action call
-                data->func_obj(data->test_case_name);
-            }
+            _this->d_action(_this->d_name);
         }
         catch(...) {
             _this->complete(test_outcome::fail);
@@ -474,6 +382,7 @@ private:
     }
 
 private:
+    std::list<std::shared_ptr<tthread::thread>> d_threads;
     tthread::mutex d_mutex;
     std::string d_name;
     test_run_state d_state;
@@ -487,15 +396,7 @@ private:
     std::function<bool()> guard_condition;
     suite<T>* d_suite;
     chrono::milliseconds d_timeout;
-    clock_t d_start;
-    std::list<typename test_helper<T>::pmf_t> d_stop_timers;
-    //static thread_canceller s_thread_waiter;
-
 };
-
-//template <class T>
-//thread_canceller test_run_spec<T>::s_thread_waiter;
-
 }
 }
 

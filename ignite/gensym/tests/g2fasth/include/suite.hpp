@@ -71,29 +71,11 @@ public:
     }
     ~suite()
     {
-        int cancelled = 0;
-        while (d_threads_to_cancel.size())
+        while (d_threads.size())
         {
-            if (d_threads_to_cancel.front()->cancel())
-                cancelled++;
-            d_threads_to_cancel.pop_front();
+            d_threads.front()->join();
+            d_threads.pop_front();
         }
-        clock_t start = clock();
-        while (d_threads_to_wait.size())
-        {
-            d_threads_to_wait.front()->join();
-            d_threads_to_wait.pop_front();
-        }
-#ifndef WIN32
-        if (cancelled)
-        {   // Let cancelled threads (in Linux) to stop
-            int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
-            int sleep = 10000 - elapsed;
-            //printf("Wait %d ms for cancelled threads(%d)...\n", sleep, cancelled);
-            if (sleep > 0)
-                tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
-        }
-#endif
     }
     /**
     * This function executes test suite. First it setups test track and then starts execution.
@@ -195,17 +177,6 @@ public:
         return test_case_graph.is_cyclic();
     }
     /**
-    * This function checks test timeouts.
-    * @return true or false.
-    */
-     void check_test_timeouts() {
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            if (spec->is_timeout())
-                spec->complete(test_outcome::fail);
-        });
-    }
-    /**
     * This function checks is all tests (sync & async) are completed.
     * @return true or false.
     */
@@ -243,13 +214,6 @@ public:
     {
         instance(name).complete(outcome);
     }
-
-    void add_thread_to_cancel(std::shared_ptr<tthread::thread> thread)
-    {
-        tthread::lock_guard<tthread::mutex> lg(d_cancel_threads_mutex);
-        d_threads_to_cancel.push_back(thread);
-    }
-
 protected:
     virtual void before() {};
     virtual void after() {};
@@ -267,41 +231,51 @@ protected:
         return new_spec;
     }
 
+    struct go_async_data
+    {
+        suite* _this;
+        std::string test_case_name;
+        std::function<void(const std::string&)> func_obj;
+        int timeout;
+    };
     /**
     * Continues test case execution asynchronously.
     * @param test_case_name Name of the test case.
     * @param async_func_obj Functional object to run asynchronously.
-    *   If not specified (nullptr), then test case itself will be called asynchronuosly,
+    * @param timeout Timeout of the functional object.
+    * @return Handle of cloned test run instance.
     */
     void go_async(const std::string& test_case_name
-        , typename test_helper<T>::pmf_t func_obj=nullptr)
+        , typename test_helper<T>::pmf_t async_func_obj
+        , const chrono::milliseconds& timeout=chrono::milliseconds(0))
     {
-        internal_async(test_case_name, func_obj, chrono::milliseconds(0));
-    }
-    /**
-    * Continues test case execution asynchronously as a timer.
-    * @param test_case_name Name of the test case.
-    * @param interval Timer interval.
-    * @param timer_func_obj Functional object to call periodically.
-    *   If not specified (nullptr), then test case itself will be called as timer object,
-    */
-    void start_timer(const std::string& test_case_name
-        , const chrono::milliseconds& interval
-        , typename test_helper<T>::pmf_t func_obj=nullptr)
-    {
-        assert(interval.count() > 0);
-        if (interval.count() <= 0)
+        assert(async_func_obj != nullptr);
+        if (async_func_obj == nullptr)
             return;
-        internal_async(test_case_name, func_obj, interval);
+        std::unique_ptr<go_async_data> data(new go_async_data);
+        data->_this = this;
+        data->test_case_name = test_case_name;
+        data->func_obj = std::bind(async_func_obj, static_cast<T*>(this), std::placeholders::_1);
+        data->timeout = (int)timeout.count();
+        std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        d_threads.push_back(thread);
     }
-    /**
-    * Stops the timer.
-    * @param test_case_name Name of the test case.
-    * @param timer_func_obj Timer functional object
-    */
-    void stop_timer(const std::string& test_case_name, typename test_helper<T>::pmf_t timer_func_obj)
+    static void s_async_thread_proc(void* p)
     {
-        instance(test_case_name).stop_timer(timer_func_obj);
+        std::unique_ptr<go_async_data> data((go_async_data*)p);
+        try {
+            test_run_spec<T>& test = data->_this->instance(data->test_case_name);
+            try {
+                if (test.execute(data->func_obj, data->_this->correct_timeout(chrono::milliseconds(data->timeout))))
+                    data->_this->after();
+            }
+            catch (... ) {
+                test.complete(test_outcome::fail);
+            }
+        }
+        catch (... ) {
+        }
     }
 private:
     inline std::string start(std::string report_file_name) {
@@ -309,7 +283,6 @@ private:
         // Execute tests
         while(true)
         {
-            check_test_timeouts();
             auto test_case_it = get_test_case_to_execute();
             if (test_case_it != d_test_specs.end())
             {
@@ -321,10 +294,7 @@ private:
             else if (are_all_tests_completed())
                 break;
             else
-            {
-                //puts("Start - wait 100 ms...");
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(100));
-            }
         }
         extract_result();
         for (auto result = d_results.begin(); result != d_results.end(); ++result)
@@ -415,51 +385,6 @@ private:
             return spec->get_ptr_test_case() == test_case;
         }) != d_test_specs.end();
     }
-    void internal_async(const std::string& test_case_name
-        , typename test_helper<T>::pmf_t func_obj
-        , const chrono::milliseconds& interval)
-    {
-        std::unique_ptr<async_run_data<T>> data(new async_run_data<T>);
-        data->test_suite = this;
-        data->test_case = nullptr;
-        data->test_case_name = test_case_name;
-        if (func_obj)
-        {
-            data->func_obj = std::bind(func_obj, static_cast<T*>(this), std::placeholders::_1);
-            data->user_func_ptr = func_obj;
-        }
-        else
-        {
-            data->func_obj = nullptr;
-            data->user_func_ptr = nullptr;
-        }
-        data->interval = (int)interval.count();
-        std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
-        tthread::lock_guard<tthread::mutex> lg(d_wait_threads_mutex);
-        d_threads_to_wait.push_back(thread);
-    }
-    static void s_async_thread_proc(void* p)
-    {
-        std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
-        try {
-            suite* _this = data->test_suite;
-            test_run_spec<T>& test = _this->instance(data->test_case_name);
-            if (test.state() != test_run_state::ongoing)
-            {
-                test.complete(test_outcome::fail);
-                return;
-            }
-            try {
-                if (test.execute(data.release()))
-                    _this->after();
-            }
-            catch (... ) {
-                test.complete(test_outcome::fail);
-            }
-        }
-        catch (... ) {
-        }
-    }
 
 private:
     tthread::mutex d_mutex;
@@ -468,10 +393,7 @@ private:
     logger d_logger;
     std::vector<test_result> d_results;
     chrono::milliseconds d_default_timeout;
-    tthread::mutex d_wait_threads_mutex;
-    std::list<std::shared_ptr<tthread::thread>> d_threads_to_wait;
-    tthread::mutex d_cancel_threads_mutex;
-    std::list<std::shared_ptr<tthread::thread>> d_threads_to_cancel;
+    std::list<std::shared_ptr<tthread::thread>> d_threads;
 };
 
 }

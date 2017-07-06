@@ -39,6 +39,7 @@ public:
     * This method logs data with desired log level.
     */
     void log(log_level, std::string);
+    void log_formatted(log_level log_level, const std::string fmt_str, ...);
 private:
     tthread::mutex d_mutex;
     log_level d_loglevel;
@@ -47,46 +48,5 @@ private:
 };
 }
 }
-
-#ifndef FUNCLOG
-#ifndef WIN32
-#include <sys/time.h>
-inline unsigned GetTickCount()
-{
-        struct timeval tv;
-        if(gettimeofday(&tv, NULL) != 0)
-                return 0;
-
-        return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
-#endif
-
-//#define ENABLE_FUNCLOG
-
-class ScopeLog
-{
-    std::string name;
-    std::string suffix;
-public:
-    ScopeLog(const std::string& name, const std::string& suffix=""): name(name), suffix(suffix)
-    {
-        printf("%08u ENTER %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
-    }
-    ~ScopeLog()
-    {
-        printf("%08u LEAVE %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
-    }
-};
-#ifdef ENABLE_FUNCLOG
-#   define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
-#   define FUNCLOG2(suffix) ScopeLog __func_log__(__FUNCTION__,suffix)
-#   define SCOPELOG(name) ScopeLog __scope_log__(name)
-#else
-#   define FUNCLOG
-#   define FUNCLOG2(suffix)
-#   define SCOPELOG(name)
-#endif
-#endif
-
 
 #endif // !INC_LIBG2FASTH_LOGGER_H

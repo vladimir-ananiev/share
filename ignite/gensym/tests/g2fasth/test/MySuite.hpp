@@ -23,10 +23,6 @@ public:
     void async_test_func_obj(const std::string&);
     void async_test_uncontrolled(const std::string&);
 
-    void timer_test(const std::string&);     // Main test method
-    void timer_func_obj(const std::string&); // Timer functional object
-    void timer_monitor(const std::string&);  // Some async helper just for demo
-
 private:
     const int d_iParam;
     const std::string d_sParam;
