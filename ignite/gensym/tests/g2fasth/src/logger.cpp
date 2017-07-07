@@ -25,9 +25,8 @@ void logger::add_output_stream(std::ostream *output_stream, log_level level)
     d_outputStreams.push_back(stream_info);
 }
 
-void logger::log(log_level log_level, std::string text)
+void logger::internal_log(log_level log_level, std::string text)
 {
-    tthread::lock_guard<tthread::mutex> lg(d_mutex);
     // If the log level passed is greater then permissible log level of suite, quit.
     if (log_level > d_loglevel)
     {
@@ -54,6 +53,12 @@ void logger::log(log_level log_level, std::string text)
             ptr_stream->flush();
         }
     }
+}
+
+void logger::log(log_level log_level, std::string text)
+{
+    tthread::lock_guard<tthread::mutex> lg(d_mutex);
+    internal_log(log_level, text);
 }
 
 bool logger::write(const char* data, bool written, std::ostream* stream)
@@ -91,5 +96,5 @@ void logger::log_formatted(log_level log_level, const std::string fmt_str, ...)
             break;
     }
 
-    log(log_level, std::string(formatted.get()));
+    internal_log(log_level, std::string(formatted.get()));
 }

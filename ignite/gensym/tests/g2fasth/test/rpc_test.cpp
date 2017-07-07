@@ -282,6 +282,7 @@ void prepare_test_3227();
 void prepare_test_3228();
 void prepare_test_3229();
 void prepare_test_3230();
+void prepare_test_4161(bool);
 
 int main(int argc, char **argv) {
     g2_options options;
@@ -292,6 +293,7 @@ int main(int argc, char **argv) {
     if (argc > 1)
     {
         printf("Arg 1 = %s\n", argv[1]);
+        char* a; for (a=argv[1]; *a && *a!='-'; a++); *a = 0;
         int tmp = strtol(argv[1], nullptr, 10);
         if (tmp)
           port_num = tmp;
@@ -324,6 +326,10 @@ int main(int argc, char **argv) {
             prepare_test_3229();
         else if (test_code == "3230")
             prepare_test_3230();
+        else if (test_code == "4161-1")
+            prepare_test_4161(false);
+        else if (test_code == "4161-2")
+            prepare_test_4161(true);
     }
     else
     {
@@ -400,4 +406,114 @@ void prepare_test_3230()
     gsi.declare_g2_variable<int>("NOT-REGISTERED");
 }
 
+// Base handler class for "TEST-FUNC" function
+class TestFuncHandler: public gsi_rpc_handler<TestFuncHandler>
+{
+public:
+    TestFuncHandler()
+    {
+        // Set TestFuncHandler::generic_handler() as initial RPC handling function
+        set_function_name("TEST-FUNC");
+    }
+    static bool test_mode;
+};
+bool TestFuncHandler::test_mode = false;
 
+// Real handler class for "TEST-FUNC" function
+class RealTestFuncHandler: public TestFuncHandler
+{
+protected:
+    void handler(const g2_arguments& in_args, g2_arguments& out_args) override
+    {
+        puts(__FUNCTION__);
+
+        // Get function IN arguments
+        int N = get_variable_value<int>(in_args[0]);
+        std::string str = get_variable_value<std::string>(in_args[1]);
+
+        // Do something
+        // Here we just concatenate the second (string) argument N times (where N is the first argument)
+        std::string result = "";
+        for (int i=0; i<N; i++)
+            result = result + str;
+
+        // Put 'result' to OUT arguments
+        out_args.resize(1);
+        out_args[0] = create_variable<std::string>(result);
+    }
+    bool filter() override
+    {
+        // Return true in real mode
+        return !test_mode;
+    }
+};
+
+// Mock handler class for "TEST-FUNC" function
+class MockTestFuncHandler: public TestFuncHandler
+{
+protected:
+    void handler(const g2_arguments& in_args, g2_arguments& out_args) override
+    {
+        puts(__FUNCTION__);
+
+        // Get function IN arguments
+        int N = get_variable_value<int>(in_args[0]);
+        std::string str = get_variable_value<std::string>(in_args[1]);
+
+        // Do something
+        // Here we just concatenate the second (string) argument N times (where N is the first argument)
+        std::string result = "";
+        for (int i=0; i<N; i++)
+            result = result + str;
+        // And add "MOCK" suffix
+        result += "MOCK";
+
+        // Put 'result' to OUT arguments
+        out_args.resize(1);
+        out_args[0] = create_variable<std::string>(result);
+    }
+    bool filter() override
+    {
+        // Return true in test(mock) mode
+        return test_mode;
+    }
+};
+
+// Handler class for "SIMPLE-FUNC" function
+class SimpleFuncHandler: public gsi_rpc_handler<SimpleFuncHandler>
+{
+friend class gsi_rpc_handler<SimpleFuncHandler>;
+protected:
+    void handler(const g2_arguments& in_args, g2_arguments& out_args) override
+    {
+        puts(__FUNCTION__);
+    }
+public:
+    SimpleFuncHandler()
+    {
+        // Set SimpleFuncHandler::generic_handler() as initial RPC handling function
+        set_function_name("SIMPLE-FUNC");
+    }
+};
+
+
+void prepare_test_4161(bool test_mode)
+{
+    // Real handler
+    std::shared_ptr<RealTestFuncHandler> real_handler = std::make_shared<RealTestFuncHandler>();
+    // Having a pointer to handler object we can make any configuring with it
+
+    // Mock handler
+    std::shared_ptr<MockTestFuncHandler> mock_handler = std::make_shared<MockTestFuncHandler>();
+    // Having a pointer to handler object we can make any configuring with it
+
+    // Add both handlers
+    TestFuncHandler::add_handler(real_handler);
+    TestFuncHandler::add_handler(mock_handler);
+
+    // Real or mock(test) mode
+    TestFuncHandler::test_mode = test_mode;
+
+    // Simple function
+    SimpleFuncHandler::add_handler(std::make_shared<SimpleFuncHandler>());
+}

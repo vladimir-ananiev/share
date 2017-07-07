@@ -2,6 +2,7 @@
 #define INC_LIB_GSI_H
 
 #include <gsi_main.h>
+#include <gsi_misc.h>
 #include "logger.hpp"
 #include "gsi_callbacks.h"
 #include "tinythread.h"
@@ -76,7 +77,7 @@ public:
 
     virtual g2_variable* clone() { return nullptr; }
     virtual void get_val(gsi_registered_item item) {}
-    virtual void set_val(gsi_registered_item item) {}
+    virtual void set_val(gsi_registered_item item, int count=1) {}
 
     g2_type dec_type;
     g2_type reg_type;
@@ -104,7 +105,7 @@ struct g2_typed_variable : public g2_variable {
     /**
     * Sets value of registered variable from GSI.
     */
-    virtual void set_val(gsi_registered_item item);
+    virtual void set_val(gsi_registered_item item, int count=1);
 
     /**
     * Assigns the default value to G2 variable which will be returned always.
@@ -179,17 +180,17 @@ template <>
 inline void g2_typed_variable<double>::get_val(gsi_registered_item item) { gsi_set_flt(item, value()); }
 
 template <>
-inline void g2_typed_variable<int>::set_val(gsi_registered_item item) { assign_temp_value(int_of(item)); }
+inline void g2_typed_variable<int>::set_val(gsi_registered_item item, int count) { assign_temp_value(int_of(item),count); }
 template <>
 #if defined(GSI_USE_WIDE_STRING_API)
-inline void g2_typed_variable<std::string>::set_val(gsi_registered_item item) { assign_temp_value(libgsi::c_string(str_of(item))); }
+inline void g2_typed_variable<std::string>::set_val(gsi_registered_item item, int count) { assign_temp_value(libgsi::c_string(str_of(item)),count); }
 #else
-inline void g2_typed_variable<std::string>::set_val(gsi_registered_item item) { assign_temp_value(str_of(item)); }
+inline void g2_typed_variable<std::string>::set_val(gsi_registered_item item, int count) { assign_temp_value(str_of(item),count); }
 #endif
 template <>
-inline void g2_typed_variable<bool>::set_val(gsi_registered_item item) { assign_temp_value(!!log_of(item)); }
+inline void g2_typed_variable<bool>::set_val(gsi_registered_item item, int count) { assign_temp_value(!!log_of(item),count); }
 template <>
-inline void g2_typed_variable<double>::set_val(gsi_registered_item item) { assign_temp_value(flt_of(item)); }
+inline void g2_typed_variable<double>::set_val(gsi_registered_item item, int count) { assign_temp_value(flt_of(item),count); }
 
   struct g2_remotefn {
     gsi_function_handle_type handle;
@@ -756,6 +757,112 @@ template <>
 inline bool libgsi::check_type<bool>(g2_type type) { return type == g2_logical; }
 template <>
 inline bool libgsi::check_type<double>(g2_type type) { return type == g2_float; }
+
+template <class T>
+class gsi_rpc_handler
+{
+    gsi_rpc_handler(const gsi_rpc_handler&) {}
+    gsi_rpc_handler& operator=(const gsi_rpc_handler&) {}
+
+    static std::list<std::shared_ptr<T>> handlers;
+
+    static void generic_handler(gsi_item rpc_args[], gsi_int count, call_identifier_type call_index);
+protected:
+    gsi_rpc_handler() {}
+    static bool set_function_name(const std::string& func_name);
+    template<typename VT>
+    static std::shared_ptr<g2_variable> create_variable(VT value);
+    template<typename VT>
+    VT get_variable_value(std::shared_ptr<g2_variable> var);
+    typedef std::vector<std::shared_ptr<g2_variable>> g2_arguments;
+    virtual void handler(const g2_arguments& in_args, g2_arguments& out_args) {};
+    virtual bool filter() { return true; }
+public:
+    static void add_handler(std::shared_ptr<T> handler);
+};
+template <class T>
+std::list<std::shared_ptr<T>> gsi_rpc_handler<T>::handlers;
+template <class T>
+void gsi_rpc_handler<T>::generic_handler(gsi_item rpc_args[], gsi_int count, call_identifier_type call_index)
+{
+    // Save function arguments from gsi_item array to g2_variable (smart pointer) vector
+    g2_arguments in_args((size_t)count);
+    for (size_t i=0; i<(size_t)count; i++)
+    {
+        std::shared_ptr<g2_variable> arg;
+        gsi_int type = type_of(rpc_args[i]);
+        if (type == GSI_INTEGER_TAG)
+            arg = std::shared_ptr<g2_variable>(new g2_typed_variable<int>(false));
+        else if (type == GSI_FLOAT64_TAG)
+            arg = std::shared_ptr<g2_variable>(new g2_typed_variable<double>(false));
+        else if (type == GSI_LOGICAL_TAG)
+            arg = std::shared_ptr<g2_variable>(new g2_typed_variable<bool>(false));
+        else if (type == GSI_STRING_TAG || type == GSI_SYMBOL_TAG)
+        {
+            arg = std::shared_ptr<g2_variable>(new g2_typed_variable<std::string>(false));
+            arg->reg_type = (g2_type)type;
+        }
+        else
+            continue;
+        arg->set_val(rpc_args[i], handlers.size());
+        in_args[i] = arg;
+    }
+
+    // Call all handler objects (with filtering)
+    g2_arguments out_args;
+    std::for_each(handlers.begin(), handlers.end(), [&](const std::shared_ptr<T>& handler)
+    {
+        if (!handler->filter())
+            return;
+        out_args.clear();
+        handler->handler(in_args, out_args);
+    });
+
+    // Save output data from g2_variable (smart pointer) vector to gsi_item array
+    gsi_item* items = nullptr;
+    if (out_args.size())
+    {
+        items = gsi_make_items((gsi_int)out_args.size());
+        for (size_t i=0; i<out_args.size(); i++)
+            out_args[i]->get_val(items[i]);
+    }
+
+    // Return data and control to G2
+    gsi_rpc_return_values(items, (gsi_int)out_args.size(), call_index, current_context);
+
+    // Free gsi_item array (if needed)
+    for (size_t i=0; i<out_args.size(); i++)
+        gsirtl_free_i_or_v_contents(items[i]);
+    if (items)
+        gsi_reclaim_items(items);
+}
+template <class T>
+bool gsi_rpc_handler<T>::set_function_name(const std::string& func_name)
+{
+    libgsi& gsi = libgsi::getInstance();
+    return gsi.declare_g2_function(func_name, T::generic_handler);
+}
+template <class T>
+void gsi_rpc_handler<T>::add_handler(std::shared_ptr<T> handler)
+{
+    handlers.push_back(handler);
+}
+
+template <class T>
+template<typename VT>
+std::shared_ptr<g2_variable> gsi_rpc_handler<T>::create_variable(VT value)
+{
+    std::shared_ptr<g2_variable> var = std::shared_ptr<g2_variable>(new g2_typed_variable<VT>(false));
+    ((g2_typed_variable<std::string>*)var.get())->assign_temp_value(value, 1);
+    return var;
+}
+
+template <class T>
+template<typename VT>
+VT gsi_rpc_handler<T>::get_variable_value(std::shared_ptr<g2_variable> var)
+{
+    return ((g2_typed_variable<VT>*)var.get())->value();
+}
 
 }
 }

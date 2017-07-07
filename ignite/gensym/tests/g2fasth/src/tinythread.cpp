@@ -261,16 +261,17 @@ bool thread::join(const chrono::milliseconds& timeout) //  timeout in ms
   return in_time;
 }
 
-void thread::cancel()
+bool thread::cancel()
 {
   if (!joinable())
-    return;
+    return false;
 #if defined(_TTHREAD_WIN32_)
   TerminateThread(native_handle(), 0);
 #elif defined(_TTHREAD_POSIX_)
   pthread_cancel(native_handle());
 #endif
   detach();
+  return true;
 }
 
 void thread::make_cancel_safe()

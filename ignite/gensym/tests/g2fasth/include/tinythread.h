@@ -562,7 +562,7 @@ class thread {
     bool join(const chrono::milliseconds& timeout);
 
     /// Cancel the thread.
-    void cancel();
+    bool cancel();
     /// Prevent segmentation fault in Linux after pthread_cancel()
     /// Should be called in cancelled thread
     static void make_cancel_safe();

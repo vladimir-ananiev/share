@@ -76,6 +76,19 @@ public:
         // Complete test case
         complete_test_case(test_case_name, test_outcome::pass);
     }
+    void test_async_itself(const std::string& test_case_name)
+    {
+        output += "<ENTER>";
+        static bool async = false;
+        if (!async)
+        {
+            async = true;
+            output += "<SYNC>";
+            return go_async(test_case_name);
+        }
+        output += "<ASYNC>";
+        complete_test_case(test_case_name, test_outcome::pass);
+    }
     std::string output;
     std::list<std::shared_ptr<tthread::thread>> threads;
 };
@@ -84,6 +97,7 @@ TEST_CASE("Test Suite should run async test in finite time") {
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario1();
     test_async.execute();
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(2000));
     auto results = test_async.get_results();
     REQUIRE(results[0].outcome() == test_outcome::pass);
 }
@@ -134,5 +148,14 @@ void test_case_fail_thread(void* p)
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
     // Complete test case
     data->suite->complete_test_case(data->test_case_name, test_outcome::fail);
+}
+
+TEST_CASE("Async test with initial test case as async functional object.") {
+    TestAsyncScenarios test_async;
+    test_async.run(&TestAsyncScenarios::test_async_itself, "test_async_itself");
+    test_async.execute();
+    auto results = test_async.get_results();
+    REQUIRE(results[0].outcome() == test_outcome::pass);
+    REQUIRE(test_async.output == "<ENTER><SYNC><ENTER><ASYNC>");
 }
 
