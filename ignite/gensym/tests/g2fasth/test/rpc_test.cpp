@@ -88,7 +88,7 @@ void rpc_exit(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
 void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 {
-    string test_code(str_of(rpc_args[0]));
+    std::string test_code(str_of(rpc_args[0]));
 
     printf("rpc_test(%s)\n", test_code.c_str());
 
@@ -96,7 +96,7 @@ void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
     rts.execute();
 
-    string result = rts.get_results()[0].outcome() == test_outcome::pass ? "pass" : "fail";
+    std::string result = rts.get_results()[0].outcome() == test_outcome::pass ? "pass" : "fail";
 
     gsi_set_str(rpc_args[0], (char*)result.c_str());
     gsi_rpc_return_values(rpc_args, 1, call_index, current_context);
@@ -104,8 +104,8 @@ void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
 void rpc_declare_variable(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 {
-    string var_name(str_of(rpc_args[0]));
-    string var_type(str_of(rpc_args[1]));
+    std::string var_name(str_of(rpc_args[0]));
+    std::string var_type(str_of(rpc_args[1]));
 
     printf("rpc_declare_variable(%s:%s)\n", var_name.c_str(), var_type.c_str());
 
@@ -118,7 +118,7 @@ void rpc_declare_variable(gsi_item rpc_args[],gsi_int count,call_identifier_type
     else if (var_type == "logical")
         gsi.declare_g2_variable<bool>(var_name);
     else if (var_type == "string" || var_type == "text")
-        gsi.declare_g2_variable<string>(var_name);
+        gsi.declare_g2_variable<std::string>(var_name);
 
     gsi_rpc_return_values(NULL, 0, call_index, current_context);
 }
@@ -282,7 +282,7 @@ void prepare_test_3227();
 void prepare_test_3228();
 void prepare_test_3229();
 void prepare_test_3230();
-void prepare_test_4161(bool);
+void prepare_test_4161_4164(bool);
 
 int main(int argc, char **argv) {
     g2_options options;
@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
     if (argc > 2)
     {
         printf("Arg 2 = %s\n", argv[2]);
-        string test_code = argv[2];
+        std::string test_code = argv[2];
 
         if (test_code == "3226")
             prepare_test_3226();
@@ -326,10 +326,10 @@ int main(int argc, char **argv) {
             prepare_test_3229();
         else if (test_code == "3230")
             prepare_test_3230();
-        else if (test_code == "4161-1")
-            prepare_test_4161(false);
-        else if (test_code == "4161-2")
-            prepare_test_4161(true);
+        else if (test_code=="4161-1" || test_code=="4162-1" || test_code=="4163-1" || test_code=="4164-1")
+            prepare_test_4161_4164(false);
+        else if (test_code=="4161-2" || test_code=="4162-2" || test_code=="4163-2" || test_code=="4164-2")
+            prepare_test_4161_4164(true);
     }
     else
     {
@@ -441,8 +441,12 @@ protected:
         out_args.resize(1);
         out_args[0] = create_variable<std::string>(result);
     }
-    bool filter() override
+    bool filter(const g2_arguments& in_args) override
     {
+        // Check N argument
+        int N = get_variable_value<int>(in_args[0]);
+        if (N < 0)
+            return false;
         // Return true in real mode
         return !test_mode;
     }
@@ -472,10 +476,34 @@ protected:
         out_args.resize(1);
         out_args[0] = create_variable<std::string>(result);
     }
-    bool filter() override
+    bool filter(const g2_arguments& in_args) override
     {
+        // Check N argument
+        int N = get_variable_value<int>(in_args[0]);
+        if (N < 0)
+            return false;
         // Return true in test(mock) mode
         return test_mode;
+    }
+};
+
+// Second mock handler class for "TEST-FUNC" function
+class SecondMockTestFuncHandler: public TestFuncHandler
+{
+protected:
+    void handler(const g2_arguments& in_args, g2_arguments& out_args) override
+    {
+        puts(__FUNCTION__);
+
+        // Prepare OUT arguments
+        out_args.resize(1);
+        out_args[0] = create_variable<std::string>("Number is negative");
+    }
+    bool filter(const g2_arguments& in_args) override
+    {
+        // Check N argument
+        int N = get_variable_value<int>(in_args[0]);
+        return N < 0;
     }
 };
 
@@ -497,8 +525,10 @@ public:
 };
 
 
-void prepare_test_4161(bool test_mode)
+void prepare_test_4161_4164(bool test_mode)
 {
+    puts(__FUNCTION__);
+
     // Real handler
     std::shared_ptr<RealTestFuncHandler> real_handler = std::make_shared<RealTestFuncHandler>();
     // Having a pointer to handler object we can make any configuring with it
@@ -507,9 +537,14 @@ void prepare_test_4161(bool test_mode)
     std::shared_ptr<MockTestFuncHandler> mock_handler = std::make_shared<MockTestFuncHandler>();
     // Having a pointer to handler object we can make any configuring with it
 
-    // Add both handlers
+    // Second mock handler
+    std::shared_ptr<SecondMockTestFuncHandler> mock2_handler = std::make_shared<SecondMockTestFuncHandler>();
+    // Having a pointer to handler object we can make any configuring with it
+
+    // Add all handlers
     TestFuncHandler::add_handler(real_handler);
     TestFuncHandler::add_handler(mock_handler);
+    TestFuncHandler::add_handler(mock2_handler);
 
     // Real or mock(test) mode
     TestFuncHandler::test_mode = test_mode;

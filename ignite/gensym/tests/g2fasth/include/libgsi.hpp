@@ -758,26 +758,39 @@ inline bool libgsi::check_type<bool>(g2_type type) { return type == g2_logical; 
 template <>
 inline bool libgsi::check_type<double>(g2_type type) { return type == g2_float; }
 
+/**
+* Class template for creating G2 RPC function handlers, including mocks.
+* One class should be created (instantiated from this template) for one RPC function.
+*/
 template <class T>
 class gsi_rpc_handler
 {
     gsi_rpc_handler(const gsi_rpc_handler&) {}
     gsi_rpc_handler& operator=(const gsi_rpc_handler&) {}
 
+    // List of handler objects
     static std::list<std::shared_ptr<T>> handlers;
-
+    // Generic RPC handler which calls handler objects
     static void generic_handler(gsi_item rpc_args[], gsi_int count, call_identifier_type call_index);
 protected:
     gsi_rpc_handler() {}
+    // Method for declaring particular class (T) to be a handler for some RPC function
+    // Typically should be called in T constructor
     static bool set_function_name(const std::string& func_name);
+    // Method template for creating output argument in a handler
     template<typename VT>
     static std::shared_ptr<g2_variable> create_variable(VT value);
+    // Method template for getting a value from input argument in a handler
     template<typename VT>
     VT get_variable_value(std::shared_ptr<g2_variable> var);
+    // Type for argument set (avtually - vector)
     typedef std::vector<std::shared_ptr<g2_variable>> g2_arguments;
+    // Handler itself (with input and output arguments) which should be overridden in T class
     virtual void handler(const g2_arguments& in_args, g2_arguments& out_args) {};
-    virtual bool filter() { return true; }
+    // Filter method (with input arguments) which could be overridden in T class
+    virtual bool filter(const g2_arguments& in_args) { return true; }
 public:
+    // Method for adding handler instance into processing
     static void add_handler(std::shared_ptr<T> handler);
 };
 template <class T>
@@ -812,7 +825,7 @@ void gsi_rpc_handler<T>::generic_handler(gsi_item rpc_args[], gsi_int count, cal
     g2_arguments out_args;
     std::for_each(handlers.begin(), handlers.end(), [&](const std::shared_ptr<T>& handler)
     {
-        if (!handler->filter())
+        if (!handler->filter(in_args))
             return;
         out_args.clear();
         handler->handler(in_args, out_args);

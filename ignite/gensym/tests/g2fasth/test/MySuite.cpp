@@ -3,10 +3,6 @@
 #include "tinythread.h"
 #include "libgsi.hpp"
 
-
-using namespace std;
-using namespace g2::fasth;
-
 struct thread_data
 {
     MySuite* suite;
@@ -15,7 +11,7 @@ struct thread_data
 
 void uncontrolled_test_case_thread(void* p);
 
-MySuite::MySuite(string suite_name, int iParam, std::string sParam, bool bParam, std::string logger_path)
+MySuite::MySuite(std::string suite_name, int iParam, std::string sParam, bool bParam, std::string logger_path)
     : suite(suite_name
         , test_order::implied
         , g2::fasth::log_level::VERBOSE
@@ -46,7 +42,7 @@ void MySuite::after()
     get_logger().log(g2::fasth::log_level::VERBOSE, "Calling after().");
 }
 
-void MySuite::first_test(const std::string& test_case_name)
+void MySuite::first_test(const std::string& test_case_name, test_run_reason reason)
 {
     char buf[25];
     sprintf(buf, "%d", d_iParam);
@@ -57,17 +53,17 @@ void MySuite::first_test(const std::string& test_case_name)
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::second_test(const std::string& test_case_name)
+void MySuite::second_test(const std::string& test_case_name, test_run_reason reason)
 {
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::third_test(const std::string& test_case_name)
+void MySuite::third_test(const std::string& test_case_name, test_run_reason reason)
 {
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::fourth_test(const std::string& test_case_name)
+void MySuite::fourth_test(const std::string& test_case_name, test_run_reason reason)
 {
     thread_data* data = new thread_data;
     data->suite = this;
@@ -77,28 +73,28 @@ void MySuite::fourth_test(const std::string& test_case_name)
     d_threads.push_back(ptr);
 }
 
-void MySuite::timeout_pass_test(const std::string& test_case_name)
+void MySuite::timeout_pass_test(const std::string& test_case_name, test_run_reason reason)
 {
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(3000));
 
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::timeout_fail_test(const std::string& test_case_name)
+void MySuite::timeout_fail_test(const std::string& test_case_name, test_run_reason reason)
 {
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(3000));
 
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::default_timeout_pass_test(const std::string& test_case_name)
+void MySuite::default_timeout_pass_test(const std::string& test_case_name, test_run_reason reason)
 {
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(4000));
 
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::default_timeout_fail_test(const std::string& test_case_name)
+void MySuite::default_timeout_fail_test(const std::string& test_case_name, test_run_reason reason)
 {
     tthread::this_thread::sleep_for(tthread::chrono::milliseconds(6000));
 
@@ -143,7 +139,7 @@ void MySuite::setup_test_track()
     run(&MySuite::timer_test, "Timer-test");
 }
 
-void MySuite::sync_test(const std::string& test_case_name)
+void MySuite::sync_test(const std::string& test_case_name, test_run_reason reason)
 {
     FUNCLOG;
 
@@ -152,7 +148,7 @@ void MySuite::sync_test(const std::string& test_case_name)
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::async_test_controlled(const std::string& test_case_name)
+void MySuite::async_test_controlled(const std::string& test_case_name, test_run_reason reason)
 {
     FUNCLOG;
 
@@ -161,7 +157,7 @@ void MySuite::async_test_controlled(const std::string& test_case_name)
         , &MySuite::async_test_func_obj  // Pointer to asynchronous functional object
     );
 }
-void MySuite::async_test_func_obj(const std::string& test_case_name)
+void MySuite::async_test_func_obj(const std::string& test_case_name, test_run_reason reason)
 {
     FUNCLOG;
 
@@ -170,7 +166,7 @@ void MySuite::async_test_func_obj(const std::string& test_case_name)
     complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void MySuite::async_test_uncontrolled(const std::string& test_case_name)
+void MySuite::async_test_uncontrolled(const std::string& test_case_name, test_run_reason reason)
 {
     FUNCLOG;
 
@@ -205,7 +201,7 @@ int get_count()
     return timer_count;
 }
 
-void MySuite::timer_test(const std::string& test_case_name)
+void MySuite::timer_test(const std::string& test_case_name, test_run_reason reason)
 {
     FUNCLOG;
 
@@ -223,14 +219,14 @@ void MySuite::timer_test(const std::string& test_case_name)
     );
 }
 
-void MySuite::timer_func_obj(const std::string& test_case_name)
+void MySuite::timer_func_obj(const std::string& test_case_name, test_run_reason reason)
 {
     //FUNCLOG;
 
     printf("Count = %d\n", dec_count());
 }
 
-void MySuite::timer_monitor(const std::string& test_case_name)
+void MySuite::timer_monitor(const std::string& test_case_name, test_run_reason reason)
 {
     FUNCLOG;
 

@@ -13,7 +13,7 @@ public:
     {
         run(&TestJUnit::first_test, "first_test");
     };
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         if (first_test_should_fail)
         {

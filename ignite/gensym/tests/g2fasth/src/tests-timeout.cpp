@@ -18,13 +18,13 @@ public:
         sleep_time = 0;
     };
 
-    void sync_test(const std::string& test_case_name)
+    void sync_test(const std::string& test_case_name, test_run_reason reason)
     {
         tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep_time));
         
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void async_test(const std::string& test_case_name)
+    void async_test(const std::string& test_case_name, test_run_reason reason)
     {
         go_async(test_case_name, &TestTimeouts::sync_test);
     }

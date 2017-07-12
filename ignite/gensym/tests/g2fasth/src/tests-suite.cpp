@@ -28,18 +28,18 @@ public:
         run(&TestSuite::third_test, "third_test");
         run(&TestSuite::third_test, "third_test_again");
     };
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         firstCalled = true;
         ++testExecutionCounterOFirstTest;
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void second_test(const std::string& test_case_name)
+    void second_test(const std::string& test_case_name, test_run_reason reason)
     {
         secondCalled = true;
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void third_test(const std::string& test_case_name)
+    void third_test(const std::string& test_case_name, test_run_reason reason)
     {
         ++testExecutionCounterOThirdTest;
         complete_test_case(test_case_name, test_outcome::pass);
@@ -66,11 +66,11 @@ public:
         run(&TestAfterConstruct::first_test, "first_test");
         run(&TestAfterConstruct::second_test, "second_test").after_success_of(&TestAfterConstruct::first_test);
     };
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         complete_test_case(test_case_name, test_outcome::fail);
     }
-    void second_test(const std::string& test_case_name)
+    void second_test(const std::string& test_case_name, test_run_reason reason)
     {
         second_test_executed = true;
         complete_test_case(test_case_name, test_outcome::pass);

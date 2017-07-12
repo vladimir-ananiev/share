@@ -66,6 +66,8 @@ SET (TESTSRCS include/catch.hpp
 	src/tests-async.cpp
 	src/tests-timeout.cpp
 	src/tests-timer.cpp
+	src/tests-reason.cpp
+	src/tests-test-order.cpp
 	src/tests-execution-engine.cpp
 	src/tests-before-after.cpp
 	src/tests-g2-options.cpp

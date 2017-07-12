@@ -16,7 +16,7 @@ public:
         output += "One";
         run(&TestOne::first_test, "first_test");
     };
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
@@ -32,7 +32,7 @@ public:
         output += "Two";
         run(&TestTwo::first_test, "first_test");
     };
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }

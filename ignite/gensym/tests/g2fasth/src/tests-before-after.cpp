@@ -22,12 +22,12 @@ public:
         run(&TestBeforeAfterConstruct::first_test, "first_test");
         run(&TestBeforeAfterConstruct::second_test, "second_test");
     };
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         output.push_back("first_test");
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void second_test(const std::string& test_case_name)
+    void second_test(const std::string& test_case_name, test_run_reason reason)
     {
         output.push_back("second_test");
         complete_test_case(test_case_name, test_outcome::pass);

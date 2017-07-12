@@ -103,22 +103,22 @@ public:
         run(&TestExecutionScenario1::third_test, "C");
         run(&TestExecutionScenario1::second_test, "B").after(instance("C"));
     }
-    void first_test(const std::string& test_case_name)
+    void first_test(const std::string& test_case_name, test_run_reason reason)
     {
         output += "<A>";
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void second_test(const std::string& test_case_name)
+    void second_test(const std::string& test_case_name, test_run_reason reason)
     {
         output += "<B>";
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void third_test(const std::string& test_case_name)
+    void third_test(const std::string& test_case_name, test_run_reason reason)
     {
         output += "<C>";
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void fourth_test(const std::string& test_case_name)
+    void fourth_test(const std::string& test_case_name, test_run_reason reason)
     {
         output += "<D>";
         complete_test_case(test_case_name, test_outcome::fail);
