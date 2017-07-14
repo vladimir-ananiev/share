@@ -11,6 +11,7 @@
 #include <fstream>
 #include <ios>
 #include "test_run_spec.hpp"
+#include "g2fasth_typedefs.hpp"
 #include "junit_report.hpp"
 #include "base_suite.hpp"
 
@@ -54,10 +55,11 @@ public:
     suite(std::string suite_name, test_order test_order,
         log_level suite_log_level, std::string logger_file_path = "", 
         const chrono::milliseconds& default_timeout=chrono::milliseconds(G2FASTH_DEFAULT_TIMEOUT))
-        : base_suite(suite_name)
+            : base_suite(suite_name)
         , d_order(test_order)
         , d_logger(suite_log_level)
         , d_default_timeout(default_timeout)
+        , d_state(not_yet)
     {
         if (d_default_timeout.count() > G2FASTH_MAX_TIMEOUT)
             d_default_timeout = chrono::milliseconds(G2FASTH_MAX_TIMEOUT);
@@ -122,8 +124,8 @@ public:
     */
     inline test_run_spec<T>& run(typename test_helper<T>::pmf_t ptr_test_case
             , const std::string& test_case_name, const chrono::milliseconds& timeout=chrono::milliseconds(0)) {
-        std::function<void(const std::string&,test_run_reason)> action =
-            std::bind(ptr_test_case, static_cast<T*>(this), std::placeholders::_1, std::placeholders::_2);
+        std::function<void(const std::string&)> action =
+            std::bind(ptr_test_case, static_cast<T*>(this), std::placeholders::_1);
         auto ptr = schedule(action, test_case_name, ptr_test_case, timeout);
         assert(ptr != nullptr);
         return *(ptr.get());
@@ -302,15 +304,26 @@ protected:
         instance(test_case_name).stop_timer(timer_func_obj);
     }
 private:
+    void set_state(test_run_state new_state) override
+    {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        d_state = new_state;
+    }
+    test_run_state state() override
+    {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        return d_state;
+    }
     inline std::string start(std::string report_file_name) {
         d_logger.log(log_level::SILENT, "Starting execution of test suite : " + get_suite_name());
         // Execute tests
         while(true)
         {
             check_test_timeouts();
-            auto test_case = get_test_case_to_execute();
-            if (test_case)
+            auto test_case_it = get_test_case_to_execute();
+            if (test_case_it != d_test_specs.end())
             {
+                std::shared_ptr<test_run_spec<T>> test_case = *test_case_it;
                 before();
                 if (test_case->execute())
                     after();
@@ -331,35 +344,11 @@ private:
         d_logger.log(log_level::SILENT, "Done executing test suite : " + get_suite_name());
         return generate_junit_report(report_file_name);
     }
-    std::shared_ptr<test_run_spec<T>> get_test_case_to_execute() {
+    typename std::list<std::shared_ptr<test_run_spec<T>>>::iterator get_test_case_to_execute() {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        auto it = std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+        return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->state()==test_run_state::not_yet && spec->valid_to_execute();
         });
-        if (it == d_test_specs.end())
-            return nullptr;
-        if (test_order::implied == d_order)
-            return *it;
-        int count = 0;
-        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
-                count++;
-        });
-        if (1 == count)
-            return *it;
-        srand (time(NULL));
-        int rnd = rand() % count;
-        int i = 0;
-        std::shared_ptr<test_run_spec<T>> test_case;
-        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
-            {
-                if (i == rnd)
-                    test_case = spec;
-                i++;
-            }
-        });
-        return test_case;
     }
     inline std::string generate_junit_report(std::string report_file_name) {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
@@ -376,7 +365,7 @@ private:
         return test_suite.to_xml(report_file_name);
     }
     typename std::shared_ptr<test_run_spec<T>> schedule(
-            std::function<void(const std::string&,test_run_reason)> test_action,
+            std::function<void(const std::string&)> test_action,
             const std::string& test_case_name,
             typename test_helper<T>::pmf_t ptr_test_case,
             const chrono::milliseconds& timeout) {
@@ -446,7 +435,7 @@ private:
         data->test_case_name = test_case_name;
         if (func_obj)
         {
-            data->func_obj = std::bind(func_obj, static_cast<T*>(this), std::placeholders::_1, std::placeholders::_2);
+            data->func_obj = std::bind(func_obj, static_cast<T*>(this), std::placeholders::_1);
             data->user_func_ptr = func_obj;
         }
         else
@@ -455,7 +444,6 @@ private:
             data->user_func_ptr = nullptr;
         }
         data->interval = (int)interval.count();
-        data->reason = 0==data->interval ? test_run_reason::async : test_run_reason::timeout;
         std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_async_thread_proc, data.release());
         tthread::lock_guard<tthread::mutex> lg(d_wait_threads_mutex);
         d_threads_to_wait.push_back(thread);
@@ -494,6 +482,7 @@ private:
     std::list<std::shared_ptr<tthread::thread>> d_threads_to_wait;
     tthread::mutex d_cancel_threads_mutex;
     std::list<std::shared_ptr<tthread::thread>> d_threads_to_cancel;
+    test_run_state d_state;
 };
 
 }

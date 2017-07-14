@@ -13,14 +13,14 @@ public:
         timer_count = 10;
     };
 
-    void test_case_1(const std::string& test_case_name, test_run_reason reason)
+    void test_case_1(const std::string& test_case_name)
     {
         start_timer(test_case_name
             , chrono::milliseconds(100)
             , &TestTimers::timer_func_obj
         );
     }
-    void timer_func_obj(const std::string& test_case_name, test_run_reason reason)
+    void timer_func_obj(const std::string& test_case_name)
     {
         if (!--timer_count)
             complete_test_case(test_case_name, test_outcome::pass);

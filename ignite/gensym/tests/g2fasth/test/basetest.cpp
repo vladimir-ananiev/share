@@ -19,8 +19,8 @@ int main(int argc, char **argv) {
     auto suiteB = std::make_shared<MySuite>("SuiteB", 100, "AnotherValue", true, options.get_output_file());
 
     g2::fasth::test_agent agent;
-    agent.run_suite(suiteA).after(suiteB);
-    //agent.run_suite(suiteB);
+    agent.schedule_suite(suiteB);
+    agent.schedule_suite(suiteA, suiteB);
 
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.continuous(true);

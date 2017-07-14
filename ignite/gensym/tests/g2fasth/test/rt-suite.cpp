@@ -40,36 +40,36 @@ void RegTestSuite::setup_test_track()
         run(&RegTestSuite::test_3230, "Test-3230");
 }
 
-void RegTestSuite::test_3227(const std::string& test_case_name, test_run_reason reason)
+void RegTestSuite::test_3227(const std::string& test_case_name)
 {
-    std::list<std::string> not_dec_vars = gsi.get_not_declared_variables();
+    list<string> not_dec_vars = gsi.get_not_declared_variables();
     if (not_dec_vars.size())
         complete_test_case(test_case_name, test_outcome::fail);
     else
         complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void RegTestSuite::test_3228(const std::string& test_case_name, test_run_reason reason)
+void RegTestSuite::test_3228(const std::string& test_case_name)
 {
-    std::list<std::string> not_dec_vars = gsi.get_not_declared_variables();
+    list<string> not_dec_vars = gsi.get_not_declared_variables();
     if (not_dec_vars.size())
         complete_test_case(test_case_name, test_outcome::fail);
     else
         complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void RegTestSuite::test_3229(const std::string& test_case_name, test_run_reason reason)
+void RegTestSuite::test_3229(const std::string& test_case_name)
 {
-    std::list<std::string> not_reg_vars = gsi.get_not_registered_variables();
+    list<string> not_reg_vars = gsi.get_not_registered_variables();
     if (not_reg_vars.size())
         complete_test_case(test_case_name, test_outcome::fail);
     else
         complete_test_case(test_case_name, test_outcome::pass);
 }
 
-void RegTestSuite::test_3230(const std::string& test_case_name, test_run_reason reason)
+void RegTestSuite::test_3230(const std::string& test_case_name)
 {
-    std::list<std::string> not_reg_vars = gsi.get_not_registered_variables();
+    list<string> not_reg_vars = gsi.get_not_registered_variables();
     if (not_reg_vars.size())
         complete_test_case(test_case_name, test_outcome::fail);
     else

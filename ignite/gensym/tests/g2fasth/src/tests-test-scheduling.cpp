@@ -15,15 +15,15 @@ public:
         run(&TestSuiteCycle::first_test, "third_test").after(&TestSuiteCycle::second_test);
         run(&TestSuiteCycle::first_test, "first_test").after(&TestSuiteCycle::third_test);
     };
-    void first_test(const std::string& test_case_name, test_run_reason reason)
+    void first_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void second_test(const std::string& test_case_name, test_run_reason reason)
+    void second_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void third_test(const std::string& test_case_name, test_run_reason reason)
+    void third_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
@@ -41,15 +41,15 @@ public:
         run(&TestSuiteAfterSuccessOfCycle::first_test, "third_test").after_success_of(&TestSuiteAfterSuccessOfCycle::second_test);
         run(&TestSuiteAfterSuccessOfCycle::first_test, "first_test").after_success_of(&TestSuiteAfterSuccessOfCycle::third_test);
     };
-    void first_test(const std::string& test_case_name, test_run_reason reason)
+    void first_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void second_test(const std::string& test_case_name, test_run_reason reason)
+    void second_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void third_test(const std::string& test_case_name, test_run_reason reason)
+    void third_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
@@ -65,7 +65,7 @@ public:
         run(&TestSuiteSameTestCase::first_test, "first_test");
         run(&TestSuiteSameTestCase::first_test, "first_test").after(&TestSuiteSameTestCase::first_test);
     };
-    void first_test(const std::string& test_case_name, test_run_reason reason)
+    void first_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
@@ -81,7 +81,7 @@ public:
         run(&TestSuiteSameSuccessTestCase::first_test, "first_test");
         run(&TestSuiteSameSuccessTestCase::first_test, "first_test").after_success_of(&TestSuiteSameSuccessTestCase::first_test);
     };
-    void first_test(const std::string& test_case_name, test_run_reason reason)
+    void first_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }

@@ -15,15 +15,15 @@ public:
         run(&TestSuiteComplexCycle::third_test, "third_test").after(&TestSuiteComplexCycle::second_test);
         run(&TestSuiteComplexCycle::first_test, "first_test").after_success_of(&TestSuiteComplexCycle::third_test);
     };
-    void first_test(const std::string& test_case_name, test_run_reason reason)
+    void first_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void second_test(const std::string& test_case_name, test_run_reason reason)
+    void second_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void third_test(const std::string& test_case_name, test_run_reason reason)
+    void third_test(const std::string& test_case_name)
     {
         complete_test_case(test_case_name, test_outcome::pass);
     }

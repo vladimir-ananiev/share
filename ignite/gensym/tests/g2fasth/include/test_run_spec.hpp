@@ -33,10 +33,9 @@ struct async_run_data
     suite<T>* test_suite;
     test_run_spec<T>* test_case;
     std::string test_case_name;
-    std::function<void(const std::string&,test_run_reason)> func_obj;
+    std::function<void(const std::string&)> func_obj;
     typename test_helper<T>::pmf_t user_func_ptr;
     int interval;
-    test_run_reason reason;
 };
 /**
 * This class is responsible storing relationships with other tests.
@@ -50,9 +49,8 @@ public :
     * Default constructor.
     * This is only used by unit test cases for testing purposes.
     */
-    test_run_spec() : d_action(nullptr)
-        , ptr_test_case(nullptr)
-        , d_after(nullptr)
+    test_run_spec() :
+        d_after(nullptr)
         , d_after_success_of(nullptr)
         , d_after_run(nullptr)
         , d_after_success_of_run(nullptr)
@@ -68,7 +66,7 @@ public :
     * @param test_case_name test case name.
     * @param ptr_test_case pointer to test case.
     */
-    test_run_spec(std::function<void(const std::string&,test_run_reason)> action, const std::string& name, typename test_helper<T>::pmf_t ptr_test_case
+    test_run_spec(std::function<void(const std::string&)> action, const std::string& name, typename test_helper<T>::pmf_t ptr_test_case
         , suite<T>* suite, const chrono::milliseconds& timeout)
         : d_action(action)
         , ptr_test_case(ptr_test_case)
@@ -254,7 +252,6 @@ public :
                 data->func_obj = d_action;
                 data->user_func_ptr = ptr_test_case;
                 data->interval = 0;
-                data->reason = test_run_reason::start;
                 timeout = d_timeout;
                 d_state = test_run_state::ongoing;
                 d_start = clock();
@@ -462,13 +459,13 @@ private:
                     if (stop)
                         break;
                     clock_t begin = clock();
-                    data->func_obj(data->test_case_name, data->reason);
+                    data->func_obj(data->test_case_name);
                     action_elapsed_ms = (int)(double(clock() - begin) / CLOCKS_PER_SEC * 1000);
                 } while(true);
             }
             else
             {   // simple action call
-                data->func_obj(data->test_case_name, data->reason);
+                data->func_obj(data->test_case_name);
             }
         }
         catch(...) {
@@ -482,7 +479,7 @@ private:
     test_run_state d_state;
     test_outcome d_outcome;
     typename test_helper<T>::pmf_t ptr_test_case;
-    std::function<void(const std::string&,test_run_reason)> d_action;
+    std::function<void(const std::string&)> d_action;
     typename test_helper<T>::pmf_t d_after;
     typename test_helper<T>::pmf_t d_after_success_of;
     test_run_spec* d_after_run;
@@ -492,7 +489,12 @@ private:
     chrono::milliseconds d_timeout;
     clock_t d_start;
     std::list<typename test_helper<T>::pmf_t> d_stop_timers;
+    //static thread_canceller s_thread_waiter;
+
 };
+
+//template <class T>
+//thread_canceller test_run_spec<T>::s_thread_waiter;
 
 }
 }

@@ -48,13 +48,13 @@ public:
         run(&TestAsyncScenarios::second_test, "second_test");
         run(&TestAsyncScenarios::first_test, "first_test").after_success_of(&TestAsyncScenarios::second_test);
     };
-    void first_test(const std::string& test_case_name, test_run_reason reason)
+    void first_test(const std::string& test_case_name)
     {
         output += "<A>";
         // Go async with TestAsyncScenarios::first_test_func_obj()
         go_async(test_case_name, &TestAsyncScenarios::first_test_func_obj);
     }
-    void second_test(const std::string& test_case_name, test_run_reason reason)
+    void second_test(const std::string& test_case_name)
     {
         std::unique_ptr<thread_data> data(new thread_data);
         data->suite = this;
@@ -64,19 +64,19 @@ public:
         std::shared_ptr<tthread::thread> ptr = std::make_shared<tthread::thread>(test_case_fail_thread, data.release());
         threads.push_back(ptr);
     }
-    void third_test(const std::string& test_case_name, test_run_reason reason)
+    void third_test(const std::string& test_case_name)
     {
         output += "<C>";
         // Complete test case
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void first_test_func_obj(const std::string& test_case_name, test_run_reason reason)
+    void first_test_func_obj(const std::string& test_case_name)
     {
         tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
         // Complete test case
         complete_test_case(test_case_name, test_outcome::pass);
     }
-    void test_async_itself(const std::string& test_case_name, test_run_reason reason)
+    void test_async_itself(const std::string& test_case_name)
     {
         output += "<ENTER>";
         static bool async = false;

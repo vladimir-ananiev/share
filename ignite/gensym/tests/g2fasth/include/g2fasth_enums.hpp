@@ -32,15 +32,6 @@ enum test_run_state {
 };
 
 /**
-* This enum specifies test run reasons
-*/
-enum test_run_reason {
-    start
-    , async
-    , timeout
-};
-
-/**
 * This enum controls the level of logging to be done.
 */
 enum log_level
