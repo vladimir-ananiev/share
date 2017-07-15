@@ -52,8 +52,8 @@ public:
     * @param logger_file_path absolute path to the log file.
     * @param suite_log_level log level of test suite.
     */
-    suite(std::string suite_name, test_order test_order,
-        log_level suite_log_level, std::string logger_file_path = "", 
+    suite(std::string suite_name, test_order test_order=test_order::random,
+        log_level suite_log_level=log_level::VERBOSE, std::string logger_file_path = "", 
         const chrono::milliseconds& default_timeout=chrono::milliseconds(G2FASTH_DEFAULT_TIMEOUT))
             : base_suite(suite_name)
         , d_order(test_order)
@@ -320,10 +320,9 @@ private:
         while(true)
         {
             check_test_timeouts();
-            auto test_case_it = get_test_case_to_execute();
-            if (test_case_it != d_test_specs.end())
+            auto test_case = get_test_case_to_execute();
+            if (test_case)
             {
-                std::shared_ptr<test_run_spec<T>> test_case = *test_case_it;
                 before();
                 if (test_case->execute())
                     after();
@@ -344,11 +343,35 @@ private:
         d_logger.log(log_level::SILENT, "Done executing test suite : " + get_suite_name());
         return generate_junit_report(report_file_name);
     }
-    typename std::list<std::shared_ptr<test_run_spec<T>>>::iterator get_test_case_to_execute() {
+    std::shared_ptr<test_run_spec<T>> get_test_case_to_execute() {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        return std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+        auto it = std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
             return spec->state()==test_run_state::not_yet && spec->valid_to_execute();
         });
+        if (it == d_test_specs.end())
+            return nullptr;
+        if (test_order::implied == d_order)
+            return *it;
+        int count = 0;
+        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
+                count++;
+        });
+        if (1 == count)
+            return *it;
+        srand (time(NULL));
+        int rnd = rand() % count;
+        int i = 0;
+        std::shared_ptr<test_run_spec<T>> test_case;
+        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
+            {
+                if (i == rnd)
+                    test_case = spec;
+                i++;
+            }
+        });
+        return test_case;
     }
     inline std::string generate_junit_report(std::string report_file_name) {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);

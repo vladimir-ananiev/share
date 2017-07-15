@@ -88,7 +88,7 @@ void rpc_exit(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
 void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 {
-    string test_code(str_of(rpc_args[0]));
+    std::string test_code(str_of(rpc_args[0]));
 
     printf("rpc_test(%s)\n", test_code.c_str());
 
@@ -96,7 +96,7 @@ void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
     rts.execute();
 
-    string result = rts.get_results()[0].outcome() == test_outcome::pass ? "pass" : "fail";
+    std::string result = rts.get_results()[0].outcome() == test_outcome::pass ? "pass" : "fail";
 
     gsi_set_str(rpc_args[0], (char*)result.c_str());
     gsi_rpc_return_values(rpc_args, 1, call_index, current_context);
@@ -104,8 +104,8 @@ void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 
 void rpc_declare_variable(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 {
-    string var_name(str_of(rpc_args[0]));
-    string var_type(str_of(rpc_args[1]));
+    std::string var_name(str_of(rpc_args[0]));
+    std::string var_type(str_of(rpc_args[1]));
 
     printf("rpc_declare_variable(%s:%s)\n", var_name.c_str(), var_type.c_str());
 
@@ -118,7 +118,7 @@ void rpc_declare_variable(gsi_item rpc_args[],gsi_int count,call_identifier_type
     else if (var_type == "logical")
         gsi.declare_g2_variable<bool>(var_name);
     else if (var_type == "string" || var_type == "text")
-        gsi.declare_g2_variable<string>(var_name);
+        gsi.declare_g2_variable<std::string>(var_name);
 
     gsi_rpc_return_values(NULL, 0, call_index, current_context);
 }
@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
     if (argc > 2)
     {
         printf("Arg 2 = %s\n", argv[2]);
-        string test_code = argv[2];
+        std::string test_code = argv[2];
 
         if (test_code == "3226")
             prepare_test_3226();

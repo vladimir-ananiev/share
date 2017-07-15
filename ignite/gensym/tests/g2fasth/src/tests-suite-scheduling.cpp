@@ -86,7 +86,7 @@ TEST_CASE("After construct should throw exception if same suite is scheduled as 
 TEST_CASE("Run all not dependent suites one by one") {
     output.clear();
     std::string expected;
-    test_agent agent;
+    test_agent agent(test_order::implied);
     for (int i=0; i<10; i++)
     {
         std::string str = std::to_string((long long)i);
@@ -95,6 +95,21 @@ TEST_CASE("Run all not dependent suites one by one") {
     }
     agent.execute();
     REQUIRE(output == expected);
+}
+
+TEST_CASE("Run all not dependent suites randomly") {
+    output.clear();
+    std::string expected;
+    test_agent agent(test_order::random);
+    for (int i=0; i<10; i++)
+    {
+        std::string str = std::to_string((long long)i);
+        expected += str;
+        agent.schedule_suite(std::make_shared<SimpleTestSuite>(str,0));
+    }
+    agent.execute();
+    REQUIRE(output.length() == expected.length());
+    REQUIRE(output != expected);
 }
 
 TEST_CASE("Run all not dependent suites in parallel") {

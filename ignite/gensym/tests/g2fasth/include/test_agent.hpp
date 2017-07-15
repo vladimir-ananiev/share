@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "base_suite.hpp"
 #include "tinythread.h"
+#include <ctime>
 
 namespace g2 {
 namespace fasth {
@@ -17,7 +18,8 @@ namespace fasth {
 class test_agent {
     typedef std::pair<std::shared_ptr<base_suite>,std::shared_ptr<base_suite>> suite_pair;
 public:
-    test_agent(): d_concurrency(tthread::thread::hardware_concurrency())
+    test_agent(test_order order=test_order::random): d_order(order)
+        , d_concurrency(tthread::thread::hardware_concurrency())
     {
         d_concurrency = tthread::thread::hardware_concurrency();
         d_max_concurrency = d_concurrency * 4;
@@ -74,10 +76,6 @@ public:
         d_concurrency = new_concurrency;
     }
 private:
-    tthread::mutex d_mutex;
-    std::list<suite_pair> d_suites;
-    unsigned d_concurrency;
-    unsigned d_max_concurrency;
     bool is_suite_scheduled(std::shared_ptr<base_suite> suite_to_run) {
         return std::find_if(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
             return sp.first->get_suite_name() == suite_to_run->get_suite_name();
@@ -112,8 +110,31 @@ private:
         });
         if (d_suites.end() == it)
             return nullptr;
-        it->first->set_state(ongoing);
-        return it->first;
+        std::shared_ptr<base_suite> suite = it->first;
+        if (test_order::random == d_order)
+        {
+            int count = 0;
+            std::for_each(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
+                if (sp.first->state()==not_yet && (!sp.second || sp.second->state()==done))
+                    count++;
+            });
+            if (count > 1)
+            {
+                srand(time(NULL));
+                int rnd = rand() % count;
+                int i = 0;
+                std::for_each(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
+                    if (sp.first->state()==not_yet && (!sp.second || sp.second->state()==done))
+                    {
+                        if (i == rnd)
+                            suite = sp.first;
+                        i++;
+                    }
+                });
+            }
+        }
+        suite->set_state(ongoing);
+        return suite;
     }
     bool are_all_suites_completed()
     {
@@ -122,6 +143,12 @@ private:
             return sp.first->state() != done;
         }) == d_suites.end();
     }
+private:
+    tthread::mutex d_mutex;
+    std::list<suite_pair> d_suites;
+    unsigned d_concurrency;
+    unsigned d_max_concurrency;
+    test_order d_order;
 };
 }
 }

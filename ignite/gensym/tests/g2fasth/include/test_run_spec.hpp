@@ -49,8 +49,9 @@ public :
     * Default constructor.
     * This is only used by unit test cases for testing purposes.
     */
-    test_run_spec() :
-        d_after(nullptr)
+    test_run_spec() : d_action(nullptr)
+        , ptr_test_case(nullptr)
+        , d_after(nullptr)
         , d_after_success_of(nullptr)
         , d_after_run(nullptr)
         , d_after_success_of_run(nullptr)
@@ -489,12 +490,7 @@ private:
     chrono::milliseconds d_timeout;
     clock_t d_start;
     std::list<typename test_helper<T>::pmf_t> d_stop_timers;
-    //static thread_canceller s_thread_waiter;
-
 };
-
-//template <class T>
-//thread_canceller test_run_spec<T>::s_thread_waiter;
 
 }
 }

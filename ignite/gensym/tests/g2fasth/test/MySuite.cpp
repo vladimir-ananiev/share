@@ -4,7 +4,6 @@
 #include "libgsi.hpp"
 
 
-using namespace std;
 using namespace g2::fasth;
 
 struct thread_data
@@ -15,10 +14,10 @@ struct thread_data
 
 void uncontrolled_test_case_thread(void* p);
 
-MySuite::MySuite(string suite_name, int iParam, std::string sParam, bool bParam, std::string logger_path)
+MySuite::MySuite(std::string suite_name, int iParam, std::string sParam, bool bParam, std::string logger_path)
     : suite(suite_name
         , test_order::implied
-        , g2::fasth::log_level::VERBOSE
+        , log_level::VERBOSE
         , logger_path
         , chrono::milliseconds(5000)) // default timeout
     , d_iParam(iParam)
@@ -38,21 +37,21 @@ MySuite::~MySuite()
 
 void MySuite::before()
 {
-    get_logger().log(g2::fasth::log_level::VERBOSE, "Calling before().");
+    get_logger().log(log_level::VERBOSE, "Calling before().");
 }
 
 void MySuite::after()
 {
-    get_logger().log(g2::fasth::log_level::VERBOSE, "Calling after().");
+    get_logger().log(log_level::VERBOSE, "Calling after().");
 }
 
 void MySuite::first_test(const std::string& test_case_name)
 {
     char buf[25];
     sprintf(buf, "%d", d_iParam);
-    get_logger().log(g2::fasth::log_level::VERBOSE, std::string("Value of d_sParam is ") + buf);
-    get_logger().log(g2::fasth::log_level::VERBOSE, std::string("Value of d_sParam is ") + d_sParam);
-    get_logger().log(g2::fasth::log_level::VERBOSE, std::string("Value of d_bParam is ") + (d_bParam ? "true" : "false"));
+    get_logger().log(log_level::VERBOSE, std::string("Value of d_sParam is ") + buf);
+    get_logger().log(log_level::VERBOSE, std::string("Value of d_sParam is ") + d_sParam);
+    get_logger().log(log_level::VERBOSE, std::string("Value of d_bParam is ") + (d_bParam ? "true" : "false"));
     
     complete_test_case(test_case_name, test_outcome::pass);
 }
@@ -107,7 +106,7 @@ void MySuite::default_timeout_fail_test(const std::string& test_case_name)
 
 void MySuite::setup_test_track()
 {
-    g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
+    libgsi& gsiobj = libgsi::getInstance();
 
     gsiobj.ignore_not_declared_variables();
     gsiobj.ignore_not_registered_variables();
@@ -127,7 +126,7 @@ void MySuite::setup_test_track()
     run(&MySuite::fourth_test, "AsyncTest");
     clone(first, "TestA Again");
 
-    g2::fasth::libgsi::getInstance().declare_g2_variable<int>("INTEGER_VAR_NAME");
+    libgsi::getInstance().declare_g2_variable<int>("INTEGER_VAR_NAME");
 
     run(&MySuite::timeout_pass_test, "Timeout-Pass-Test", chrono::milliseconds(4000)); // timeout 4000 ms
     run(&MySuite::timeout_fail_test, "Timeout-Fail-Test", chrono::milliseconds(2000)); // timeout 2000 ms
