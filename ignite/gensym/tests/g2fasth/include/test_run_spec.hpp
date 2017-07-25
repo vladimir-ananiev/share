@@ -22,6 +22,29 @@ namespace fasth {
 
 namespace chrono = tthread::chrono;
 
+class timing
+{
+typedef long long time;
+    time t;
+public:
+    timing() { start(); }
+    operator time() { return t; }
+    time start() { return t = get_time(); }
+    int elapsed(time end) { return elapsed(end, t); }
+    int elapsed() { return elapsed(get_time(), t); }
+    static int elapsed(time end, time start) { return int(end-start)/1000000; }
+    static time get_time()
+    {
+#ifdef WIN32
+        return (time)GetTickCount() * 1000000;
+#else
+        timespec ts; 
+        clock_gettime(CLOCK_REALTIME, &ts);
+        return (time)ts.tv_sec*1000000000 + ts.tv_nsec;
+#endif
+    }
+};
+
 template <class T>
 class suite;
 template <class T>
@@ -217,8 +240,7 @@ public :
     }
     bool is_timeout(bool lock=true, int* elapsed=nullptr)
     {
-        clock_t now = clock();
-        clock_t start;
+        timing start, now;
         int timeout;
         test_run_state tstate;
         if (lock)
@@ -230,7 +252,7 @@ public :
             d_mutex.unlock();
         if (tstate != test_run_state::ongoing)
             return false;
-        int elapsed_ms = int(double(now - start) / CLOCKS_PER_SEC * 1000 + 0.5);
+        int elapsed_ms = start.elapsed(now);
         //printf("is_timeout(%s): elapsed=%d\n", lock?"ext":"int", elapsed_ms);
         if (elapsed)
             *elapsed = elapsed_ms;
@@ -254,8 +276,8 @@ public :
                 data->user_func_ptr = ptr_test_case;
                 data->interval = 0;
                 timeout = d_timeout;
-                d_state = test_run_state::ongoing;
-                d_start = clock();
+                //d_state = test_run_state::ongoing;
+                d_start.start();
             }
             else
             {
@@ -459,9 +481,9 @@ private:
                     }
                     if (stop)
                         break;
-                    clock_t begin = clock();
+                    timing start;
                     data->func_obj(data->test_case_name);
-                    action_elapsed_ms = (int)(double(clock() - begin) / CLOCKS_PER_SEC * 1000);
+                    action_elapsed_ms = start.elapsed();
                 } while(true);
             }
             else
@@ -488,7 +510,7 @@ private:
     std::function<bool()> guard_condition;
     suite<T>* d_suite;
     chrono::milliseconds d_timeout;
-    clock_t d_start;
+    timing d_start;
     std::list<typename test_helper<T>::pmf_t> d_stop_timers;
 };
 

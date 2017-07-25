@@ -51,6 +51,7 @@ public:
     };
     void setup_test_track_scenario5() override
     {
+        set_parallel(false);
         // B->A (all test cases pass)
         // B->D (some test cases pass)
         run(&TestExecutionScenario1::first_test, "A");
@@ -88,6 +89,7 @@ public:
     };
     void setup_test_track_scenario10() override
     {
+        set_parallel(false);
         // B->A (all test cases pass)
         // B->D (some test cases pass)
         auto &a_run = run(&TestExecutionScenario1::first_test, "A");
@@ -97,11 +99,12 @@ public:
     };
     void setup_test_track_scenario11() override
     {
+        set_parallel(false);
         // C->B->A (all test cases pass)
         run(&TestExecutionScenario1::first_test, "A");
         run(&TestExecutionScenario1::second_test, "B");
         run(&TestExecutionScenario1::third_test, "C");
-        run(&TestExecutionScenario1::second_test, "B").after(instance("C"));
+        run(&TestExecutionScenario1::second_test, "B").after(instance("D"));
     }
     void first_test(const std::string& test_case_name)
     {

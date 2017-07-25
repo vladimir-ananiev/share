@@ -5,6 +5,7 @@
 using namespace g2::fasth;
 
 std::string output = "";
+tthread::mutex mutex;
 
 class TestOne : public suite<TestOne> {
 public:
@@ -41,19 +42,25 @@ public:
 class SimpleTestSuite : public suite<SimpleTestSuite> {
     std::string str;
     int sleep;
-    bool log;
 public:
-    SimpleTestSuite(const std::string& str, int sleep, bool log=false)
+    SimpleTestSuite(const std::string& str, int sleep)
         : suite("SimpleTestSuite"+str, test_order::implied, log_level::SILENT)
-        , str(str), sleep(sleep), log(log)
+        , str(str), sleep(sleep)
     {
     }
     void setup_test_track() override
     {
-        //if (log) printf("%d) Start %s\n", (int)GetTickCount(), str.c_str());
+        {
+            tthread::lock_guard<tthread::mutex> lg(mutex);
+            output += str + ">";
+        }
+        //printf("%d) Start %s\n", (int)GetTickCount(), str.c_str());
         tthread::this_thread::sleep_for(chrono::milliseconds(sleep));
-        //if (log) printf("%d) After %d sleep - %s\n", (int)GetTickCount(), sleep, str.c_str());
-        output += str;
+        //printf("%d) After %d sleep - %s\n", (int)GetTickCount(), sleep, str.c_str());
+        {
+            tthread::lock_guard<tthread::mutex> lg(mutex);
+            output += str + "<";
+        }
     };
 };
 
@@ -90,7 +97,7 @@ TEST_CASE("Run all not dependent suites one by one") {
     for (int i=0; i<10; i++)
     {
         std::string str = std::to_string((long long)i);
-        expected += str;
+        expected += str + ">" + str + "<";
         agent.schedule_suite(std::make_shared<SimpleTestSuite>(str,0));
     }
     agent.execute();
@@ -104,7 +111,7 @@ TEST_CASE("Run all not dependent suites randomly") {
     for (int i=0; i<10; i++)
     {
         std::string str = std::to_string((long long)i);
-        expected += str;
+        expected += str + ">" + str + "<";
         agent.schedule_suite(std::make_shared<SimpleTestSuite>(str,0));
     }
     agent.execute();
@@ -112,51 +119,122 @@ TEST_CASE("Run all not dependent suites randomly") {
     REQUIRE(output != expected);
 }
 
+
 TEST_CASE("Run all not dependent suites in parallel") {
     output.clear();
     std::string expected;
     test_agent agent;
-    for (int i=0; i<10; i++)
+    int count = 4;
+    for (int i=0; i<count; i++)
     {
-        expected += std::to_string((long long)(9-i));
-        agent.schedule_suite(std::make_shared<SimpleTestSuite>(std::to_string((long long)i),(10-i)*100));
+        std::string str = std::to_string((long long)i);
+        agent.schedule_background_suite(std::make_shared<SimpleTestSuite>(str, 3000));
     }
-    agent.set_concurrency(10);
-    agent.execute(true);
-    REQUIRE(output == expected);
+    agent.set_concurrency(count);
+    agent.set_sleep_quantum(chrono::milliseconds(10));
+    agent.execute();
+    REQUIRE(output.length() == count*4);
+    REQUIRE(output.substr(1,1) == ">");
+    REQUIRE(output.substr(3,1) == ">");
+    REQUIRE(output.substr(5,1) == ">");
+    REQUIRE(output.substr(7,1) == ">");
 }
 
-TEST_CASE("Run suites in parallel, when some suites depend on the other ones") {
+TEST_CASE("Run all suites in parallel, when some suites depend on the other ones") {
 
-    std::shared_ptr<base_suite> ts0 = std::make_shared<SimpleTestSuite>("0",100,true);
-    std::shared_ptr<base_suite> ts1 = std::make_shared<SimpleTestSuite>("1",200,true);
-    std::shared_ptr<base_suite> ts2 = std::make_shared<SimpleTestSuite>("2",300,true);
-    std::shared_ptr<base_suite> ts3 = std::make_shared<SimpleTestSuite>("3",400,true);
-    std::shared_ptr<base_suite> ts4 = std::make_shared<SimpleTestSuite>("4",500,true);
-    std::shared_ptr<base_suite> ts5 = std::make_shared<SimpleTestSuite>("5",200,true);
-    std::shared_ptr<base_suite> ts6 = std::make_shared<SimpleTestSuite>("6",250,true);
-    std::shared_ptr<base_suite> ts7 = std::make_shared<SimpleTestSuite>("7",350,true);
-    std::shared_ptr<base_suite> ts8 = std::make_shared<SimpleTestSuite>("8",450,true);
-    std::shared_ptr<base_suite> ts9 = std::make_shared<SimpleTestSuite>("9",550,true);
+    std::shared_ptr<base_suite> ts0 = std::make_shared<SimpleTestSuite>("0",1000);
+    std::shared_ptr<base_suite> ts1 = std::make_shared<SimpleTestSuite>("1",1000);
+    std::shared_ptr<base_suite> ts2 = std::make_shared<SimpleTestSuite>("2",1000);
+    std::shared_ptr<base_suite> ts3 = std::make_shared<SimpleTestSuite>("3",1000);
+    std::shared_ptr<base_suite> ts4 = std::make_shared<SimpleTestSuite>("4",1000);
+    std::shared_ptr<base_suite> ts5 = std::make_shared<SimpleTestSuite>("5",1000);
+    std::shared_ptr<base_suite> ts6 = std::make_shared<SimpleTestSuite>("6",1000);
+    std::shared_ptr<base_suite> ts7 = std::make_shared<SimpleTestSuite>("7",1000);
+    std::shared_ptr<base_suite> ts8 = std::make_shared<SimpleTestSuite>("8",1000);
+    std::shared_ptr<base_suite> ts9 = std::make_shared<SimpleTestSuite>("9",1000);
 
     test_agent agent;
     agent.set_concurrency(10);
+    agent.set_sleep_quantum(chrono::milliseconds(10));
 
-    agent.schedule_suite(ts0);
-    agent.schedule_suite(ts1,ts0);
-    agent.schedule_suite(ts2,ts0);
-    agent.schedule_suite(ts3,ts0);
-    agent.schedule_suite(ts4,ts0);
-    agent.schedule_suite(ts5);
-    agent.schedule_suite(ts6,ts5);
-    agent.schedule_suite(ts7,ts5);
-    agent.schedule_suite(ts8,ts5);
-    agent.schedule_suite(ts9,ts5);
+    agent.schedule_background_suite(ts0);
+    agent.schedule_background_suite(ts1,ts0);
+    agent.schedule_background_suite(ts2,ts0);
+    agent.schedule_background_suite(ts3,ts0);
+    agent.schedule_background_suite(ts4,ts0);
+    agent.schedule_background_suite(ts5);
+    agent.schedule_background_suite(ts6,ts5);
+    agent.schedule_background_suite(ts7,ts5);
+    agent.schedule_background_suite(ts8,ts5);
+    agent.schedule_background_suite(ts9,ts5);
 
     output.clear();
-    agent.execute(true);
+    agent.execute();
 
-    std::string expected = "0512637489";
+    REQUIRE(output.length() == 40);
+    REQUIRE((output.substr(0,4)=="0>5>" || output.substr(0,4)=="5>0>"));
+}
+
+TEST_CASE("Run not dependent suites one by one and in parallel") {
+    output.clear();
+    std::string expected;
+    test_agent agent(test_order::implied);
+    agent.set_concurrency(5);
+    agent.set_sleep_quantum(chrono::milliseconds(10));
+    for (int i=0; i<5; i++)
+    {
+        std::string str = std::to_string((long long)i);
+        expected += str;
+        agent.schedule_suite(std::make_shared<SimpleTestSuite>(str,0));
+    }
+    for (int i=5; i<10; i++)
+    {
+        std::string str = std::to_string((long long)i);
+        expected += str;
+        agent.schedule_background_suite(std::make_shared<SimpleTestSuite>(str,3000));
+    }
+    agent.execute();
+    std::string substr = output.substr(29,10);
+    REQUIRE(output.length() == 40);
+    REQUIRE(substr[0] =='<');
+    REQUIRE(substr[2] =='<');
+    REQUIRE(substr[4] =='<');
+    REQUIRE(substr[6] =='<');
+    REQUIRE(substr[8] =='<');
+}
+
+TEST_CASE("Run dependent suites in parallel and one by one") {
+    std::shared_ptr<base_suite> ts0 = std::make_shared<SimpleTestSuite>("0",0);
+    std::shared_ptr<base_suite> ts1 = std::make_shared<SimpleTestSuite>("1",0);
+    std::shared_ptr<base_suite> ts2 = std::make_shared<SimpleTestSuite>("2",0);
+    std::shared_ptr<base_suite> ts3 = std::make_shared<SimpleTestSuite>("3",0);
+    std::shared_ptr<base_suite> ts4 = std::make_shared<SimpleTestSuite>("4",0);
+    std::shared_ptr<base_suite> ts5 = std::make_shared<SimpleTestSuite>("5",0);
+    std::shared_ptr<base_suite> ts6 = std::make_shared<SimpleTestSuite>("6",0);
+    std::shared_ptr<base_suite> ts7 = std::make_shared<SimpleTestSuite>("7",0);
+    std::shared_ptr<base_suite> ts8 = std::make_shared<SimpleTestSuite>("8",0);
+    std::shared_ptr<base_suite> ts9 = std::make_shared<SimpleTestSuite>("9",0);
+
+    test_agent agent;
+    agent.set_concurrency(5);
+    agent.set_sleep_quantum(chrono::milliseconds(10));
+
+    agent.schedule_background_suite(ts0);
+    agent.schedule_background_suite(ts1,ts0);
+    agent.schedule_background_suite(ts2,ts1);
+    agent.schedule_background_suite(ts3,ts2);
+    agent.schedule_background_suite(ts4,ts3);
+    agent.schedule_suite(ts5,ts4);
+    agent.schedule_suite(ts6,ts5);
+    agent.schedule_suite(ts7,ts6);
+    agent.schedule_suite(ts8,ts7);
+    agent.schedule_suite(ts9,ts8);
+
+    output.clear();
+    agent.execute();
+
+    std::string expected = "0>0<1>1<2>2<3>3<4>4<5>5<6>6<7>7<8>8<9>9<";
     REQUIRE(output == expected);
 }
+
 

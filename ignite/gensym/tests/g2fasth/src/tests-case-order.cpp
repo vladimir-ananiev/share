@@ -9,7 +9,7 @@ public:
     std::string log;
     std::string implied_log;
     TestOrders(test_order order)
-        : suite("TestOrders", order, log_level::NONE)
+        : suite("TestOrders", order, log_level::REGULAR)
     {
         implied_log = "0123456789";
     };
@@ -20,58 +20,62 @@ public:
 
     void test(const std::string& test_case_name)
     {
+        //puts(test_case_name.c_str());
         log += test_case_name;
         complete_test_case(test_case_name, test_outcome::pass);
     }
 };
 
 TEST_CASE("Test order - explicit implied") {
-    TestOrders test_suite(test_order::implied);
-    test_suite.run(&TestOrders::test, "0");
-    test_suite.run(&TestOrders::test, "1");
-    test_suite.run(&TestOrders::test, "2");
-    test_suite.run(&TestOrders::test, "3");
-    test_suite.run(&TestOrders::test, "4");
-    test_suite.run(&TestOrders::test, "5");
-    test_suite.run(&TestOrders::test, "6");
-    test_suite.run(&TestOrders::test, "7");
-    test_suite.run(&TestOrders::test, "8");
-    test_suite.run(&TestOrders::test, "9");
-    test_suite.execute();
-    REQUIRE(test_suite.log == test_suite.implied_log);
+    TestOrders ts(test_order::implied);
+    ts.set_parallel(false);
+    ts.run(&TestOrders::test, "0");
+    ts.run(&TestOrders::test, "1");
+    ts.run(&TestOrders::test, "2");
+    ts.run(&TestOrders::test, "3");
+    ts.run(&TestOrders::test, "4");
+    ts.run(&TestOrders::test, "5");
+    ts.run(&TestOrders::test, "6");
+    ts.run(&TestOrders::test, "7");
+    ts.run(&TestOrders::test, "8");
+    ts.run(&TestOrders::test, "9");
+    ts.execute();
+    REQUIRE(ts.log == ts.implied_log);
 }
 
 TEST_CASE("Test order - explicit random") {
-    TestOrders test_suite(test_order::random);
-    test_suite.run(&TestOrders::test, "0");
-    test_suite.run(&TestOrders::test, "1");
-    test_suite.run(&TestOrders::test, "2");
-    test_suite.run(&TestOrders::test, "3");
-    test_suite.run(&TestOrders::test, "4");
-    test_suite.run(&TestOrders::test, "5");
-    test_suite.run(&TestOrders::test, "6");
-    test_suite.run(&TestOrders::test, "7");
-    test_suite.run(&TestOrders::test, "8");
-    test_suite.run(&TestOrders::test, "9");
-    test_suite.execute();
-    REQUIRE(test_suite.log.length() == test_suite.implied_log.length());
-    REQUIRE(test_suite.log != test_suite.implied_log);
+    TestOrders ts(test_order::random);
+    ts.set_parallel(false);
+    ts.run(&TestOrders::test, "0");
+    ts.run(&TestOrders::test, "1");
+    ts.run(&TestOrders::test, "2");
+    ts.run(&TestOrders::test, "3");
+    ts.run(&TestOrders::test, "4");
+    ts.run(&TestOrders::test, "5");
+    ts.run(&TestOrders::test, "6");
+    ts.run(&TestOrders::test, "7");
+    ts.run(&TestOrders::test, "8");
+    ts.run(&TestOrders::test, "9");
+    ts.execute();
+    REQUIRE(ts.log.length() == ts.implied_log.length());
+    REQUIRE(ts.log != ts.implied_log);
 }
 
 TEST_CASE("Test order - default random") {
-    TestOrders test_suite;
-    test_suite.run(&TestOrders::test, "0");
-    test_suite.run(&TestOrders::test, "1");
-    test_suite.run(&TestOrders::test, "2");
-    test_suite.run(&TestOrders::test, "3");
-    test_suite.run(&TestOrders::test, "4");
-    test_suite.run(&TestOrders::test, "5");
-    test_suite.run(&TestOrders::test, "6");
-    test_suite.run(&TestOrders::test, "7");
-    test_suite.run(&TestOrders::test, "8");
-    test_suite.run(&TestOrders::test, "9");
-    test_suite.execute();
-    REQUIRE(test_suite.log.length() == test_suite.implied_log.length());
-    REQUIRE(test_suite.log != test_suite.implied_log);
+    TestOrders ts;
+    ts.set_parallel(false);
+    ts.run(&TestOrders::test, "0");
+    ts.run(&TestOrders::test, "1");
+    ts.run(&TestOrders::test, "2");
+    ts.run(&TestOrders::test, "3");
+    ts.run(&TestOrders::test, "4");
+    ts.run(&TestOrders::test, "5");
+    ts.run(&TestOrders::test, "6");
+    ts.run(&TestOrders::test, "7");
+    ts.run(&TestOrders::test, "8");
+    ts.run(&TestOrders::test, "9");
+    ts.execute();
+    REQUIRE(ts.log.length() == ts.implied_log.length());
+    REQUIRE(ts.log != ts.implied_log);
 }
 

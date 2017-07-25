@@ -16,10 +16,15 @@ namespace fasth {
 * All suites can be executed via single instruction.
 */
 class test_agent {
-    typedef std::pair<std::shared_ptr<base_suite>,std::shared_ptr<base_suite>> suite_pair;
+    struct suite_pair
+    {
+        std::shared_ptr<base_suite> first, second;
+        bool background;
+        suite_pair(std::shared_ptr<base_suite> f, std::shared_ptr<base_suite> s, bool bg): first(f), second(s), background(bg) {}
+    };
 public:
     test_agent(test_order order=test_order::random): d_order(order)
-        , d_concurrency(tthread::thread::hardware_concurrency())
+        , d_sleep_quantum(100)
     {
         d_concurrency = tthread::thread::hardware_concurrency();
         d_max_concurrency = d_concurrency * 4;
@@ -30,39 +35,45 @@ public:
     {
     }
     /**
-    * This function accepts a pointer to test suite and schedule it.
+    * This function accepts a pointer to test suite and schedule it for sequential execution.
     * Pointer is used as its list is to be maintained.
     * Naked pointer is used for easier syntax of its usage.
     * @param suite_to_run pointer to test suite.
-    * @return instance of test agent.
+    * @param suite_after pointer to test suite after which the scheduled suite will start.
     */
     inline void schedule_suite(std::shared_ptr<base_suite> suite_to_run
         , std::shared_ptr<base_suite> suite_after=nullptr)
     {
-        if (suite_to_run == nullptr)
-            throw std::invalid_argument("Could not schedule nullptr");
-        if (is_suite_scheduled(suite_to_run))
-            throw std::invalid_argument("Could not schedule the suite " + suite_to_run->get_suite_name() + " again.");
-        if (suite_after && !is_suite_scheduled(suite_after))
-            throw std::invalid_argument("Could not schedule the suite " + suite_to_run->get_suite_name() + " to run after a suite that is not scheduled.");
-        d_suites.push_back(suite_pair(suite_to_run,suite_after));
+        internal_schedule_suite(suite_to_run, suite_after, false);
+    }
+    /**
+    * This function accepts a pointer to test suite and schedule it for background execution.
+    * Pointer is used as its list is to be maintained.
+    * Naked pointer is used for easier syntax of its usage.
+    * @param suite_to_run pointer to test suite.
+    * @param suite_after pointer to test suite after which the scheduled suite will start.
+    */
+    inline void schedule_background_suite(std::shared_ptr<base_suite> suite_to_run
+        , std::shared_ptr<base_suite> suite_after=nullptr)
+    {
+        internal_schedule_suite(suite_to_run, suite_after, true);
     }
     /**
     * This function executes all test suites in its queue.
+    * @param parallel Flag that specifies how to run suites: sequentially or concurrently.
     */
-    inline void execute(bool parallel=false) {
+    inline void execute() {
+        auto bg_count = std::count_if(d_suites.begin(), d_suites.end(), [&](suite_pair sp) { return sp.background; });
         int concurrency = d_concurrency;
-        if (d_suites.size() < concurrency)
-            concurrency = d_suites.size();
-        if (concurrency < 2)
-            parallel = false;
-        if (!parallel)
-            return internal_execute();
+        if (bg_count < concurrency)
+            concurrency = bg_count;
         std::list<std::shared_ptr<tthread::thread>> threads;
         for (unsigned i=0; i<concurrency; i++)
-        {
+        {   // Start background suites
             threads.push_back(std::make_shared<tthread::thread>(s_thread_proc, this));
         }
+        if (d_suites.size()-bg_count > 0)
+            internal_execute(false); // Run sequential suites
         while (threads.size())
         {
             threads.front()->join();
@@ -75,7 +86,26 @@ public:
             throw std::invalid_argument("Concurrency could not be more than " + std::to_string((long long)d_max_concurrency));
         d_concurrency = new_concurrency;
     }
+    void set_sleep_quantum(const tthread::chrono::milliseconds& new_quantum)
+    {
+        if (new_quantum.count() > 1000)
+            throw std::invalid_argument("Sleep quantum could not be more than 1 second");
+        if (new_quantum.count() < 1)
+            throw std::invalid_argument("Sleep quantum could not be less than 1 millisecond");
+        d_sleep_quantum = new_quantum;
+    }
 private:
+    inline void internal_schedule_suite(std::shared_ptr<base_suite> suite_to_run
+        , std::shared_ptr<base_suite> suite_after, bool background)
+    {
+        if (suite_to_run == nullptr)
+            throw std::invalid_argument("Could not schedule nullptr");
+        if (is_suite_scheduled(suite_to_run))
+            throw std::invalid_argument("Could not schedule the suite " + suite_to_run->get_suite_name() + " again.");
+        if (suite_after && !is_suite_scheduled(suite_after))
+            throw std::invalid_argument("Could not schedule the suite " + suite_to_run->get_suite_name() + " to run after a suite that is not scheduled.");
+        d_suites.push_back(suite_pair(suite_to_run,suite_after,background));
+    }
     bool is_suite_scheduled(std::shared_ptr<base_suite> suite_to_run) {
         return std::find_if(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
             return sp.first->get_suite_name() == suite_to_run->get_suite_name();
@@ -84,63 +114,52 @@ private:
     static void s_thread_proc(void* p)
     {
         try {
-            ((test_agent*)p)->internal_execute();
+            ((test_agent*)p)->internal_execute(true);
         } catch (...) {}
     }
-    void internal_execute()
+    void internal_execute(bool background)
     {
         while (true)
         {
             std::shared_ptr<base_suite> suite;
-            while (suite = get_suite_to_run())
+            while (suite = get_suite_to_run(background))
             {
                 suite->execute();
                 suite->set_state(done);
             }
-            if (are_all_suites_completed())
+            if (are_all_suites_completed(background))
                 break;
-            tthread::this_thread::sleep_for(tthread::chrono::milliseconds(10));
+            tthread::this_thread::sleep_for(d_sleep_quantum);
         }
     }
-    std::shared_ptr<base_suite> get_suite_to_run()
+    std::shared_ptr<base_suite> get_suite_to_run(bool background)
     {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        auto it = std::find_if(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
-            return sp.first->state()==not_yet && (!sp.second || sp.second->state()==done);
+        std::list<suite_pair> suites;
+        std::for_each(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
+            if (sp.background==background && sp.first->state()==not_yet && (!sp.second || sp.second->state()==done))
+                suites.push_back(sp);
         });
-        if (d_suites.end() == it)
+        if (0 == suites.size())
             return nullptr;
-        std::shared_ptr<base_suite> suite = it->first;
-        if (test_order::random == d_order)
+        std::shared_ptr<base_suite> suite = suites.front().first;
+        if (test_order::random==d_order && suites.size()>1)
         {
-            int count = 0;
-            std::for_each(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
-                if (sp.first->state()==not_yet && (!sp.second || sp.second->state()==done))
-                    count++;
-            });
-            if (count > 1)
-            {
-                srand(time(NULL));
-                int rnd = rand() % count;
-                int i = 0;
-                std::for_each(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
-                    if (sp.first->state()==not_yet && (!sp.second || sp.second->state()==done))
-                    {
-                        if (i == rnd)
-                            suite = sp.first;
-                        i++;
-                    }
-                });
-            }
+            srand(time(NULL));
+            int rnd = rand() % suites.size();
+            auto it = suites.begin();
+            for (int i=0; i<rnd; i++)
+                it++;
+            suite = it->first;
         }
         suite->set_state(ongoing);
         return suite;
     }
-    bool are_all_suites_completed()
+    bool are_all_suites_completed(bool background)
     {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return std::find_if(d_suites.begin(), d_suites.end(), [&](suite_pair sp) {
-            return sp.first->state() != done;
+            return sp.background==background && sp.first->state() != done;
         }) == d_suites.end();
     }
 private:
@@ -149,6 +168,7 @@ private:
     unsigned d_concurrency;
     unsigned d_max_concurrency;
     test_order d_order;
+    tthread::chrono::milliseconds d_sleep_quantum;
 };
 }
 }

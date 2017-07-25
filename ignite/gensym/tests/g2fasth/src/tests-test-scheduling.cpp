@@ -106,3 +106,36 @@ TEST_CASE("Test suite should throw exception if same test is scheduled as depend
     TestSuiteSameSuccessTestCase testsuite;
     REQUIRE_THROWS(testsuite.setup_test_track());
 }
+
+class ParallelTestCases : public suite<ParallelTestCases> {
+public:
+    tthread::mutex d_mutex;
+    std::string log;
+    ParallelTestCases()
+        :suite("ParallelTestCases", test_order::implied, log_level::NONE) {
+    };
+    void test(const std::string& test_case_name)
+    {
+        add_log(">");
+        tthread::this_thread::sleep_for(chrono::milliseconds(3000));
+        complete_test_case(test_case_name, test_outcome::pass);
+        add_log("<");
+    }
+    void add_log(const std::string& s)
+    {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        log += s;
+    }
+};
+
+TEST_CASE("Parallel test case execution") {
+    ParallelTestCases ts;
+
+    for (long long i=1; i<=4; i++)
+        ts.run(&ParallelTestCases::test, std::to_string(i));
+
+    ts.execute("");
+
+    REQUIRE(ts.log.length() == 8);
+    REQUIRE(ts.log.substr(0,4) == ">>>>");
+}

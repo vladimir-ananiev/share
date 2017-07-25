@@ -60,6 +60,7 @@ public:
         , d_logger(suite_log_level)
         , d_default_timeout(default_timeout)
         , d_state(not_yet)
+        , d_parallel(true)
     {
         if (d_default_timeout.count() > G2FASTH_MAX_TIMEOUT)
             d_default_timeout = chrono::milliseconds(G2FASTH_MAX_TIMEOUT);
@@ -78,7 +79,7 @@ public:
                 cancelled++;
             d_threads_to_cancel.pop_front();
         }
-        clock_t start = clock();
+        timing start;
         while (d_threads_to_wait.size())
         {
             d_threads_to_wait.front()->join();
@@ -87,13 +88,16 @@ public:
 #ifndef WIN32
         if (cancelled)
         {   // Let cancelled threads (in Linux) to stop
-            int elapsed = int(double(clock() - start) / CLOCKS_PER_SEC * 1000 + 0.5);
-            int sleep = 10000 - elapsed;
+            int sleep = 10000 - start.elapsed();
             //printf("Wait %d ms for cancelled threads(%d)...\n", sleep, cancelled);
             if (sleep > 0)
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
         }
 #endif
+    }
+    void set_parallel(bool parallel)
+    {
+        d_parallel = parallel;
     }
     /**
     * This function executes test suite. First it setups test track and then starts execution.
@@ -317,6 +321,45 @@ private:
     inline std::string start(std::string report_file_name) {
         d_logger.log(log_level::SILENT, "Starting execution of test suite : " + get_suite_name());
         // Execute tests
+        bool parallel = d_parallel;
+        int concurrency = 16;
+        if (d_test_specs.size() < concurrency)
+            concurrency = d_test_specs.size();
+        if (concurrency < 2)
+            parallel = false;
+        if (parallel)
+        {
+            std::list<std::shared_ptr<tthread::thread>> threads;
+            for (unsigned i=0; i<concurrency; i++)
+            {
+                threads.push_back(std::make_shared<tthread::thread>(s_start_thread_proc, this));
+            }
+            while (threads.size())
+            {
+                threads.front()->join();
+                threads.pop_front();
+            }
+        }
+        else
+        {
+            internal_start();
+        }
+        extract_result();
+        for (auto result = d_results.begin(); result != d_results.end(); ++result)
+        {
+            d_logger.log(log_level::REGULAR, "Outcome of " + result->test_case_name() + " is " + test_outcome_str[(int)result->outcome()] + ".");
+        }
+        d_logger.log(log_level::SILENT, "Done executing test suite : " + get_suite_name());
+        return generate_junit_report(report_file_name);
+    }
+    static void s_start_thread_proc(void* p)
+    {
+        try {
+            ((suite<T>*)p)->internal_start();
+        } catch (...) {}
+    }
+    void internal_start()
+    {
         while(true)
         {
             check_test_timeouts();
@@ -335,42 +378,27 @@ private:
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(100));
             }
         }
-        extract_result();
-        for (auto result = d_results.begin(); result != d_results.end(); ++result)
-        {
-            d_logger.log(log_level::REGULAR, "Outcome of " + result->test_case_name() + " is " + test_outcome_str[(int)result->outcome()] + ".");
-        }
-        d_logger.log(log_level::SILENT, "Done executing test suite : " + get_suite_name());
-        return generate_junit_report(report_file_name);
     }
     std::shared_ptr<test_run_spec<T>> get_test_case_to_execute() {
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        auto it = std::find_if(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            return spec->state()==test_run_state::not_yet && spec->valid_to_execute();
+        std::list<std::shared_ptr<test_run_spec<T>>> test_cases;
+        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
+            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
+                test_cases.push_back(spec);
         });
-        if (it == d_test_specs.end())
+        if (0 == test_cases.size())
             return nullptr;
-        if (test_order::implied == d_order)
-            return *it;
-        int count = 0;
-        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
-                count++;
-        });
-        if (1 == count)
-            return *it;
-        srand (time(NULL));
-        int rnd = rand() % count;
-        int i = 0;
-        std::shared_ptr<test_run_spec<T>> test_case;
-        std::for_each(d_test_specs.begin(), d_test_specs.end(), [&](std::shared_ptr<test_run_spec<T>> spec) {
-            if (spec->state()==test_run_state::not_yet && spec->valid_to_execute())
-            {
-                if (i == rnd)
-                    test_case = spec;
-                i++;
-            }
-        });
+        std::shared_ptr<test_run_spec<T>> test_case = test_cases.front();
+        if (test_order::random==d_order && test_cases.size()>1)
+        {
+            srand(time(NULL));
+            int rnd = rand() % test_cases.size();
+            auto it = test_cases.begin();
+            for (int i=0; i<rnd; i++)
+                it++;
+            test_case = *it;
+        }
+        test_case->set_state(test_run_state::ongoing);
         return test_case;
     }
     inline std::string generate_junit_report(std::string report_file_name) {
@@ -506,6 +534,7 @@ private:
     tthread::mutex d_cancel_threads_mutex;
     std::list<std::shared_ptr<tthread::thread>> d_threads_to_cancel;
     test_run_state d_state;
+    bool d_parallel;
 };
 
 }
