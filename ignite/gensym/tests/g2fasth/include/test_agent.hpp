@@ -26,10 +26,10 @@ public:
     test_agent(test_order order=test_order::random): d_order(order)
         , d_sleep_quantum(100)
     {
-        d_concurrency = tthread::thread::hardware_concurrency();
-        d_max_concurrency = d_concurrency * 4;
+        d_max_concurrency = tthread::thread::hardware_concurrency();
         if (d_max_concurrency < 16)
             d_max_concurrency = 16;
+        d_thread_pool = std::make_shared<tthread::thread_pool>();
     }
     ~test_agent()
     {
@@ -64,27 +64,24 @@ public:
     */
     inline void execute() {
         auto bg_count = std::count_if(d_suites.begin(), d_suites.end(), [&](suite_pair sp) { return sp.background; });
-        int concurrency = d_concurrency;
-        if (bg_count < concurrency)
-            concurrency = bg_count;
-        std::list<std::shared_ptr<tthread::thread>> threads;
-        for (unsigned i=0; i<concurrency; i++)
+        std::list<unsigned> task_ids;
+        for (unsigned i=0; i<bg_count; i++)
         {   // Start background suites
-            threads.push_back(std::make_shared<tthread::thread>(s_thread_proc, this));
+            task_ids.push_back(d_thread_pool->add_task(s_thread_proc, this));
         }
         if (d_suites.size()-bg_count > 0)
             internal_execute(false); // Run sequential suites
-        while (threads.size())
+        while (task_ids.size())
         {
-            threads.front()->join();
-            threads.pop_front();
+            d_thread_pool->join_task(task_ids.front());
+            task_ids.pop_front();
         }
     }
     void set_concurrency(unsigned new_concurrency)
     {
         if (new_concurrency > d_max_concurrency)
             throw std::invalid_argument("Concurrency could not be more than " + std::to_string((long long)d_max_concurrency));
-        d_concurrency = new_concurrency;
+        d_thread_pool->set_thread_limit(new_concurrency);
     }
     void set_sleep_quantum(const tthread::chrono::milliseconds& new_quantum)
     {
@@ -124,7 +121,9 @@ private:
             std::shared_ptr<base_suite> suite;
             while (suite = get_suite_to_run(background))
             {
-                suite->execute();
+                if (suite->is_parallel())
+                    d_thread_pool->increase_thread_limit();
+                suite->execute(d_thread_pool);
                 suite->set_state(done);
             }
             if (are_all_suites_completed(background))
@@ -165,10 +164,10 @@ private:
 private:
     tthread::mutex d_mutex;
     std::list<suite_pair> d_suites;
-    unsigned d_concurrency;
     unsigned d_max_concurrency;
     test_order d_order;
     tthread::chrono::milliseconds d_sleep_quantum;
+    std::shared_ptr<tthread::thread_pool> d_thread_pool;
 };
 }
 }

@@ -31,7 +31,7 @@ public:
     operator time() { return t; }
     time start() { return t = get_time(); }
     int elapsed(time end) { return elapsed(end, t); }
-    int elapsed() { return elapsed(get_time(), t); }
+    int elapsed() { return elapsed(get_time()); }
     static int elapsed(time end, time start) { return int(end-start)/1000000; }
     static time get_time()
     {
@@ -278,6 +278,8 @@ public :
                 timeout = d_timeout;
                 //d_state = test_run_state::ongoing;
                 d_start.start();
+                if (d_name == "t3")
+                    d_start = d_start;
             }
             else
             {

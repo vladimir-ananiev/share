@@ -104,11 +104,12 @@ public:
     * @param report_file_name Absolute path of the JUnit report xml, can be empty if report is not to be written
     * @return JUnit report in string format.
     */
-    inline std::string execute(std::string report_file_name = "") override {
+    inline std::string execute(std::shared_ptr<tthread::thread_pool> thread_pool=nullptr, std::string report_file_name = "") override {
         int count;
         {
             tthread::lock_guard<tthread::mutex> lg(d_mutex);
             count = d_test_specs.size();
+            d_thread_pool = thread_pool ? thread_pool : std::make_shared<tthread::thread_pool>();
         }
         if (count == 0)
         {
@@ -318,6 +319,11 @@ private:
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return d_state;
     }
+    bool is_parallel()
+    {
+        tthread::lock_guard<tthread::mutex> lg(d_mutex);
+        return d_parallel;
+    }
     inline std::string start(std::string report_file_name) {
         d_logger.log(log_level::SILENT, "Starting execution of test suite : " + get_suite_name());
         // Execute tests
@@ -329,15 +335,15 @@ private:
             parallel = false;
         if (parallel)
         {
-            std::list<std::shared_ptr<tthread::thread>> threads;
+            std::list<unsigned> task_ids;
             for (unsigned i=0; i<concurrency; i++)
             {
-                threads.push_back(std::make_shared<tthread::thread>(s_start_thread_proc, this));
+                task_ids.push_back(d_thread_pool->add_task(s_start_thread_proc, this));
             }
-            while (threads.size())
+            while (task_ids.size())
             {
-                threads.front()->join();
-                threads.pop_front();
+                d_thread_pool->join_task(task_ids.front());
+                task_ids.pop_front();
             }
         }
         else
@@ -535,6 +541,7 @@ private:
     std::list<std::shared_ptr<tthread::thread>> d_threads_to_cancel;
     test_run_state d_state;
     bool d_parallel;
+    std::shared_ptr<tthread::thread_pool> d_thread_pool;
 };
 
 }

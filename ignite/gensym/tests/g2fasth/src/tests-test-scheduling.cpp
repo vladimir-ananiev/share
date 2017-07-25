@@ -134,7 +134,10 @@ TEST_CASE("Parallel test case execution") {
     for (long long i=1; i<=4; i++)
         ts.run(&ParallelTestCases::test, std::to_string(i));
 
-    ts.execute("");
+    std::shared_ptr<tthread::thread_pool> thread_pool = std::make_shared<tthread::thread_pool>();
+    thread_pool->set_thread_limit(10);
+
+    ts.execute(thread_pool);
 
     REQUIRE(ts.log.length() == 8);
     REQUIRE(ts.log.substr(0,4) == ">>>>");

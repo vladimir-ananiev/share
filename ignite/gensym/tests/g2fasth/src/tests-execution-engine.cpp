@@ -20,6 +20,7 @@ public:
     TestExecutionScenario1()
         : suite("TestExecutionScenario1", g2::fasth::test_order::implied, g2::fasth::log_level::NONE)
         , output("") {
+            set_parallel(false);
     };
     void setup_test_track_scenario1() override
     {
