@@ -36,15 +36,14 @@ public:
     static time get_time()
     {
 #ifdef WIN32
-        return (time)GetTickCount() * 1000000;
+        return (time)GetTickCount();
 #else
         timespec ts; 
         clock_gettime(CLOCK_REALTIME, &ts);
-        return (time)ts.tv_sec*1000000000 + ts.tv_nsec;
+        return (time)ts.tv_sec*1000 + ts.tv_nsec/1000000;
 #endif
     }
-    std::string str() { return i2s(t/1000000); }
-    std::string str2() { return std::to_string(t); }
+    std::string str() { return std::to_string(t); }
 };
 
 template <class T>

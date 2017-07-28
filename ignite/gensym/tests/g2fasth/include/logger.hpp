@@ -100,9 +100,10 @@ public:
 #else
 inline std::string parse_pretty_function(const std::string& pf)
 {
-    return pf;
     size_t space_pos = pf.find_first_of(' ') + 1;
     size_t arg_pos = pf.find_first_of('(') + 1;
+    if (space_pos > arg_pos)
+        space_pos = 0;
     std::string str = pf.substr(space_pos, arg_pos-space_pos);
     str += ")";
     return str;
