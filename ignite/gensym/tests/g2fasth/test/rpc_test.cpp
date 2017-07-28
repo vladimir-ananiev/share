@@ -74,16 +74,20 @@ void rpc_asynch(gsi_item rpc_args[],gsi_int count,call_identifier_type call_inde
     gsi_reclaim_items(arguments);
 }
 
-void exit_thread(void*)
+void exit_thread(void*p)
 {
-    puts("exit_thread(): exiting in 1 sec...");
-    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
+    if (nullptr == p) return;
+    int* sleep_sec = (int*)p;
+    printf("Exit thread: program will exit in %d sec...\n", *sleep_sec);
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(*sleep_sec*1000));
     exit(0);
 }
 void rpc_exit(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
 {
     puts("rpc_exit()");
-    new tthread::thread(exit_thread, NULL);
+    int* sleep_sec = new int;
+    *sleep_sec = 1;
+    new tthread::thread(exit_thread, sleep_sec);
 }
 
 void rpc_test(gsi_item rpc_args[],gsi_int count,call_identifier_type call_index)
@@ -298,6 +302,17 @@ int main(int argc, char **argv) {
         if (tmp)
           port_num = tmp;
     }
+    int timeout_sec = 60;
+    if (argc > 3)
+    {
+        printf("Arg 3 = %s\n", argv[3]);
+        int tmp = strtol(argv[3], nullptr, 10);
+        if (tmp)
+          timeout_sec = tmp;
+    }
+    int* sleep_sec = new int;
+    *sleep_sec = timeout_sec;
+    new tthread::thread(exit_thread, sleep_sec);
 
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.continuous(true);
@@ -318,7 +333,7 @@ int main(int argc, char **argv) {
 
         if (test_code == "3226")
             prepare_test_3226();
-        else if (test_code == "3227")
+        else if (test_code=="3227" || test_code=="3227-2")
             prepare_test_3227();
         else if (test_code == "3228")
             prepare_test_3228();

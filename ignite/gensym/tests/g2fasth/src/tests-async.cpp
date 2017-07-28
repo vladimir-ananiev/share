@@ -94,6 +94,7 @@ public:
 };
 
 TEST_CASE("Test Suite should run async test in finite time") {
+    FUNCLOG;
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario1();
     test_async.execute();
@@ -103,6 +104,7 @@ TEST_CASE("Test Suite should run async test in finite time") {
 }
 
 TEST_CASE("Test Suite should run dependent async test in finite time") {
+    FUNCLOG;
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario2();
     test_async.execute();
@@ -112,6 +114,7 @@ TEST_CASE("Test Suite should run dependent async test in finite time") {
 }
 
 TEST_CASE("Sync test should run only when dependent async test has finished executing.") {
+    FUNCLOG;
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario3();
     test_async.execute();
@@ -122,6 +125,7 @@ TEST_CASE("Sync test should run only when dependent async test has finished exec
 }
 
 TEST_CASE("Async test should run only when dependent sync test has executed.") {
+    FUNCLOG;
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario4();
     test_async.execute();
@@ -132,6 +136,7 @@ TEST_CASE("Async test should run only when dependent sync test has executed.") {
 }
 
 TEST_CASE("Test should fail and not execute if dependent method (after_sccess_of) fails.") {
+    FUNCLOG;
     TestAsyncScenarios test_async;
     test_async.setup_test_track_scenario5();
     test_async.execute();
@@ -151,6 +156,7 @@ void test_case_fail_thread(void* p)
 }
 
 TEST_CASE("Async test with initial test case as async functional object.") {
+    FUNCLOG;
     TestAsyncScenarios test_async;
     test_async.run(&TestAsyncScenarios::test_async_itself, "test_async_itself");
     test_async.execute();

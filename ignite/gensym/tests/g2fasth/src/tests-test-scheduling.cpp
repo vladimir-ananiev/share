@@ -88,21 +88,25 @@ public:
 };
 
 TEST_CASE("Test suite should throw exception if it detects cycle in after construct") {
+    FUNCLOG;
     TestSuiteCycle testsuite;
     REQUIRE_THROWS(testsuite.setup_test_track());
 }
 
 TEST_CASE("Test suite should throw exception if it detects cycle in after_success_of construct") {
+    FUNCLOG;
     TestSuiteAfterSuccessOfCycle testsuite;
     REQUIRE_THROWS(testsuite.setup_test_track());
 }
 
 TEST_CASE("Test suite should throw exception if same test is scheduled as dependent test case in after construct") {
+    FUNCLOG;
     TestSuiteSameTestCase testsuite;
     REQUIRE_THROWS(testsuite.setup_test_track());
 }
 
 TEST_CASE("Test suite should throw exception if same test is scheduled as dependent test case in after_success_of construct") {
+    FUNCLOG;
     TestSuiteSameSuccessTestCase testsuite;
     REQUIRE_THROWS(testsuite.setup_test_track());
 }
@@ -129,13 +133,14 @@ public:
 };
 
 TEST_CASE("Parallel test case execution") {
+    FUNCLOG;
     ParallelTestCases ts;
 
     for (long long i=1; i<=4; i++)
         ts.run(&ParallelTestCases::test, std::to_string(i));
 
     std::shared_ptr<tthread::thread_pool> thread_pool = std::make_shared<tthread::thread_pool>();
-    thread_pool->set_thread_limit(10);
+    thread_pool->set_thread_limit(4);
 
     ts.execute(thread_pool);
 

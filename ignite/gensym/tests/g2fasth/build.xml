@@ -38,12 +38,12 @@
     <echo>Base directory: ${basedir}</echo>
     <echo>Main base dir: ${main.basedir}</echo>
   </target>
-  <target name="unit-tests">
+ <target name="unit-tests" depends="print-version">
     <exec executable="${basedir}\bin\Release\testg2fasth.exe" osfamily="windows" failonerror="true">
       <arg line = "-r junit -o ${basedir}/../../results/api-tests/c/api_tests_junit_g2fasth.xml" />
     </exec>
-    <exec executable="bin/testg2fasth" osfamily="unix" failonerror="true">
+    <exec executable="${basedir}/bin/testg2fasth" osfamily="unix" failonerror="true">
       <arg line = "-r junit -o ${basedir}/../../results/g2fasth_unit_tests.xml" />
     </exec>
-  </target>
+  </target> 
 </project>

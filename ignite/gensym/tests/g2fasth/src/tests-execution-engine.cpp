@@ -131,6 +131,7 @@ public:
 };
 
 TEST_CASE("Test suite should execute sync test cases in correct order specified after construct (Scenario 1).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario1();
     test_suite.execute();
@@ -139,6 +140,7 @@ TEST_CASE("Test suite should execute sync test cases in correct order specified 
 }
 
 TEST_CASE("Test suite should execute sync test cases in correct order specified after construct (Scenario 2).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario2();
     test_suite.execute();
@@ -147,6 +149,7 @@ TEST_CASE("Test suite should execute sync test cases in correct order specified 
 }
 
 TEST_CASE("Test case should fail and not execute if dependent test case (after_success_of) fails (Scenario 4).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario3();
     test_suite.execute();
@@ -155,6 +158,7 @@ TEST_CASE("Test case should fail and not execute if dependent test case (after_s
 }
 
 TEST_CASE("Test case should fail and not execute if dependent test case (after_success_of) fails (Scenario 5).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario4();
     test_suite.execute();
@@ -163,6 +167,7 @@ TEST_CASE("Test case should fail and not execute if dependent test case (after_s
 }
 
 TEST_CASE("Test case should still execute even if dependent test case (after) fails (Scenario 1).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario5();
     test_suite.execute();
@@ -171,6 +176,7 @@ TEST_CASE("Test case should still execute even if dependent test case (after) fa
 }
 
 TEST_CASE("Test case should still execute even if dependent test case (after) fails (Scenario 2).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario6();
     test_suite.execute();
@@ -179,6 +185,7 @@ TEST_CASE("Test case should still execute even if dependent test case (after) fa
 }
 
 TEST_CASE("Test case should still execute even if dependent test case (after) fails (Scenario 3).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario7();
     test_suite.execute();
@@ -187,6 +194,7 @@ TEST_CASE("Test case should still execute even if dependent test case (after) fa
 }
 
 TEST_CASE("Test case should fail and not execute if dependent test case (after_success_of) fails (Scenario 1).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario9();
     test_suite.execute();
@@ -195,6 +203,7 @@ TEST_CASE("Test case should fail and not execute if dependent test case (after_s
 }
 
 TEST_CASE("Test case should fail and not execute if dependent test case (after_success_of) fails (Scenario 2).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario10();
     test_suite.execute();
@@ -203,6 +212,7 @@ TEST_CASE("Test case should fail and not execute if dependent test case (after_s
 }
 
 TEST_CASE("Test case should fail and not execute if dependent test case (after_success_of) fails (Scenario 3).") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     test_suite.setup_test_track_scenario8();
     test_suite.execute();
@@ -211,6 +221,7 @@ TEST_CASE("Test case should fail and not execute if dependent test case (after_s
 }
 
 TEST_CASE("Setup phase should throw exception if a test used in after construct is not scheduled before.") {
+    FUNCLOG;
     TestExecutionScenario1 test_suite;
     REQUIRE_THROWS(test_suite.setup_test_track_scenario11());
 }

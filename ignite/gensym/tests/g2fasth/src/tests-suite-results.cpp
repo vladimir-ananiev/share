@@ -9,6 +9,7 @@ public:
 };
 
 TEST_CASE("There should not be any test results if there is no test case to execute.") {
+    FUNCLOG;
     TestResults test_suite;
     test_suite.execute();
     auto results = test_suite.get_results();

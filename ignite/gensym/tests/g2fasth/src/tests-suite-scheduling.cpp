@@ -65,6 +65,7 @@ public:
 };
 
 TEST_CASE("After construct should schedule test suites correctly") {
+    FUNCLOG;
     output.clear();
     auto test_one = std::make_shared<TestOne>();
     auto test_two = std::make_shared<TestTwo>();
@@ -76,6 +77,7 @@ TEST_CASE("After construct should schedule test suites correctly") {
 }
 
 TEST_CASE("After construct should throw exception if same suite is scheduled again.") {
+    FUNCLOG;
     auto test_one = std::make_shared<TestOne>();
     auto test_two = std::make_shared<TestTwo>();
     test_agent agent;
@@ -85,12 +87,14 @@ TEST_CASE("After construct should throw exception if same suite is scheduled aga
 }
 
 TEST_CASE("After construct should throw exception if same suite is scheduled as dependent suite.") {
+    FUNCLOG;
     auto test_one = std::make_shared<TestOne>();
     test_agent agent;
     REQUIRE_THROWS(agent.schedule_suite(test_one, test_one));
 }
 
 TEST_CASE("Run all not dependent suites one by one") {
+    FUNCLOG;
     output.clear();
     std::string expected;
     test_agent agent(test_order::implied);
@@ -105,6 +109,7 @@ TEST_CASE("Run all not dependent suites one by one") {
 }
 
 TEST_CASE("Run all not dependent suites randomly") {
+    FUNCLOG;
     output.clear();
     std::string expected;
     test_agent agent(test_order::random);
@@ -121,6 +126,7 @@ TEST_CASE("Run all not dependent suites randomly") {
 
 
 TEST_CASE("Run all not dependent suites in parallel") {
+    FUNCLOG;
     output.clear();
     std::string expected;
     test_agent agent;
@@ -141,6 +147,7 @@ TEST_CASE("Run all not dependent suites in parallel") {
 }
 
 TEST_CASE("Run all suites in parallel, when some suites depend on the other ones") {
+    FUNCLOG;
 
     std::shared_ptr<base_suite> ts0 = std::make_shared<SimpleTestSuite>("0",1000);
     std::shared_ptr<base_suite> ts1 = std::make_shared<SimpleTestSuite>("1",1000);
@@ -154,7 +161,7 @@ TEST_CASE("Run all suites in parallel, when some suites depend on the other ones
     std::shared_ptr<base_suite> ts9 = std::make_shared<SimpleTestSuite>("9",1000);
 
     test_agent agent;
-    agent.set_concurrency(10);
+    agent.set_concurrency(4);
     agent.set_sleep_quantum(chrono::milliseconds(10));
 
     agent.schedule_background_suite(ts0);
@@ -176,34 +183,30 @@ TEST_CASE("Run all suites in parallel, when some suites depend on the other ones
 }
 
 TEST_CASE("Run not dependent suites one by one and in parallel") {
+    FUNCLOG;
     output.clear();
-    std::string expected;
     test_agent agent(test_order::implied);
-    agent.set_concurrency(5);
-    agent.set_sleep_quantum(chrono::milliseconds(10));
-    for (int i=0; i<5; i++)
+    agent.set_concurrency(4);
+    for (int i=0; i<3; i++)
     {
         std::string str = std::to_string((long long)i);
-        expected += str;
         agent.schedule_suite(std::make_shared<SimpleTestSuite>(str,0));
     }
-    for (int i=5; i<10; i++)
+    for (int i=3; i<6; i++)
     {
         std::string str = std::to_string((long long)i);
-        expected += str;
         agent.schedule_background_suite(std::make_shared<SimpleTestSuite>(str,3000));
     }
     agent.execute();
-    std::string substr = output.substr(29,10);
-    REQUIRE(output.length() == 40);
+    std::string substr = output.substr(17,6);
+    REQUIRE(output.length() == 24);
     REQUIRE(substr[0] =='<');
     REQUIRE(substr[2] =='<');
     REQUIRE(substr[4] =='<');
-    REQUIRE(substr[6] =='<');
-    REQUIRE(substr[8] =='<');
 }
 
 TEST_CASE("Run dependent suites in parallel and one by one") {
+    FUNCLOG;
     std::shared_ptr<base_suite> ts0 = std::make_shared<SimpleTestSuite>("0",0);
     std::shared_ptr<base_suite> ts1 = std::make_shared<SimpleTestSuite>("1",0);
     std::shared_ptr<base_suite> ts2 = std::make_shared<SimpleTestSuite>("2",0);
@@ -216,7 +219,6 @@ TEST_CASE("Run dependent suites in parallel and one by one") {
     std::shared_ptr<base_suite> ts9 = std::make_shared<SimpleTestSuite>("9",0);
 
     test_agent agent;
-    agent.set_concurrency(5);
     agent.set_sleep_quantum(chrono::milliseconds(10));
 
     agent.schedule_background_suite(ts0);

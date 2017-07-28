@@ -22,7 +22,6 @@ class base_suite {
     };
     virtual void set_state(test_run_state new_state) {}
     virtual test_run_state state() { return not_yet; }
-    virtual bool is_parallel() { return false; }
 protected:
     /**
     * Constructor that sets the name of the suite.

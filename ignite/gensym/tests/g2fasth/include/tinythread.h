@@ -90,6 +90,7 @@ freely, subject to the following restrictions:
 #include <memory>
 #include <algorithm>
 
+
 /// TinyThread++ version (major number).
 #define TINYTHREAD_VERSION_MAJOR 1
 /// TinyThread++ version (minor number).
@@ -734,198 +735,151 @@ class thread_pool
         unsigned id;
         bool running;
     };
+    mutex _mutex;
     std::list<task> _tasks;
-    recursive_mutex _mutex;
     std::list<std::shared_ptr<thread>> _threads;
     unsigned _thread_limit;
+    unsigned _max_thread_limit;
     unsigned _new_task_id;
+    unsigned _active_thread_count;
+    unsigned _max_active_thread_count;
 public:
-    thread_pool(unsigned thread_limit=0) : _new_task_id(0)
+    thread_pool() : _new_task_id(0)
+        , _active_thread_count(0)
+        , _max_active_thread_count(0)
     {
-        set_thread_limit(thread_limit);
+        unsigned hc = thread::hardware_concurrency();
+        printf("thread_pool(): CPU number = %u\n", hc);
+        if (hc < 4)  hc = 4;
+        if (hc > 16) hc = 16;
+        _thread_limit = hc - 1;
+        _max_thread_limit = hc*2 - 1;
     }
     ~thread_pool()
     {
+        puts("ENTER ~thread_pool()");
         while (_threads.size())
         {
             _threads.front()->join();
             _threads.pop_front();
         }
+        puts("LEAVE ~thread_pool()");
     }
     unsigned add_task(void(*f)(void*), void*p)
     {
-        lock_guard<recursive_mutex> lg(_mutex);
+        lock_guard<mutex> lg(_mutex);
         task t = {f, p, ++_new_task_id, false};
+        printf("thread_pool::add_task(%u)\n", _new_task_id);
         _tasks.push_back(t);
-        if (_threads.size() < _thread_limit)
+        if (_active_thread_count < _thread_limit)
         {
             std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_thread_proc, this);
             _threads.push_back(thread);
+            inc_active_thread_count();
         }
         return t.id;
     }
+    unsigned thread_limit()
+    {
+        lock_guard<mutex> lg(_mutex);
+        return _thread_limit;
+    }
     void set_thread_limit(unsigned thread_limit)
     {
-        lock_guard<recursive_mutex> lg(_mutex);
-        _thread_limit = thread_limit ? thread_limit : thread::hardware_concurrency();
+        lock_guard<mutex> lg(_mutex);
+        if (thread_limit > _max_thread_limit)
+            thread_limit = _max_thread_limit;
+        _thread_limit  = thread_limit;
     }
-    void increase_thread_limit()
+    unsigned max_thread_limit()
     {
-        lock_guard<recursive_mutex> lg(_mutex);
-        unsigned thread_limit = _thread_limit;
-        _thread_limit = _thread_limit * 3 / 2;
-        if (_thread_limit == thread_limit)
-            _thread_limit++;
+        return _max_thread_limit;
     }
-    bool is_task_joinable(unsigned task_id)
+    void cancel_task(unsigned task_id)
     {
-        lock_guard<recursive_mutex> lg(_mutex);
-        auto it = std::find_if(_tasks.begin(), _tasks.end(), [task_id](task t) { return task_id==t.id; });
-        return _tasks.end() != it;
+        printf("thread_pool::cancel_task(%u)\n", task_id);
+        lock_guard<mutex> lg(_mutex);
+        auto it = std::find_if(_tasks.begin(), _tasks.end(), [task_id](task t)
+            { return task_id==t.id && !t.running; });
+        if (_tasks.end() != it)
+            _tasks.erase(it);
     }
     void join_task(unsigned task_id)
     {
+        printf("ENTER thread_pool::join_task(%u) \n", task_id);
         while (is_task_joinable(task_id))
             this_thread::sleep_for(chrono::milliseconds(40));
+        printf("LEAVE thread_pool::join_task(%u) \n", task_id);
+    }
+    unsigned max_active_thread_count()
+    {
+        lock_guard<mutex> lg(_mutex);
+        return _max_active_thread_count;
     }
 private:
-    std::list<task>::iterator get_task(bool& ok)
+    bool get_task(task& t)
     {
-        ok = false;
-        lock_guard<recursive_mutex> lg(_mutex);
+        t.id = 0;
+        lock_guard<mutex> lg(_mutex);
         auto it = std::find_if(_tasks.begin(), _tasks.end(), [](task t) { return !t.running; });
+        if (_tasks.end() == it)
+            return false;
+        it->running = true;
+        t = *it;
+        return true;
+    }
+    void delete_task(int task_id)
+    {
+        lock_guard<mutex> lg(_mutex);
+        auto it = std::find_if(_tasks.begin(), _tasks.end(), [task_id](task t) { return task_id==t.id; });
         if (_tasks.end() != it)
-            it->running = ok = true;
-        return it;
+            _tasks.erase(it);
     }
     void thread_proc()
     {
-        bool ok;
-        do
+        task t;
+        while (get_task(t))
         {
-            auto it = get_task(ok);
-            if (ok)
-            {
-                // Run a task
-                it->f(it->p);
-                // Erase completed task from task list
-                lock_guard<recursive_mutex> lg(_mutex);
-                _tasks.erase(it);
-            }
-            clean_threads();
-        } while(ok);
+            t.f(t.p);
+            delete_task(t.id);
+            clean_thread_objects();
+        }
+        dec_active_thread_count();
     }
     static void s_thread_proc(void*p)
     {
         ((thread_pool*)p)->thread_proc();
     }
-    void clean_threads()
+    bool is_task_joinable(unsigned task_id)
     {
-        lock_guard<recursive_mutex> lg(_mutex);
-        bool ok;
-        do
-        {
-            // Find completed (not joinable) thread
-            auto it = std::find_if(_threads.begin(), _threads.end(), [](std::shared_ptr<thread> t)
-            {
-                return !t->joinable();
-            });
-            ok = _threads.end() != it;
-            if (ok)
-                _threads.erase(it);
-        } while (ok);
+        lock_guard<mutex> lg(_mutex);
+        auto it = std::find_if(_tasks.begin(), _tasks.end(), [task_id](task t) { return task_id==t.id; });
+        return _tasks.end() != it;
     }
-    unsigned active_thread_count()
+    void clean_thread_objects()
     {
-        lock_guard<recursive_mutex> lg(_mutex);
-        return std::count_if(_threads.begin(), _threads.end(), [](std::shared_ptr<thread> t)
+        lock_guard<mutex> lg(_mutex);
+        while (true)
         {
-            return t->joinable();
-        });
+            auto it = std::find_if(_threads.begin(), _threads.end(), [](std::shared_ptr<thread> t)
+                { return !t->joinable(); });
+            if (_threads.end() == it)
+                break;
+            _threads.erase(it);
+        }
+    }
+    void inc_active_thread_count()
+    {
+        _active_thread_count++;
+        if (_active_thread_count > _max_active_thread_count)
+            _max_active_thread_count = _active_thread_count;
+    }
+    void dec_active_thread_count()
+    {
+        lock_guard<mutex> lg(_mutex);
+        _active_thread_count--;
     }
 };
-
-//class thread_pool
-//{
-//    struct task
-//    {
-//        void(*f)(void*);
-//        void*p;
-//        thread::id thread_id;
-//    };
-//    std::list<task> _scheduled_tasks;
-//    std::list<task> _running_tasks;
-//    recursive_mutex _mutex;
-//    std::list<std::shared_ptr<thread>> _threads;
-//    int _thread_limit;
-//    bool _exit;
-//
-//    bool is_exit()
-//    {
-//        lock_guard<recursive_mutex> lg(_mutex);
-//        return _exit;
-//    }
-//    bool take_task(task& t)
-//    {
-//        lock_guard<recursive_mutex> lg(_mutex);
-//        if (_scheduled_tasks.empty())
-//            return false;
-//        t = _scheduled_tasks.front();
-//        if (t.thread_id!=thread::id() && t.thread_id!=this_thread::get_id())
-//            return false;
-//        _scheduled_tasks.pop_front();
-//        t.thread_id = this_thread::get_id();
-//        _running_tasks.push_back(t);
-//        return true;
-//    }
-//    void thread_proc()
-//    {
-//        while (!is_exit())
-//        {
-//            task t;
-//            while (!is_exit() && take_task(t))
-//            {
-//                t.f(t.p);
-//                lock_guard<recursive_mutex> lg(_mutex);
-//                _running_tasks.remove(t);
-//            }
-//            this_thread::sleep_for(chrono::milliseconds(40));
-//        }
-//    }
-//    static void s_thread_proc(void*p)
-//    {
-//        ((thread_pool*)p)->thread_proc();
-//    }
-//public:
-//    thread_pool(int thread_limit): _thread_limit(thread_limit), _exit(false)
-//    {
-//    }
-//    ~thread_pool()
-//    {
-//        {
-//            lock_guard<recursive_mutex> lg(_mutex);
-//            _exit = true;
-//        }
-//        while (_threads.size())
-//        {
-//            _threads.front()->join();
-//            _threads.pop_front();
-//        }
-//    }
-//    void add_task(void(*f)(void*), void*p)
-//    {
-//        task t;
-//        t.f = f;
-//        t.p = p;
-//        lock_guard<recursive_mutex> lg(_mutex);
-//        _scheduled_tasks.push_back(t);
-//        if (_threads.size() < _thread_limit)
-//        {
-//            std::shared_ptr<tthread::thread> thread = std::make_shared<tthread::thread>(s_thread_proc, this);
-//            _threads.push_back(thread);
-//        }
-//    }
-//};
 
 }
 

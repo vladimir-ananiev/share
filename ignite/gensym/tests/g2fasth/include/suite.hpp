@@ -62,6 +62,7 @@ public:
         , d_state(not_yet)
         , d_parallel(true)
     {
+        FUNCLOG_S(suite_name);
         if (d_default_timeout.count() > G2FASTH_MAX_TIMEOUT)
             d_default_timeout = chrono::milliseconds(G2FASTH_MAX_TIMEOUT);
         d_logger.add_output_stream(std::cout, log_level::REGULAR);
@@ -72,6 +73,7 @@ public:
     }
     ~suite()
     {
+        FUNCLOG_S(get_suite_name());
         int cancelled = 0;
         while (d_threads_to_cancel.size())
         {
@@ -82,6 +84,7 @@ public:
         timing start;
         while (d_threads_to_wait.size())
         {
+            SCOPELOG("suite::destr(): while (d_threads_to_wait.size())");
             d_threads_to_wait.front()->join();
             d_threads_to_wait.pop_front();
         }
@@ -90,6 +93,7 @@ public:
         {   // Let cancelled threads (in Linux) to stop
             int sleep = 10000 - start.elapsed();
             //printf("Wait %d ms for cancelled threads(%d)...\n", sleep, cancelled);
+            ScopeLog::print("suite::destr(): sleep(): " + i2s(sleep));
             if (sleep > 0)
                 tthread::this_thread::sleep_for(tthread::chrono::milliseconds(sleep));
         }
@@ -97,6 +101,7 @@ public:
     }
     void set_parallel(bool parallel)
     {
+        FUNCLOG_S(parallel);
         d_parallel = parallel;
     }
     /**
@@ -105,6 +110,7 @@ public:
     * @return JUnit report in string format.
     */
     inline std::string execute(std::shared_ptr<tthread::thread_pool> thread_pool=nullptr, std::string report_file_name = "") override {
+        FUNCLOG_S((bool)thread_pool);
         int count;
         {
             tthread::lock_guard<tthread::mutex> lg(d_mutex);
@@ -129,6 +135,7 @@ public:
     */
     inline test_run_spec<T>& run(typename test_helper<T>::pmf_t ptr_test_case
             , const std::string& test_case_name, const chrono::milliseconds& timeout=chrono::milliseconds(0)) {
+        FUNCLOG_S(test_case_name);
         std::function<void(const std::string&)> action =
             std::bind(ptr_test_case, static_cast<T*>(this), std::placeholders::_1);
         auto ptr = schedule(action, test_case_name, ptr_test_case, timeout);
@@ -281,6 +288,7 @@ protected:
     void go_async(const std::string& test_case_name
         , typename test_helper<T>::pmf_t func_obj=nullptr)
     {
+        FUNCLOG_S(test_case_name);
         internal_async(test_case_name, func_obj, chrono::milliseconds(0));
     }
     /**
@@ -294,6 +302,7 @@ protected:
         , const chrono::milliseconds& interval
         , typename test_helper<T>::pmf_t func_obj=nullptr)
     {
+        FUNCLOG_S(test_case_name);
         assert(interval.count() > 0);
         if (interval.count() <= 0)
             return;
@@ -319,36 +328,24 @@ private:
         tthread::lock_guard<tthread::mutex> lg(d_mutex);
         return d_state;
     }
-    bool is_parallel()
-    {
-        tthread::lock_guard<tthread::mutex> lg(d_mutex);
-        return d_parallel;
-    }
     inline std::string start(std::string report_file_name) {
+        FUNCLOG_S(get_suite_name());
         d_logger.log(log_level::SILENT, "Starting execution of test suite : " + get_suite_name());
         // Execute tests
-        bool parallel = d_parallel;
-        int concurrency = 16;
-        if (d_test_specs.size() < concurrency)
-            concurrency = d_test_specs.size();
-        if (concurrency < 2)
-            parallel = false;
-        if (parallel)
+        std::list<unsigned> bg_task_ids;
+        if (d_parallel)
         {
-            std::list<unsigned> task_ids;
-            for (unsigned i=0; i<concurrency; i++)
-            {
-                task_ids.push_back(d_thread_pool->add_task(s_start_thread_proc, this));
-            }
-            while (task_ids.size())
-            {
-                d_thread_pool->join_task(task_ids.front());
-                task_ids.pop_front();
-            }
+            int background_count = int(d_test_specs.size()) - 1;
+            for (int i=0; i<background_count; i++)
+                bg_task_ids.push_back(d_thread_pool->add_task(s_start_thread_proc, this));
         }
-        else
+        internal_start(); // run one execution in main thread
+        while (bg_task_ids.size())
         {
-            internal_start();
+            SCOPELOG("suite::start(): while (bg_task_ids.size())");
+            d_thread_pool->cancel_task(bg_task_ids.front());
+            d_thread_pool->join_task(bg_task_ids.front());
+            bg_task_ids.pop_front();
         }
         extract_result();
         for (auto result = d_results.begin(); result != d_results.end(); ++result)
@@ -366,6 +363,7 @@ private:
     }
     void internal_start()
     {
+        FUNCLOG;
         while(true)
         {
             check_test_timeouts();
@@ -507,6 +505,7 @@ private:
     }
     static void s_async_thread_proc(void* p)
     {
+        FUNCLOG;
         std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
         try {
             suite* _this = data->test_suite;
