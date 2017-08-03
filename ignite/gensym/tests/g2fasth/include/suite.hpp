@@ -541,9 +541,9 @@ private:
         clock_gettime(CLOCK_REALTIME, &ts);
         tzset();
         tm t;
-        localtime_r(&(ts->tv_sec), &t);
-        y  = t.tm_year;
-        mo = t.tm_mon;
+        localtime_r(&ts.tv_sec, &t);
+        y  = t.tm_year + 1900;
+        mo = t.tm_mon + 1;
         d  = t.tm_mday;
         h  = t.tm_hour;
         mi = t.tm_min;

@@ -288,7 +288,68 @@ void prepare_test_3229();
 void prepare_test_3230();
 void prepare_test_4161_4164(bool);
 
+std::string get_time_string()
+{
+    char buf[64];
+    int y, mo, d, h, mi, s, ms;
+#ifdef _WIN32
+    SYSTEMTIME st;
+    ::GetLocalTime(&st);
+    y  = st.wYear;
+    mo = st.wMonth;
+    d  = st.wDay;
+    h  = st.wHour;
+    mi = st.wMinute;
+    s  = st.wSecond;
+    ms = st.wMilliseconds;
+#else
+    timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    tzset();
+    tm t;
+    localtime_r(&ts.tv_sec, &t);
+    y  = t.tm_year + 1900;
+    mo = t.tm_mon + 1;
+    d  = t.tm_mday;
+    h  = t.tm_hour;
+    mi = t.tm_min;
+    s  = t.tm_sec;
+    ms = ts.tv_nsec / 1000000;
+#endif
+    sprintf(buf, "%04d-%02d-%02d %02d:%02d:%02d.%03d", y, mo, d, h, mi, s, ms);
+    return buf;
+}
+
+
 int main(int argc, char **argv) {
+
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(100));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(200));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(300));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(400));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(500));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(600));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(700));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(800));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(900));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1000));
+    puts(get_time_string().c_str());
+    tthread::this_thread::sleep_for(tthread::chrono::milliseconds(1100));
+    puts(get_time_string().c_str());
+
+
+    return 0;
+
     g2_options options;
     options.parse_arguments(&argc, argv);
     options.set_signal_handler();
