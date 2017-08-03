@@ -5,7 +5,6 @@
 using namespace g2::fasth;
 
 TEST_CASE("is_g2_tests_initialized should be FALSE before initialization and TRUE after") {
-    FUNCLOG;
     g2_options options;
     REQUIRE_FALSE(options.is_g2_tests_initialized());
     int argc = 1;
@@ -18,7 +17,6 @@ TEST_CASE("is_g2_tests_initialized should be FALSE before initialization and TRU
 }
 
 TEST_CASE("parse_arguments should properly parse input arguments") {
-    FUNCLOG;
     g2_options options;
     int argc = 4;
     char argv0[] = "test";
@@ -35,7 +33,6 @@ TEST_CASE("parse_arguments should properly parse input arguments") {
 }
 
 TEST_CASE("Options should stay uninitialized when flags do not match") {
-    FUNCLOG;
     g2_options options;
     int argc = 4;
     char argv0[] = "test";
@@ -52,7 +49,6 @@ TEST_CASE("Options should stay uninitialized when flags do not match") {
 }
 
 TEST_CASE("Arguments should be parsed correctly if some flags match and some don't") {
-    FUNCLOG;
     g2_options options;
     int argc = 4;
     char argv0[] = "test";
@@ -69,7 +65,6 @@ TEST_CASE("Arguments should be parsed correctly if some flags match and some don
 }
 
 TEST_CASE("Arguments should not be parsed when no values are provided") {
-    FUNCLOG;
     g2_options options;
     int argc = 4;
     char argv0[] = "test";
@@ -86,7 +81,6 @@ TEST_CASE("Arguments should not be parsed when no values are provided") {
 }
 
 TEST_CASE("Options are not initialized with argc = 0") {
-    FUNCLOG;
     g2_options options;
     int argc = 0;
     char* argv[] = {nullptr};
@@ -95,7 +89,6 @@ TEST_CASE("Options are not initialized with argc = 0") {
 }
 
 TEST_CASE("Options are not initialized with argc < 0") {
-    FUNCLOG;
     g2_options options;
     int argc = -4;
     char* argv[] = {nullptr};
@@ -104,7 +97,6 @@ TEST_CASE("Options are not initialized with argc < 0") {
 }
 
 TEST_CASE("argv[] may contain null pointers") {
-    FUNCLOG;
     g2_options options;
     int argc = 4;
     char argv0[] = "test";
@@ -120,7 +112,6 @@ TEST_CASE("argv[] may contain null pointers") {
 }
 
 TEST_CASE("Signal handling") {
-    FUNCLOG;
     g2_options options;
     options.set_signal_handler(false);
     raise(SIGILL);

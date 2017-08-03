@@ -50,9 +50,6 @@ private:
 }
 }
 
-#include <string>
-inline std::string i2s(int i) { return std::to_string((long long)i); }
-
 #ifndef FUNCLOG
 #ifndef WIN32
 #include <sys/time.h>
@@ -66,7 +63,7 @@ inline unsigned GetTickCount()
 }
 #endif
 
-#define ENABLE_FUNCLOG
+//#define ENABLE_FUNCLOG
 
 class ScopeLog
 {
@@ -75,49 +72,20 @@ class ScopeLog
 public:
     ScopeLog(const std::string& name, const std::string& suffix=""): name(name), suffix(suffix)
     {
-        print("ENTER " + this->name + "-" + this->suffix);
-    }
-    ScopeLog(const std::string& name, int i): name(name), suffix(i2s(i))
-    {
-        print("ENTER " + this->name + "-" + this->suffix);
-    }
-    ScopeLog(const std::string& name, bool b): name(name), suffix(b?"true":"false")
-    {
-        print("ENTER " + this->name + "-" + this->suffix);
+        printf("%08u ENTER %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
     }
     ~ScopeLog()
     {
-        print("LEAVE " + this->name + "-" + this->suffix);
-    }
-    static void print(const std::string& str)
-    {
-        printf("%08u %s\n", GetTickCount(), str.c_str());
+        printf("%08u LEAVE %s-%s\n", GetTickCount(), this->name.c_str(), this->suffix.c_str());
     }
 };
-
-#ifdef WIN32
-#define FUNC_NAME __FUNCTION__
-#else
-inline std::string parse_pretty_function(const std::string& pf)
-{
-    size_t space_pos = pf.find_first_of(' ') + 1;
-    size_t arg_pos = pf.find_first_of('(') + 1;
-    if (space_pos > arg_pos)
-        space_pos = 0;
-    std::string str = pf.substr(space_pos, arg_pos-space_pos);
-    str += ")";
-    return str;
-}
-#define FUNC_NAME parse_pretty_function(__PRETTY_FUNCTION__).c_str()
-#endif
-
 #ifdef ENABLE_FUNCLOG
-#   define FUNCLOG ScopeLog __func_log__(FUNC_NAME)
-#   define FUNCLOG_S(suffix) ScopeLog __func_log__(FUNC_NAME,suffix)
+#   define FUNCLOG ScopeLog __func_log__(__FUNCTION__)
+#   define FUNCLOG2(suffix) ScopeLog __func_log__(__FUNCTION__,suffix)
 #   define SCOPELOG(name) ScopeLog __scope_log__(name)
 #else
 #   define FUNCLOG
-#   define FUNCLOG_S(suffix)
+#   define FUNCLOG2(suffix)
 #   define SCOPELOG(name)
 #endif
 #endif

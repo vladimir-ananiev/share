@@ -30,7 +30,6 @@ public:
 };
 
 TEST_CASE("Test suite should throw exception if it detects complex cycle") {
-    FUNCLOG;
     TestSuiteComplexCycle testsuite;
     REQUIRE_THROWS(testsuite.setup_test_track());
 }

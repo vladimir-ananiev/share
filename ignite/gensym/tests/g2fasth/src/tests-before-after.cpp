@@ -36,7 +36,6 @@ public:
 };
 
 TEST_CASE("Before and after should be called in correct sequence while executing of test case") {
-    FUNCLOG;
     TestBeforeAfterConstruct testsuite;
     testsuite.set_parallel(false);
     testsuite.execute();

@@ -22,7 +22,6 @@ std::string string_handler()
 }
 
 TEST_CASE("Tests returning the empty value when no other values are set") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.ignore_not_registered_variables();
 
@@ -50,7 +49,6 @@ TEST_CASE("Tests returning the empty value when no other values are set") {
 }
 
 TEST_CASE("Tests handlers for providing a variable value") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.ignore_not_registered_variables();
 
@@ -78,7 +76,6 @@ TEST_CASE("Tests handlers for providing a variable value") {
 }
 
 TEST_CASE("Tests setting the default value which returns always") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.ignore_not_registered_variables();
 
@@ -106,7 +103,6 @@ TEST_CASE("Tests setting the default value which returns always") {
 }
 
 TEST_CASE("Tests returning the value for just one read") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.ignore_not_registered_variables();
 
@@ -146,7 +142,6 @@ TEST_CASE("Tests returning the value for just one read") {
 }
 
 TEST_CASE("Tests returning the value for next N reads") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.ignore_not_registered_variables();
 
@@ -198,7 +193,6 @@ TEST_CASE("Tests returning the value for next N reads") {
 }
 
 TEST_CASE("Assigning to undeclared variable or variable with wrong type should fail") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.ignore_not_registered_variables();
 

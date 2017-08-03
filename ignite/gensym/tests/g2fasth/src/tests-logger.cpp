@@ -18,7 +18,6 @@ private:
 };
 
 TEST_CASE("Logger should log in silent mode") {
-    FUNCLOG;
     std::stringstream buffer;
     cout_redirect redirect(buffer.rdbuf());
     logger logger_instance(g2::fasth::log_level::SILENT);
@@ -28,7 +27,6 @@ TEST_CASE("Logger should log in silent mode") {
 }
 
 TEST_CASE("Logger set at higher log level should log data with lower log level") {
-    FUNCLOG;
     std::stringstream d_buffer;
     cout_redirect redirect(d_buffer.rdbuf());
     logger logger_instance(g2::fasth::log_level::VERBOSE);
@@ -38,7 +36,6 @@ TEST_CASE("Logger set at higher log level should log data with lower log level")
 }
 
 TEST_CASE("Logger set at lower log level should not log data with higher log level") {
-    FUNCLOG;
     std::stringstream d_buffer;
     cout_redirect redirect(d_buffer.rdbuf());
     logger logger_instance(g2::fasth::log_level::SILENT);

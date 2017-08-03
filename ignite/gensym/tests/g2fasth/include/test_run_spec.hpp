@@ -31,19 +31,18 @@ public:
     operator time() { return t; }
     time start() { return t = get_time(); }
     int elapsed(time end) { return elapsed(end, t); }
-    int elapsed() { return elapsed(get_time()); }
-    static int elapsed(time end, time start) { return int((end-start)/1000000); }
+    int elapsed() { return elapsed(get_time(), t); }
+    static int elapsed(time end, time start) { return int(end-start)/1000000; }
     static time get_time()
     {
 #ifdef WIN32
-        return (time)GetTickCount();
+        return (time)GetTickCount() * 1000000;
 #else
         timespec ts; 
         clock_gettime(CLOCK_REALTIME, &ts);
-        return (time)ts.tv_sec*1000 + ts.tv_nsec/1000000;
+        return (time)ts.tv_sec*1000000000 + ts.tv_nsec;
 #endif
     }
-    std::string str() { return std::to_string(t); }
 };
 
 template <class T>
@@ -105,7 +104,6 @@ public :
         , d_state(test_run_state::not_yet)
         , d_outcome(test_outcome::fail)
     {
-        FUNCLOG_S(name);
     }
     
     std::shared_ptr<test_run_spec<T>> clone(const std::string& name) const
@@ -265,7 +263,6 @@ public :
     * It validates every condition before executing a test case.
     */
     inline bool execute(async_run_data<T>* async_data=nullptr) {
-        FUNCLOG_S((bool)async_data);
         std::unique_ptr<async_run_data<T>> data(async_data);
         std::shared_ptr<tthread::thread> thread;
         chrono::milliseconds timeout(0);
@@ -281,7 +278,6 @@ public :
                 timeout = d_timeout;
                 //d_state = test_run_state::ongoing;
                 d_start.start();
-                ScopeLog::print("case::execute(): start=" + d_start.str());
             }
             else
             {
@@ -305,7 +301,6 @@ public :
         }
 
         // Wait for the thread completion during the timeout
-        ScopeLog::print("case::execute(): join timeout=" + i2s((int)timeout.count()));
         bool test_done;
         bool timed_out = !thread->join(timeout);
         {
@@ -463,7 +458,6 @@ private:
 
     // Thread procedure for test action run
     static void action_thread_proc(void* p) {
-        FUNCLOG;
         tthread::thread::make_cancel_safe();
         std::unique_ptr<async_run_data<T>> data((async_run_data<T>*)p);
         test_run_spec* _this = data->test_case;
@@ -490,7 +484,6 @@ private:
                     timing start;
                     data->func_obj(data->test_case_name);
                     action_elapsed_ms = start.elapsed();
-                    ScopeLog::print("case::action_thread_proc(): action_elapsed_ms=" + i2s(action_elapsed_ms));
                 } while(true);
             }
             else

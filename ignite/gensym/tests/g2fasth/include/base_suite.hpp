@@ -17,7 +17,7 @@ class base_suite {
     * @param report_file_name Absolute path of the JUnit report xml, can be empty if report is not to be written.
     * @return JUnit report in string format.
     */
-    virtual std::string execute(std::shared_ptr<tthread::thread_pool> thread_pool=nullptr, std::string report_file_name = "") {
+    virtual std::string execute(std::string report_file_name = "") {
         return "";
     };
     virtual void set_state(test_run_state new_state) {}

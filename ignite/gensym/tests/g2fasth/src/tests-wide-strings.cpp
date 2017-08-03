@@ -5,7 +5,6 @@
 #include <cstring>
 
 TEST_CASE("Conversion from string to Gensym string and back") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
     gsiobj.continuous(false);
     gsiobj.port(22041);
@@ -18,7 +17,6 @@ TEST_CASE("Conversion from string to Gensym string and back") {
 }
 
 TEST_CASE("Conversion from wide string to Gensym string and back") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
 
     short gensym_str[100];

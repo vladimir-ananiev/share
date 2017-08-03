@@ -28,7 +28,6 @@ public:
 };
 
 TEST_CASE("Functional object multiple calls") {
-    FUNCLOG;
     TestTimers test_suite;
     test_suite.run(&TestTimers::test_case_1, "test_case_1");
     test_suite.execute();
@@ -37,7 +36,6 @@ TEST_CASE("Functional object multiple calls") {
 }
 
 TEST_CASE("Timer-based test case ending by timeout") {
-    FUNCLOG;
     TestTimers test_suite;
     test_suite.run(&TestTimers::test_case_1, "test_case_1", chrono::milliseconds(3000));
     test_suite.timer_count = 0;

@@ -28,7 +28,6 @@ public:
 };
 
 TEST_CASE("Test Suite should return JUnit report after all success") {
-    FUNCLOG;
     TestJUnit test_junit;
     auto report = test_junit.execute();
     auto results = test_junit.get_results();
@@ -38,7 +37,6 @@ TEST_CASE("Test Suite should return JUnit report after all success") {
 }
 
 TEST_CASE("Test Suite should return JUnit report after some success") {
-    FUNCLOG;
     TestJUnit test_junit;
     test_junit.first_test_should_fail = true;
     auto report = test_junit.execute();

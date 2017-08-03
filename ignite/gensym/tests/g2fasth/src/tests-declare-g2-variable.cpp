@@ -4,7 +4,6 @@
 #include "libgsi.hpp"
 
 TEST_CASE("G2 variable declartion with not registered ignored") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("T1-VAR-1"));
@@ -23,7 +22,6 @@ TEST_CASE("G2 variable declartion with not registered ignored") {
 }
 
 TEST_CASE("Variable duplicate declartion is not allowed") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("T2-VAR-1"));
@@ -34,7 +32,6 @@ TEST_CASE("Variable duplicate declartion is not allowed") {
 }
 
 TEST_CASE("G2 variable declartion with not registered not ignored") {
-    FUNCLOG;
     g2::fasth::libgsi& gsiobj = g2::fasth::libgsi::getInstance();
 
     REQUIRE(true == gsiobj.declare_g2_variable<int>("T3-VAR-1"));

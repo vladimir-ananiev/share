@@ -79,26 +79,22 @@ public:
 };
 
 TEST_CASE("Test Run Spec should throw exception on calling after without scheduling test case") {
-    FUNCLOG;
     g2::fasth::test_run_spec<TestSuite> spec;
     REQUIRE_THROWS(spec.after(&TestSuite::first_test));
 }
 
 TEST_CASE("Test Run Spec should throw exception on calling after_success_of without scheduling test case") {
-    FUNCLOG;
     g2::fasth::test_run_spec<TestSuite> spec;
     REQUIRE_THROWS(spec.after_success_of(&TestSuite::first_test));
 }
 
 TEST_CASE("Test Run Spec should return false on calling testcaseExists if no test exists") {
-    FUNCLOG;
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
     REQUIRE(testsuite.are_all_tests_completed());
 }
 
 TEST_CASE("Test Run Spec should schedule test case on calling schedule") {
-    FUNCLOG;
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
     testsuite.run(&TestSuite::first_test, "sample_test");
@@ -106,7 +102,6 @@ TEST_CASE("Test Run Spec should schedule test case on calling schedule") {
 }
 
 TEST_CASE("Test Run Spec should validate parent method on calling after") {
-    FUNCLOG;
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
     testsuite.run(&TestSuite::first_test, "sample_test");
@@ -114,7 +109,6 @@ TEST_CASE("Test Run Spec should validate parent method on calling after") {
 }
 
 TEST_CASE("Test Run Spec should validate parent method on calling after_success_of") {
-    FUNCLOG;
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
     testsuite.run(&TestSuite::first_test, "sample_test");
@@ -122,7 +116,6 @@ TEST_CASE("Test Run Spec should validate parent method on calling after_success_
 }
 
 TEST_CASE("Test Run Spec should set pointer on calling after after scheduling a test case") {
-    FUNCLOG;
     TestSuite testsuite;
     g2::fasth::test_run_spec<TestSuite> spec;
     testsuite.run(&TestSuite::first_test, "sample1_test");
@@ -132,28 +125,24 @@ TEST_CASE("Test Run Spec should set pointer on calling after after scheduling a 
 }
 
 TEST_CASE("Test Suite should setup test track before execution") {
-    FUNCLOG;
     TestSuite testsuite;
     testsuite.execute();
     REQUIRE(testsuite.setupTestTrackCalled);
 }
 
 TEST_CASE("Test Suite should call before before execution of each test") {
-    FUNCLOG;
     TestSuite testsuite;
     testsuite.execute();
     REQUIRE(testsuite.beforeCalled);
 }
 
 TEST_CASE("Test Suite should call after after execution of each test") {
-    FUNCLOG;
     TestSuite testsuite;
     testsuite.execute();
     REQUIRE(testsuite.afterCalled);
 }
 
 TEST_CASE("Test Suite should execute only test cases present in test track") {
-    FUNCLOG;
     TestSuite testsuite;
     testsuite.execute();
     REQUIRE(testsuite.firstCalled);
@@ -161,7 +150,6 @@ TEST_CASE("Test Suite should execute only test cases present in test track") {
 }
 
 TEST_CASE("Test Suite should execute test cases scheduled multiple times present in test track") {
-    FUNCLOG;
     TestSuite testsuite;
     testsuite.execute();
     REQUIRE(testsuite.firstCalled);
@@ -171,7 +159,6 @@ TEST_CASE("Test Suite should execute test cases scheduled multiple times present
 }
 
 TEST_CASE("Test case should not be executed and marked as failed test if dependent test has failed") {
-    FUNCLOG;
     TestAfterConstruct testsuite;
     testsuite.execute();
     REQUIRE_FALSE(testsuite.second_test_executed);

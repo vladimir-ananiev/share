@@ -27,7 +27,6 @@ public:
 };
 
 TEST_CASE("Test order - explicit implied") {
-    FUNCLOG;
     TestOrders ts(test_order::implied);
     ts.set_parallel(false);
     ts.run(&TestOrders::test, "0");
@@ -45,7 +44,6 @@ TEST_CASE("Test order - explicit implied") {
 }
 
 TEST_CASE("Test order - explicit random") {
-    FUNCLOG;
     TestOrders ts(test_order::random);
     ts.set_parallel(false);
     ts.run(&TestOrders::test, "0");
@@ -64,7 +62,6 @@ TEST_CASE("Test order - explicit random") {
 }
 
 TEST_CASE("Test order - default random") {
-    FUNCLOG;
     TestOrders ts;
     ts.set_parallel(false);
     ts.run(&TestOrders::test, "0");

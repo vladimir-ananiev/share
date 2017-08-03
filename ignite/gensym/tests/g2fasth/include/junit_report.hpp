@@ -56,11 +56,13 @@ private:
 */
 class testsuite_data : public xmls::serializable {
 public:
-    testsuite_data(xmls::x_int tests) {
+    testsuite_data(xmls::x_int tests, xmls::x_string start_time) {
         set_class_name("testsuite");
         register_type("tests", &d_tests);
+        register_type("start", &d_start_time);
         register_type("testcases", &d_testcases);
         d_tests = tests;
+        d_start_time=  start_time;
     }
     testcase_data * add_testcase(std::string class_name, std::string name) {
         auto test_case = d_testcases.new_element();
@@ -70,6 +72,7 @@ public:
 private:
     xmls::collection<testcase_data> d_testcases;
     xmls::x_int d_tests;
+    xmls::x_string d_start_time;
 };
 }
 }
