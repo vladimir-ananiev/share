@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	printf("long long size = %d\n", long_long_size);
 	printf("void* size = %d\n", void_ptr);
 
-	std::string in_str = "test string";
+	std::string in_str = "test strin jbdkjqdbwkjqwndkjqwnkdj nkjn kjqwdn kqnk nqkwdnkjn kjwqdn kjn knwd qkqjnwd kjqwndkjqwn kdg";
 
 	os_string_hasher2 StringHash;
 	unsigned long hash = StringHash(in_str);
