@@ -9,7 +9,7 @@ public:
 	{
 		int n = c.length();
 		const char* d = c.data();
-		long h = n; 
+		int h = n; 
       
 		for ( int i = 0; i < n; ++i, ++d )
 			h = 613*h + *d;
@@ -18,7 +18,7 @@ public:
 	}
 
 protected:
-	long prime_;
+	int prime_;
 };
 
 
