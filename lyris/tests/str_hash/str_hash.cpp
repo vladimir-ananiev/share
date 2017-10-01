@@ -37,12 +37,12 @@ long os_string_hasher2::operator()( const os_string& c ) const
   int n = c.length();
   const char* d = c.data();
   int h = n; 
-  int prime = (int)prime_;
+  //int prime = (int)prime_;
       
   for ( int i = 0; i < n; ++i, ++d )
     h = 613*h + *d;
 
-  return ((h >= 0) ? (h % prime) : (-h % prime)); 
+  return ((h >= 0) ? (h % prime_) : (-h % prime_)); 
   }
 
 
