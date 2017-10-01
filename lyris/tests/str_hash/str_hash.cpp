@@ -37,7 +37,6 @@ long os_string_hasher2::operator()( const os_string& c ) const
   int n = c.length();
   const char* d = c.data();
   int h = n; 
-  //int prime = (int)prime_;
       
   for ( int i = 0; i < n; ++i, ++d )
     h = 613*h + *d;
@@ -61,12 +60,17 @@ int main(int argc, char* argv[])
 	printf("long long size = %d\n", long_long_size);
 	printf("void* size = %d\n", void_ptr_size);
 
-	std::string in_str = "test strin jbdkjqdbwkjqwndkjqwnkdj nkjn kjqwdn kqnk nqkwdnkjn kjwqdn kjn knwd qkqjnwd kjqwndkjqwn kdg";
+	std::string in_str = "Lyris ListManagerThis is an evaluation version of Lyris ListManager.";
+	in_str += "\n";
+	in_str += "\n";
+	in_str += "To purchase Lyris ListManager, see: http://go.aurea.com/contact-us";
+	in_str += "\n";
+	in_str += "\n";
 
 	os_string_hasher2 StringHash;
 	unsigned long hash = StringHash(in_str);
 
-	printf("Hash of (%s) = %u\n", in_str.c_str(), hash);
+	printf("Hash of (%s) = %u, len=%d\n", in_str.c_str(), hash, in_str.length());
 
 	return 0;
 }
